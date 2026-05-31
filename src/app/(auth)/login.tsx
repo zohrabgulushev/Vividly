@@ -155,7 +155,7 @@ export default function LoginScreen() {
                 <ActivityIndicator size="small" color="#151c27" />
               ) : (
                 <>
-                  <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBcJq7Z5VPwzaY3TI0sm2PS0BPwYkYGYJBvAyb1zclZw5_IZJ6uoEioNfc6S2Y0_B5xrBDal3Y36uCvg_iqVwpX0pQ8dTJOC0Pl0GhqGinNuC0uRGs6WgfIjnNblTilMkeMcfHP_pkjSz5wfx31xGX7lCxBoMzUI7_foRPTGKXlKJDGH_SH_Z4Fm6rcRv0uVVKBwaTfs3jXy2tsL2ilNnen4muzkCYpPOaTqLHHCKpXjAODlEK93XhUgy5aGykEaZC0HEkkU9igg_Y' }} style={styles.googleIcon} />
+                  <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png' }} style={styles.googleIcon} />
                   <Text style={styles.googleButtonText}>Continue with Google</Text>
                 </>
               )}
