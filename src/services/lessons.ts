@@ -52,9 +52,22 @@ export async function updateLessonProgress(
 }
 
 // Award XP to a student after completing a lesson
+// Uses a direct increment — no separate RPC needed
 export async function awardXP(studentId: string, xpAmount: number) {
-  return supabase.rpc('award_xp', {
-    user_id: studentId,
-    xp_amount: xpAmount,
-  });
+  // First get current balance, then increment
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('xp_balance')
+    .eq('id', studentId)
+    .single();
+
+  const currentXP = profile?.xp_balance ?? 0;
+
+  return supabase
+    .from('profiles')
+    .update({
+      xp_balance: currentXP + xpAmount,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', studentId);
 }

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Language",
-    "slug": "Language",
+    "name": "Vividly",
+    "slug": "vividly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "language",
+    "scheme": "vividly",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
