@@ -169,7 +169,7 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9f9ff' },
+  container: { flex: 1, backgroundColor: '#f9f9ff', overflow: 'hidden' },
   keyboardView: { flex: 1 },
   
   scrollContent: {
