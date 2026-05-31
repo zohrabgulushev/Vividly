@@ -27,11 +27,9 @@ export default function TabsLayout() {
         options={{
           title: 'Learn',
           tabBarIcon: ({ focused }) => (
-            <View style={styles.iconContainer}>
-              <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-                <MaterialIcons name="menu-book" size={24} color={focused ? '#ffffff' : '#737686'} />
-                <Text style={[styles.tabText, focused && styles.tabTextActive]}>Learn</Text>
-              </View>
+            <View style={[styles.tabItem, focused && styles.tabItemActive]}>
+              <MaterialIcons name="menu-book" size={24} color={focused ? '#ffffff' : '#737686'} />
+              <Text style={[styles.tabText, focused && styles.tabTextActive]}>Learn</Text>
             </View>
           ),
         }}
@@ -41,11 +39,9 @@ export default function TabsLayout() {
         options={{
           title: 'Speak',
           tabBarIcon: ({ focused }) => (
-            <View style={styles.iconContainer}>
-              <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-                <MaterialIcons name="record-voice-over" size={24} color={focused ? '#ffffff' : '#737686'} />
-                <Text style={[styles.tabText, focused && styles.tabTextActive]}>Speak</Text>
-              </View>
+            <View style={[styles.tabItem, focused && styles.tabItemActive]}>
+              <MaterialIcons name="record-voice-over" size={24} color={focused ? '#ffffff' : '#737686'} />
+              <Text style={[styles.tabText, focused && styles.tabTextActive]}>Speak</Text>
             </View>
           ),
         }}
@@ -55,11 +51,9 @@ export default function TabsLayout() {
         options={{
           title: 'League',
           tabBarIcon: ({ focused }) => (
-            <View style={styles.iconContainer}>
-              <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-                <MaterialIcons name="emoji-events" size={24} color={focused ? '#ffffff' : '#737686'} />
-                <Text style={[styles.tabText, focused && styles.tabTextActive]}>League</Text>
-              </View>
+            <View style={[styles.tabItem, focused && styles.tabItemActive]}>
+              <MaterialIcons name="emoji-events" size={24} color={focused ? '#ffffff' : '#737686'} />
+              <Text style={[styles.tabText, focused && styles.tabTextActive]}>League</Text>
             </View>
           ),
         }}
@@ -69,11 +63,9 @@ export default function TabsLayout() {
         options={{
           title: 'Progress',
           tabBarIcon: ({ focused }) => (
-            <View style={styles.iconContainer}>
-              <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-                <MaterialIcons name="calendar-today" size={24} color={focused ? '#ffffff' : '#737686'} />
-                <Text style={[styles.tabText, focused && styles.tabTextActive]}>Progress</Text>
-              </View>
+            <View style={[styles.tabItem, focused && styles.tabItemActive]}>
+              <MaterialIcons name="calendar-today" size={24} color={focused ? '#ffffff' : '#737686'} />
+              <Text style={[styles.tabText, focused && styles.tabTextActive]}>Progress</Text>
             </View>
           ),
         }}
@@ -83,11 +75,9 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ focused }) => (
-            <View style={styles.iconContainer}>
-              <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-                <MaterialIcons name="account-circle" size={24} color={focused ? '#ffffff' : '#737686'} />
-                <Text style={[styles.tabText, focused && styles.tabTextActive]}>Profile</Text>
-              </View>
+            <View style={[styles.tabItem, focused && styles.tabItemActive]}>
+              <MaterialIcons name="account-circle" size={24} color={focused ? '#ffffff' : '#737686'} />
+              <Text style={[styles.tabText, focused && styles.tabTextActive]}>Profile</Text>
             </View>
           ),
         }}
@@ -97,20 +87,14 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    marginTop: Platform.OS === 'ios' ? 16 : 0, // Align properly on iOS
-  },
   tabItem: {
     alignItems: 'center',
     justifyContent: 'center',
     height: 52,
     minWidth: 64,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     borderRadius: 16,
+    marginTop: Platform.OS === 'ios' ? 12 : 8,
   },
   tabItemActive: {
     backgroundColor: '#2563eb', // Matches the exact blue from the screenshot
