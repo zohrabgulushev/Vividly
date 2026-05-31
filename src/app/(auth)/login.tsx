@@ -132,7 +132,7 @@ export default function LoginScreen() {
 
           {/* Footer Link */}
           <TouchableOpacity onPress={() => router.push('/(auth)/register')} style={styles.footerLink}>
-            <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerBold}>Start learning today</Text></Text>
+            <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerBold}>Create an account</Text></Text>
           </TouchableOpacity>
 
           {/* Social Proof */}
