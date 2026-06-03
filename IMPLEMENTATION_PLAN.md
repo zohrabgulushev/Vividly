@@ -13,7 +13,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 
 ## 3. Speak Tab (Tutor Marketplace)
 - [x] **Tutor Profile Screen**: Detailed view of a tutor when clicking their card (intro video, full bio, reviews, availability calendar). `src/app/tutor-profile.tsx`
-- [ ] **Active Call Room (Video/Audio)**: A sleek UI for the actual conversation, showing the tutor's video, call duration, end call button, and maybe a "Translation/Notes" drawer.
+- [x] **Active Call Room (Video/Audio)**: A sleek UI for the actual conversation, showing the tutor's video, call duration, end call button, and maybe a "Translation/Notes" drawer. `src/app/active-call.tsx`
 - [ ] **Booking / Scheduling Modal**: The interface for selecting a date/time when clicking the calendar icon.
 - [ ] **Session History Screen**: A detailed list of past calls with audio playback/notes (linked from the quick action).
 - [ ] **Practice Prompts Screen**: A library of topics to discuss with tutors (linked from the quick action).
