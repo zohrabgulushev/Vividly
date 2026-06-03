@@ -9,7 +9,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 
 ## 2. Learn Tab (Core Educational Content)
 - [x] **Lesson Player / Interactive Screen**: The screen that opens when you click "Continue" or tap a pathway node. Needs a premium Duolingo/Babbel style quiz interface (multiple choice, fill in the blanks, listening). `src/app/lesson-player.tsx`
-- [ ] **Lesson Complete / Reward Screen**: The celebration screen showing XP earned, streak maintained, and accuracy after finishing a lesson.
+- [x] **Lesson Complete / Reward Screen**: The celebration screen showing XP earned, streak maintained, and accuracy after finishing a lesson. `src/app/lesson-complete.tsx`
 
 ## 3. Speak Tab (Tutor Marketplace)
 - [ ] **Tutor Profile Screen**: Detailed view of a tutor when clicking their card (intro video, full bio, reviews, availability calendar).
