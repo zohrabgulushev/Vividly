@@ -12,7 +12,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Lesson Complete / Reward Screen**: The celebration screen showing XP earned, streak maintained, and accuracy after finishing a lesson. `src/app/lesson-complete.tsx`
 
 ## 3. Speak Tab (Tutor Marketplace)
-- [ ] **Tutor Profile Screen**: Detailed view of a tutor when clicking their card (intro video, full bio, reviews, availability calendar).
+- [x] **Tutor Profile Screen**: Detailed view of a tutor when clicking their card (intro video, full bio, reviews, availability calendar). `src/app/tutor-profile.tsx`
 - [ ] **Active Call Room (Video/Audio)**: A sleek UI for the actual conversation, showing the tutor's video, call duration, end call button, and maybe a "Translation/Notes" drawer.
 - [ ] **Booking / Scheduling Modal**: The interface for selecting a date/time when clicking the calendar icon.
 - [ ] **Session History Screen**: A detailed list of past calls with audio playback/notes (linked from the quick action).
