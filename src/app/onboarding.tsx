@@ -11,7 +11,7 @@ export default function OnboardingScreen() {
 
   const handleContinue = () => {
     // In a real app, save this selection to Supabase user profile
-    router.replace('/(tabs)/learn');
+    router.push('/goal-selection' as any);
   };
 
   return (
