@@ -25,7 +25,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Store / Streak Freeze Modal**: Clicking "Streak Freeze available" should open a mini-store to spend in-game currency (gems) or real money on streak freezes and other power-ups. `src/app/store.tsx`
 
 ## 6. Profile & Settings Tab
-- [ ] **Edit Profile Screen**: A form to change Avatar, Name, Email, and Bio.
+- [x] **Edit Profile Screen**: A form to change Avatar, Name, Email, and Bio. `src/app/edit-profile.tsx`
 - [ ] **Premium Subscription / Top-up Screen**: The screen that opens on "Buy More Minutes" (pricing tiers, benefits of Vividly Premium, Apple Pay/Google Pay buttons).
 - [ ] **Personal Information Settings**: Form for deep account details (phone number, linked accounts).
 - [ ] **Payment Methods**: List of saved cards and billing history.
