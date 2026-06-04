@@ -16,7 +16,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Active Call Room (Video/Audio)**: A sleek UI for the actual conversation, showing the tutor's video, call duration, end call button, and maybe a "Translation/Notes" drawer. `src/app/active-call.tsx`
 - [x] **Booking / Scheduling Modal**: The interface for selecting a date/time when clicking the calendar icon. `src/app/book-session.tsx`
 - [x] **Session History Screen**: A detailed list of past calls with audio playback/notes (linked from the quick action). `src/app/session-history.tsx`
-- [ ] **Practice Prompts Screen**: A library of topics to discuss with tutors (linked from the quick action).
+- [x] **Practice Prompts Screen**: A library of topics to discuss with tutors (linked from the quick action). `src/app/practice-prompts.tsx`
 
 ## 4. League Tab (Gamification)
 - [ ] **Public User Profile Modal**: Clicking on a rival (e.g., Emma Watson) should show a mini-profile comparing their stats with yours.
