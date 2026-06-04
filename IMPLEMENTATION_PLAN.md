@@ -26,7 +26,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 
 ## 6. Profile & Settings Tab
 - [x] **Edit Profile Screen**: A form to change Avatar, Name, Email, and Bio. `src/app/edit-profile.tsx`
-- [ ] **Premium Subscription / Top-up Screen**: The screen that opens on "Buy More Minutes" (pricing tiers, benefits of Vividly Premium, Apple Pay/Google Pay buttons).
+- [x] **Premium Subscription / Top-up Screen**: The screen that opens on "Buy More Minutes" (pricing tiers, benefits of Vividly Premium, Apple Pay/Google Pay buttons). `src/app/top-up.tsx`
 - [ ] **Personal Information Settings**: Form for deep account details (phone number, linked accounts).
 - [ ] **Payment Methods**: List of saved cards and billing history.
 - [ ] **Notification Preferences**: Toggles for daily reminders, league updates, tutor messages.
