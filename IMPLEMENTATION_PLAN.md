@@ -22,7 +22,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Public User Profile Modal**: Clicking on a rival (e.g., Emma Watson) should show a mini-profile comparing their stats with yours. `src/app/rival-profile.tsx`
 
 ## 5. Progress Tab (Analytics)
-- [ ] **Store / Streak Freeze Modal**: Clicking "Streak Freeze available" should open a mini-store to spend in-game currency (gems) or real money on streak freezes and other power-ups.
+- [x] **Store / Streak Freeze Modal**: Clicking "Streak Freeze available" should open a mini-store to spend in-game currency (gems) or real money on streak freezes and other power-ups. `src/app/store.tsx`
 
 ## 6. Profile & Settings Tab
 - [ ] **Edit Profile Screen**: A form to change Avatar, Name, Email, and Bio.
