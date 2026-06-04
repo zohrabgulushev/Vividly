@@ -30,5 +30,5 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Personal Information Settings**: Form for deep account details (phone number, linked accounts). `src/app/personal-info.tsx`
 - [x] **Payment Methods**: List of saved cards and billing history. `src/app/payment-methods.tsx`
 - [x] **Notification Preferences**: Toggles for daily reminders, league updates, tutor messages. `src/app/notifications.tsx`
-- [ ] **App Language Selector**: A modal to choose the UI language.
+- [x] **App Language Selector**: A modal to choose the UI language. `src/app/language.tsx`
 - [ ] **Help Center & Privacy Policy**: Simple text/FAQ screens.
