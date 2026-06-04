@@ -19,7 +19,7 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Practice Prompts Screen**: A library of topics to discuss with tutors (linked from the quick action). `src/app/practice-prompts.tsx`
 
 ## 4. League Tab (Gamification)
-- [ ] **Public User Profile Modal**: Clicking on a rival (e.g., Emma Watson) should show a mini-profile comparing their stats with yours.
+- [x] **Public User Profile Modal**: Clicking on a rival (e.g., Emma Watson) should show a mini-profile comparing their stats with yours. `src/app/rival-profile.tsx`
 
 ## 5. Progress Tab (Analytics)
 - [ ] **Store / Streak Freeze Modal**: Clicking "Streak Freeze available" should open a mini-store to spend in-game currency (gems) or real money on streak freezes and other power-ups.
