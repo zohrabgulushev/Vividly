@@ -31,4 +31,4 @@ This document outlines every missing screen, modal, and flow required to transfo
 - [x] **Payment Methods**: List of saved cards and billing history. `src/app/payment-methods.tsx`
 - [x] **Notification Preferences**: Toggles for daily reminders, league updates, tutor messages. `src/app/notifications.tsx`
 - [x] **App Language Selector**: A modal to choose the UI language. `src/app/language.tsx`
-- [ ] **Help Center & Privacy Policy**: Simple text/FAQ screens.
+- [x] **Help Center & Privacy Policy**: Simple text/FAQ screens. `src/app/help-center.tsx`
