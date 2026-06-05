@@ -1,10 +1,119 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Platform, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { awardXP, awardXPFallback } from '@/services/lessons';
 
 export default function StoreScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id ?? null);
+
+  const [freezeCount, setFreezeCount] = useState(0);
+  const [doubleXPActive, setDoubleXPActive] = useState(false);
+  const [amuletActive, setAmuletActive] = useState(false);
+
+  // Load local power-up states
+  useEffect(() => {
+    AsyncStorage.getItem('vividly_streak_freeze').then(val => {
+      if (val) setFreezeCount(parseInt(val, 10));
+    });
+    AsyncStorage.getItem('vividly_double_xp').then(val => {
+      if (val === 'true') setDoubleXPActive(true);
+    });
+    AsyncStorage.getItem('vividly_weekend_amulet').then(val => {
+      if (val === 'true') setAmuletActive(true);
+    });
+  }, []);
+
+  const handlePurchaseFreeze = async () => {
+    if (!user?.id || !profile) return;
+    const cost = 200;
+    if (profile.xp_balance < cost) {
+      Alert.alert('Not enough XP', `You need ${cost} XP to purchase a Streak Freeze. Complete lessons to earn more!`);
+      return;
+    }
+
+    if (freezeCount >= 2) {
+      Alert.alert('Equipped Limit Reached', 'You can equip a maximum of 2 Streak Freezes at once.');
+      return;
+    }
+
+    try {
+      try {
+        await awardXP(user.id, -cost);
+      } catch (err) {
+        await awardXPFallback(user.id, -cost);
+      }
+      const newCount = freezeCount + 1;
+      setFreezeCount(newCount);
+      await AsyncStorage.setItem('vividly_streak_freeze', newCount.toString());
+      Alert.alert('Streak Freeze Equipped!', 'Your streak will be protected automatically if you miss a day of practice.');
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Purchase failed', 'An error occurred during the transaction.');
+    }
+  };
+
+  const handlePurchaseDoubleXP = async () => {
+    if (!user?.id || !profile) return;
+    const cost = 100;
+    if (profile.xp_balance < cost) {
+      Alert.alert('Not enough XP', `You need ${cost} XP to purchase a Double XP Boost. Complete lessons to earn more!`);
+      return;
+    }
+
+    if (doubleXPActive) {
+      Alert.alert('Already Active', 'Double XP Boost is already active for the next 15 minutes.');
+      return;
+    }
+
+    try {
+      try {
+        await awardXP(user.id, -cost);
+      } catch (err) {
+        await awardXPFallback(user.id, -cost);
+      }
+      setDoubleXPActive(true);
+      await AsyncStorage.setItem('vividly_double_xp', 'true');
+      Alert.alert('Double XP Boost Activated!', 'You will earn double XP for the next 15 minutes.');
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Purchase failed', 'An error occurred during the transaction.');
+    }
+  };
+
+  const handlePurchaseAmulet = async () => {
+    if (!user?.id || !profile) return;
+    const cost = 500;
+    if (profile.xp_balance < cost) {
+      Alert.alert('Not enough XP', `You need ${cost} XP to purchase a Weekend Amulet. Complete lessons to earn more!`);
+      return;
+    }
+
+    if (amuletActive) {
+      Alert.alert('Already Active', 'Weekend Amulet is already active for this coming weekend.');
+      return;
+    }
+
+    try {
+      try {
+        await awardXP(user.id, -cost);
+      } catch (err) {
+        await awardXPFallback(user.id, -cost);
+      }
+      setAmuletActive(true);
+      await AsyncStorage.setItem('vividly_weekend_amulet', 'true');
+      Alert.alert('Weekend Amulet Activated!', 'Your streak is protected over the weekend.');
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Purchase failed', 'An error occurred during the transaction.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -16,10 +125,10 @@ export default function StoreScreen() {
         <Text style={styles.headerTitle}>Store</Text>
         <View style={styles.balanceBadge}>
           <MaterialIcons name="diamond" size={16} color="#00a3ff" />
-          <Text style={styles.balanceText}>1,240</Text>
+          <Text style={styles.balanceText}>{profile?.xp_balance ?? 0}</Text>
         </View>
       </View>
-
+ 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         
         {/* Vividly Pro Section */}
@@ -53,12 +162,12 @@ export default function StoreScreen() {
               <Text style={styles.proFeatureText}>Personalized Practice</Text>
             </View>
           </View>
-
+ 
           <TouchableOpacity style={styles.proButton}>
             <Text style={styles.proButtonText}>Try 2 Weeks Free</Text>
           </TouchableOpacity>
         </LinearGradient>
-
+ 
         {/* Power-Ups Section */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
@@ -67,10 +176,10 @@ export default function StoreScreen() {
               <Text style={styles.sectionLink}>Learn More</Text>
             </TouchableOpacity>
           </View>
-
+ 
           <View style={styles.itemsList}>
             {/* Streak Freeze */}
-            <TouchableOpacity style={styles.itemCard} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.itemCard} activeOpacity={0.7} onPress={handlePurchaseFreeze}>
               <View style={[styles.itemIconContainer, { backgroundColor: 'rgba(0, 101, 145, 0.1)' }]}>
                 <MaterialIcons name="ac-unit" size={32} color="#006591" />
               </View>
@@ -83,12 +192,12 @@ export default function StoreScreen() {
                   <MaterialIcons name="diamond" size={14} color="#00a3ff" />
                   <Text style={styles.priceText}>200</Text>
                 </View>
-                <Text style={styles.equippedText}>0/2 equipped</Text>
+                <Text style={styles.equippedText}>{freezeCount}/2 equipped</Text>
               </View>
             </TouchableOpacity>
-
+ 
             {/* Double XP Boost */}
-            <TouchableOpacity style={styles.itemCard} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.itemCard} activeOpacity={0.7} onPress={handlePurchaseDoubleXP}>
               <View style={[styles.itemIconContainer, { backgroundColor: 'rgba(89, 54, 0, 0.1)' }]}>
                 <MaterialIcons name="bolt" size={32} color="#593600" />
               </View>
@@ -97,15 +206,21 @@ export default function StoreScreen() {
                 <Text style={styles.itemSubtitle}>Earn 2x XP for the next 15 minutes.</Text>
               </View>
               <View style={styles.itemAction}>
-                <View style={styles.priceBadge}>
-                  <MaterialIcons name="diamond" size={14} color="#00a3ff" />
-                  <Text style={styles.priceText}>100</Text>
-                </View>
+                {doubleXPActive ? (
+                  <View style={[styles.priceBadge, { backgroundColor: '#e2f0d9' }]}>
+                    <Text style={[styles.priceText, { color: '#385723' }]}>ACTIVE</Text>
+                  </View>
+                ) : (
+                  <View style={styles.priceBadge}>
+                    <MaterialIcons name="diamond" size={14} color="#00a3ff" />
+                    <Text style={styles.priceText}>100</Text>
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
-
+ 
             {/* Weekend Amulet */}
-            <TouchableOpacity style={styles.itemCard} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.itemCard} activeOpacity={0.7} onPress={handlePurchaseAmulet}>
               <View style={[styles.itemIconContainer, { backgroundColor: 'rgba(0, 53, 148, 0.1)' }]}>
                 <MaterialIcons name="pentagon" size={32} color="#003594" />
               </View>
@@ -114,10 +229,16 @@ export default function StoreScreen() {
                 <Text style={styles.itemSubtitle}>Protect your streak over the weekend.</Text>
               </View>
               <View style={styles.itemAction}>
-                <View style={styles.priceBadge}>
-                  <MaterialIcons name="diamond" size={14} color="#00a3ff" />
-                  <Text style={styles.priceText}>500</Text>
-                </View>
+                {amuletActive ? (
+                  <View style={[styles.priceBadge, { backgroundColor: '#e2f0d9' }]}>
+                    <Text style={[styles.priceText, { color: '#385723' }]}>ACTIVE</Text>
+                  </View>
+                ) : (
+                  <View style={styles.priceBadge}>
+                    <MaterialIcons name="diamond" size={14} color="#00a3ff" />
+                    <Text style={styles.priceText}>500</Text>
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
           </View>

@@ -1,17 +1,34 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/hooks/useAuth';
+import { updateProfile } from '@/services/profiles';
 
 type Level = 'beginner' | 'intermediate' | 'advanced';
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState<Level>('intermediate');
+  const [saving, setSaving] = useState(false);
 
-  const handleContinue = () => {
-    // In a real app, save this selection to Supabase user profile
-    router.push('/goal-selection' as any);
+  // Map UI level to CEFR code stored in DB
+  const LEVEL_MAP: Record<Level, string> = {
+    beginner: 'A1',
+    intermediate: 'B1',
+    advanced: 'C1',
+  };
+
+  const handleContinue = async () => {
+    const cefrLevel = LEVEL_MAP[selectedLevel];
+    if (user?.id) {
+      setSaving(true);
+      // Pre-save level; goal-selection will do the final saveOnboardingData call
+      await updateProfile(user.id, { level: cefrLevel } as any);
+      setSaving(false);
+    }
+    router.push({ pathname: '/goal-selection' as any, params: { level: cefrLevel } });
   };
 
   return (

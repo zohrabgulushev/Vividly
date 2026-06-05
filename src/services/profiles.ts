@@ -15,3 +15,15 @@ export async function updateProfile(userId: string, data: Partial<Profile>) {
     .update({ ...data, updated_at: new Date().toISOString() })
     .eq('id', userId);
 }
+
+export async function saveOnboardingData(userId: string, level: string, goal: string) {
+  return supabase
+    .from('profiles')
+    .update({
+      level,
+      goal,
+      is_onboarded: true,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', userId);
+}

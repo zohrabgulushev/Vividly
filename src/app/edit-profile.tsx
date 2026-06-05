@@ -198,7 +198,11 @@ const styles = StyleSheet.create({
     borderRadius: 52,
   },
   cameraOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(21, 28, 39, 0.3)',
     borderRadius: 52,
     alignItems: 'center',

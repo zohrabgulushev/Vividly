@@ -1,29 +1,46 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Platform, ActivityIndicator, Alert } from 'react-native';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { getActiveTutors } from '@/services/calls';
+import type { TutorWithProfile } from '@/types/database';
 
 const FILTERS = ['Top Rated', 'Native Speakers', 'Business English', 'IELTS'];
 
-const TUTORS = [
-  {
-    id: '1',
-    name: 'Sarah Jenkins',
-    title: 'British English Expert',
-    rating: '4.9',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuArgtFMlGjvUgU3PGfOQDNwDVMCfsZfTW_9YesgxoijSjtVUdkjohZU2ClfDuLlUAr4ILAJCnss2-C1pGAG-UBO4Qw32ee5hW5TgaW5bmLC6L_Rlnig55Gh3ohAXA2qgLgP2jedsw9FWg8ogyGrHQdlhfsH7USxQcjcQJ6sdahnAnS3j-oL96DsxJPvTl6_1aO70wjTdUCtWM6o0wHEBAjSPl2Yg9XzWaFzZINpc3c4vR_yxfxVycXopxzDl1F0GCNKp8yzsfPIpvA',
-  },
-  {
-    id: '2',
-    name: 'Alex Carter',
-    title: 'American English Specialist',
-    rating: '4.8',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4xftewwCfqqLHkiIpZmVDlyFtfT30K6Wj047e59Pq3h6S2V4Rmc7UbWMDnCWDIo6dGWsgp-P05jYa8NheGPWjGk-2llsKbdmH7Friz_NPl1MW_QuqYoRSTO4o-Zcd55SqYAv8qy0zUmgMRoKTHo8vszYsX005JrFqcBBZChZD01QM9KBpGmC57kp6bUHJkNmzJ6AMIm6dB9kohg1O8YI5zmAbf2W1Qzdb5m9sAX1MT1_hfruGjKM8zTF7v3wxuQ0ZDxX9HMg13-8',
-  }
-];
 
 export default function SpeakTab() {
   const [activeFilter, setActiveFilter] = useState('Top Rated');
+  const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id ?? null);
+  const [tutors, setTutors] = useState<TutorWithProfile[]>([]);
+  const [tutorsLoading, setTutorsLoading] = useState(true);
+
+  useEffect(() => {
+    getActiveTutors().then(({ data }) => {
+      setTutors((data as unknown as TutorWithProfile[]) ?? []);
+      setTutorsLoading(false);
+    });
+  }, []);
+
+  const hasMinutes = (profile?.minutes_balance ?? 0) > 0;
+
+  const handleCallNow = (tutorName: string) => {
+    if (!hasMinutes) {
+      Alert.alert(
+        'No Minutes Available',
+        'You need to buy a minutes package to start a session.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Buy Minutes', style: 'default', onPress: () => {} },
+        ]
+      );
+      return;
+    }
+    // TODO: navigate to active-call screen with tutorId
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,7 +54,7 @@ export default function SpeakTab() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
-        {/* Search & Context */}
+          {/* Search & Context */}
         <View style={styles.searchSection}>
           <View style={styles.searchBar}>
             <Feather name="search" size={20} color="#737686" style={styles.searchIcon} />
@@ -45,6 +62,8 @@ export default function SpeakTab() {
               style={styles.searchInput}
               placeholder="Search tutors by name or skill..."
               placeholderTextColor="#737686"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
           </View>
 
@@ -72,11 +91,29 @@ export default function SpeakTab() {
         </View>
 
         {/* Tutors List */}
+        {tutorsLoading ? (
+          <ActivityIndicator size="large" color="#004ac6" style={{ marginTop: 40 }} />
+        ) : tutors.length === 0 ? (
+          <View style={styles.emptyState}>
+            <MaterialIcons name="person-search" size={48} color="#c3c6d6" />
+            <Text style={styles.emptyStateText}>No tutors available</Text>
+            <Text style={styles.emptyStateSubtext}>Check back soon!</Text>
+          </View>
+        ) : (
         <View style={styles.tutorsContainer}>
-          {TUTORS.map((tutor) => (
-            <View key={tutor.id} style={styles.tutorCard}>
+          {tutors
+            .filter(t =>
+              searchQuery.trim() === '' ||
+              t.profile.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              (t.bio ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((tutor) => (
+            <View key={tutor.tutor_id} style={styles.tutorCard}>
               <View style={styles.tutorImageContainer}>
-                <Image source={{ uri: tutor.image }} style={styles.tutorImage} />
+                <Image 
+                  source={{ uri: tutor.profile.avatar_url ?? 'https://ui-avatars.com/api/?name=' + encodeURIComponent(tutor.profile.full_name) + '&background=004ac6&color=fff&size=300' }}
+                  style={styles.tutorImage}
+                />
                 
                 {/* Online Badge */}
                 <View style={styles.onlineBadge}>
@@ -91,21 +128,25 @@ export default function SpeakTab() {
                 >
                   <View style={styles.tutorInfoRow}>
                     <View>
-                      <Text style={styles.tutorName}>{tutor.name}</Text>
-                      <Text style={styles.tutorTitle}>{tutor.title}</Text>
+                      <Text style={styles.tutorName}>{tutor.profile.full_name}</Text>
+                      <Text style={styles.tutorTitle}>{tutor.bio ?? tutor.tags.join(', ')}</Text>
                     </View>
                     <View style={styles.ratingBadge}>
                       <MaterialIcons name="star" size={16} color="#fea619" />
-                      <Text style={styles.ratingText}>{tutor.rating}</Text>
+                      <Text style={styles.ratingText}>{tutor.rating.toFixed(1)}</Text>
                     </View>
                   </View>
                 </LinearGradient>
               </View>
 
               <View style={styles.cardActions}>
-                <TouchableOpacity style={styles.callButton} activeOpacity={0.8}>
+                <TouchableOpacity 
+                  style={[styles.callButton, !hasMinutes && styles.callButtonDisabled]}
+                  activeOpacity={0.8}
+                  onPress={() => handleCallNow(tutor.profile.full_name)}
+                >
                   <MaterialIcons name="call" size={20} color="#ffffff" />
-                  <Text style={styles.callButtonText}>Call Now</Text>
+                  <Text style={styles.callButtonText}>{hasMinutes ? 'Call Now' : 'Buy Minutes'}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.scheduleButton} activeOpacity={0.8}>
                   <MaterialIcons name="calendar-today" size={20} color="#004ac6" />
@@ -114,6 +155,7 @@ export default function SpeakTab() {
             </View>
           ))}
         </View>
+        )}
 
         {/* Quick Links */}
         <View style={styles.quickLinksGrid}>
@@ -139,6 +181,10 @@ export default function SpeakTab() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9ff' },
+  emptyState: { alignItems: 'center', paddingVertical: 60, gap: 8 },
+  emptyStateText: { fontSize: 16, fontWeight: '600', color: '#737686' },
+  emptyStateSubtext: { fontSize: 13, color: '#c3c6d6' },
+  callButtonDisabled: { backgroundColor: '#737686' },
   
   header: {
     flexDirection: 'row',

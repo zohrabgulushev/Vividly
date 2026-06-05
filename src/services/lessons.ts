@@ -12,12 +12,17 @@ export async function getDueLessons(studentId: string, limit = 10) {
 
 // Get new lessons for a student (not started yet) based on their level
 export async function getNewLessons(level: string, excludeIds: string[], limit = 5) {
-  return supabase
+  let query = supabase
     .from('lessons')
     .select('*')
     .eq('level', level)
-    .not('id', 'in', `(${excludeIds.join(',')})`)
     .limit(limit);
+
+  if (excludeIds.length > 0) {
+    query = query.not('id', 'in', `(${excludeIds.join(',')})`);
+  }
+
+  return query;
 }
 
 // After answering: update SRS box and next review date
@@ -32,7 +37,7 @@ export async function updateLessonProgress(
     .select('box')
     .eq('student_id', studentId)
     .eq('lesson_id', lessonId)
-    .single();
+    .maybeSingle();
 
   const INTERVALS_DAYS = [1, 3, 7, 14, 30]; // per box
   const currentBox = existing?.box ?? 1;
@@ -48,13 +53,21 @@ export async function updateLessonProgress(
     box: newBox,
     next_review_date: nextReview.toISOString(),
     last_reviewed_at: new Date().toISOString(),
+  }, {
+    onConflict: 'student_id,lesson_id',
   });
 }
 
-// Award XP to a student after completing a lesson
-// Uses a direct increment — no separate RPC needed
+// Award XP to a student — uses Supabase RPC for atomic increment (no race condition)
 export async function awardXP(studentId: string, xpAmount: number) {
-  // First get current balance, then increment
+  return supabase.rpc('increment_xp', {
+    user_id: studentId,
+    amount: xpAmount,
+  });
+}
+
+// Fallback XP award if RPC not available (client-side increment)
+export async function awardXPFallback(studentId: string, xpAmount: number) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('xp_balance')

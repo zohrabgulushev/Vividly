@@ -46,10 +46,10 @@ export default function TopUpScreen() {
               <MaterialIcons name="local-fire-department" size={24} color={selectedTier === 1 ? "#ffffff" : "#434654"} />
             </View>
             <View style={styles.tierInfo}>
-              <Text style={[styles.tierTitle, selectedTier === 1 && styles.tierTitleActive]}>1 Hour</Text>
-              <Text style={[styles.tierSubtitle, selectedTier === 1 && styles.tierSubtitleActive]}>Quick session boost</Text>
+              <Text style={[styles.tierTitle, selectedTier === 1 && styles.tierTitleActive]}>60 Minutes</Text>
+              <Text style={[styles.tierSubtitle, selectedTier === 1 && styles.tierSubtitleActive]}>Group conversation minutes</Text>
             </View>
-            <Text style={[styles.tierPrice, selectedTier === 1 && styles.tierPriceActive]}>$15</Text>
+            <Text style={[styles.tierPrice, selectedTier === 1 && styles.tierPriceActive]}>15 ₼</Text>
           </TouchableOpacity>
 
           {/* Tier 2 */}
@@ -61,8 +61,7 @@ export default function TopUpScreen() {
             {selectedTier === 2 && (
               <LinearGradient
                 colors={['#0055e6', '#004ac6']}
-                style={StyleSheet.absoluteFill}
-                borderRadius={16}
+                style={[StyleSheet.absoluteFill, { borderRadius: 16 }]}
               />
             )}
             
@@ -74,10 +73,10 @@ export default function TopUpScreen() {
               <MaterialIcons name="star" size={24} color={selectedTier === 2 ? "#ffffff" : "#003594"} />
             </View>
             <View style={styles.tierInfo}>
-              <Text style={[styles.tierTitle, selectedTier === 2 && styles.tierTitleActive]}>5 Hours</Text>
-              <Text style={[styles.tierSubtitle, selectedTier === 2 && styles.tierSubtitleActive]}>Most popular choice</Text>
+              <Text style={[styles.tierTitle, selectedTier === 2 && styles.tierTitleActive]}>300 Minutes</Text>
+              <Text style={[styles.tierSubtitle, selectedTier === 2 && styles.tierSubtitleActive]}>Group conversation minutes</Text>
             </View>
-            <Text style={[styles.tierPrice, selectedTier === 2 && styles.tierPriceActive]}>$60</Text>
+            <Text style={[styles.tierPrice, selectedTier === 2 && styles.tierPriceActive]}>60 ₼</Text>
           </TouchableOpacity>
 
           {/* Tier 3 */}
@@ -93,11 +92,19 @@ export default function TopUpScreen() {
               <MaterialIcons name="workspace-premium" size={24} color={selectedTier === 3 ? "#ffffff" : "#855300"} />
             </View>
             <View style={styles.tierInfo}>
-              <Text style={[styles.tierTitle, selectedTier === 3 && styles.tierTitleActive]}>10 Hours</Text>
-              <Text style={[styles.tierSubtitle, selectedTier === 3 && styles.tierSubtitleActive]}>Mastery commitment</Text>
+              <Text style={[styles.tierTitle, selectedTier === 3 && styles.tierTitleActive]}>600 Minutes</Text>
+              <Text style={[styles.tierSubtitle, selectedTier === 3 && styles.tierSubtitleActive]}>Group conversation minutes</Text>
             </View>
-            <Text style={[styles.tierPrice, selectedTier === 3 && styles.tierPriceActive]}>$100</Text>
+            <Text style={[styles.tierPrice, selectedTier === 3 && styles.tierPriceActive]}>100 ₼</Text>
           </TouchableOpacity>
+
+          {/* Disclaimer Text */}
+          <View style={styles.disclaimerContainer}>
+            <MaterialIcons name="info-outline" size={16} color="#737685" style={{ marginTop: 2 }} />
+            <Text style={styles.disclaimerText}>
+              Minutes are displayed for Group Conversation classes. Private 1-on-1 sessions consume minutes at a 2x rate.
+            </Text>
+          </View>
         </View>
 
         {/* Trust Section */}
@@ -185,7 +192,11 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   heroImageOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0, 74, 198, 0.1)',
     borderRadius: 64,
   },
@@ -385,5 +396,18 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  disclaimerContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginTop: 16,
+    paddingHorizontal: 8,
+  },
+  disclaimerText: {
+    fontSize: 12,
+    color: '#737685',
+    flex: 1,
+    lineHeight: 18,
   }
 });

@@ -28,9 +28,8 @@ export default function RegisterScreen() {
     if (error) {
       Alert.alert('Registration Failed', error.message);
     } else {
-      Alert.alert('Welcome to Vividly!', 'Please check your email to confirm your account.', [
-        { text: 'OK', onPress: () => router.replace('/(auth)/login') }
-      ]);
+      // Redirect immediately to onboarding — let them start the journey
+      router.replace('/onboarding' as any);
     }
   };
 

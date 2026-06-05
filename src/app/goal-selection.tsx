@@ -1,18 +1,33 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useAuth } from '@/hooks/useAuth';
+import { saveOnboardingData } from '@/services/profiles';
 
 type Goal = 'career' | 'travel' | 'brain' | 'social';
 
 export default function GoalSelectionScreen() {
   const router = useRouter();
+  const { level } = useLocalSearchParams<{ level?: string }>();
+  const { user } = useAuth();
   const [selectedGoal, setSelectedGoal] = useState<Goal>('travel');
+  const [saving, setSaving] = useState(false);
 
-  const handleContinue = () => {
-    // In a real app, save this selection to user profile
-    // Navigate to the next onboarding screen (Processing Screen)
-    router.push('/processing' as any); // Replace with your actual next route
+  const GOAL_LABELS: Record<Goal, string> = {
+    career: 'Career Advancement',
+    travel: 'Travel & Culture',
+    brain: 'Cognitive Health',
+    social: 'Social Connection',
+  };
+
+  const handleContinue = async () => {
+    if (user?.id) {
+      setSaving(true);
+      await saveOnboardingData(user.id, level ?? 'B1', selectedGoal);
+      setSaving(false);
+    }
+    router.push('/processing' as any);
   };
 
   return (
@@ -147,8 +162,8 @@ export default function GoalSelectionScreen() {
 
       {/* Bottom Footer Action */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.continueButton} onPress={handleContinue} activeOpacity={0.9}>
-          <Text style={styles.continueButtonText}>Continue</Text>
+        <TouchableOpacity style={[styles.continueButton, saving && { opacity: 0.7 }]} onPress={handleContinue} disabled={saving} activeOpacity={0.9}>
+          {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.continueButtonText}>Continue</Text>}
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -1,11 +1,16 @@
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView, Animated, Easing } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function LessonCompleteScreen() {
   const router = useRouter();
+  const { xpEarned, accuracy, streak } = useLocalSearchParams<{ xpEarned?: string; accuracy?: string; streak?: string }>();
   
+  const xp = xpEarned ? parseInt(xpEarned, 10) : 15;
+  const acc = accuracy ? parseInt(accuracy, 10) : 100;
+  const str = streak ? parseInt(streak, 10) : 7;
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -33,7 +38,6 @@ export default function LessonCompleteScreen() {
   }, []);
 
   const handleContinue = () => {
-    // Navigate back to the home or learn tab
     router.replace('/(tabs)/learn' as any);
   };
 
@@ -73,7 +77,7 @@ export default function LessonCompleteScreen() {
                 </View>
                 <Text style={styles.statLabel}>XP Gained</Text>
               </View>
-              <Text style={styles.statValue}>+15 XP</Text>
+              <Text style={styles.statValue}>+{xp} XP</Text>
             </View>
 
             {/* Accuracy Card */}
@@ -84,7 +88,7 @@ export default function LessonCompleteScreen() {
                 </View>
                 <Text style={styles.statLabel}>Accuracy</Text>
               </View>
-              <Text style={styles.statValue}>94%</Text>
+              <Text style={styles.statValue}>{acc}%</Text>
             </View>
 
             {/* Streak Card */}
@@ -95,7 +99,7 @@ export default function LessonCompleteScreen() {
                 </View>
                 <Text style={styles.statLabel}>Daily Streak</Text>
               </View>
-              <Text style={styles.statValue}>7 Days</Text>
+              <Text style={styles.statValue}>{str} Days</Text>
             </View>
 
           </View>

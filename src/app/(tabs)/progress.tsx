@@ -1,13 +1,49 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { getCallHistory } from '@/services/calls';
+import type { Call } from '@/types/database';
 
-const RECENT_CALLS = [
-  { id: '1', title: 'Conversation Practice', subtitle: 'Today, 10:00 AM • 15 mins' },
-  { id: '2', title: 'Pronunciation Drill', subtitle: 'Yesterday, 4:30 PM • 30 mins' },
-  { id: '3', title: 'Grammar Q&A', subtitle: 'Oct 24, 2:00 PM • 15 mins' },
-];
+// Build last 7 days for streak calendar
+function buildWeekDays() {
+  const days = ['S','M','T','W','T','F','S'];
+  const today = new Date();
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return { label: days[d.getDay()], date: d, isToday: i === 6 };
+  });
+}
+
+function formatCallDate(isoString: string): string {
+  const d = new Date(isoString);
+  const now = new Date();
+  const diff = now.getDate() - d.getDate();
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (diff === 0) return `Today, ${time}`;
+  if (diff === 1) return `Yesterday, ${time}`;
+  return `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${time}`;
+}
 
 export default function ProgressTab() {
+  const { user } = useAuth();
+  const { profile, loading: profileLoading } = useProfile(user?.id ?? null);
+  const [calls, setCalls] = useState<Call[]>([]);
+  const [callsLoading, setCallsLoading] = useState(true);
+  const weekDays = buildWeekDays();
+
+  useEffect(() => {
+    if (!user?.id) { setCallsLoading(false); return; }
+    getCallHistory(user.id).then(({ data }) => {
+      setCalls((data as unknown as Call[]) ?? []);
+      setCallsLoading(false);
+    });
+  }, [user?.id]);
+
+  const isLoading = profileLoading;
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -17,38 +53,46 @@ export default function ProgressTab() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
+        {/* Loading */}
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#004ac6" />
+          </View>
+        )}
+
         {/* Streak Calendar Card */}
+        {!isLoading && (
         <View style={styles.streakCard}>
           <View style={styles.streakAccentLine} />
           <View style={styles.streakHeader}>
-            <Text style={styles.streakTitle}>Current Streak: <Text style={styles.streakCount}>🔥 14 Days</Text></Text>
+            <Text style={styles.streakTitle}>Current Streak: <Text style={styles.streakCount}>🔥 {profile?.current_streak ?? 0} Days</Text></Text>
             <MaterialIcons name="local-fire-department" size={24} color="#f97316" />
           </View>
 
-          {/* 7-Day Mini Calendar */}
+          {/* 7-Day Dynamic Calendar */}
           <View style={styles.calendarRow}>
-            {['M', 'T', 'W', 'T', 'F'].map((day, i) => (
-              <View key={i} style={styles.calendarDay}>
-                <Text style={styles.dayLabel}>{day}</Text>
-                <View style={[styles.dayCircle, styles.dayCircleActive]}>
-                  <MaterialIcons name="local-fire-department" size={20} color="#ffffff" />
+            {weekDays.map((day, i) => {
+              const isStreakDay = !day.isToday && i < 6; // simplified: past days = active if streak > 0
+              const hasStreak = (profile?.current_streak ?? 0) > 0;
+              return (
+                <View key={i} style={styles.calendarDay}>
+                  <Text style={[styles.dayLabel, day.isToday && styles.dayLabelToday]}>{day.label}</Text>
+                  {day.isToday ? (
+                    <View style={[styles.dayCircle, styles.dayCircleToday]}>
+                      <MaterialIcons name="fiber-manual-record" size={16} color="#004ac6" />
+                    </View>
+                  ) : hasStreak && isStreakDay ? (
+                    <View style={[styles.dayCircle, styles.dayCircleActive]}>
+                      <MaterialIcons name="local-fire-department" size={20} color="#ffffff" />
+                    </View>
+                  ) : (
+                    <View style={[styles.dayCircle, styles.dayCircleFuture]}>
+                      <MaterialIcons name="fiber-manual-record" size={16} color="#c3c6d6" />
+                    </View>
+                  )}
                 </View>
-              </View>
-            ))}
-            {/* Today */}
-            <View style={styles.calendarDay}>
-              <Text style={[styles.dayLabel, styles.dayLabelToday]}>S</Text>
-              <View style={[styles.dayCircle, styles.dayCircleToday]}>
-                <MaterialIcons name="fiber-manual-record" size={16} color="#004ac6" />
-              </View>
-            </View>
-            {/* Tomorrow */}
-            <View style={styles.calendarDay}>
-              <Text style={styles.dayLabel}>S</Text>
-              <View style={[styles.dayCircle, styles.dayCircleFuture]}>
-                <MaterialIcons name="fiber-manual-record" size={16} color="#c3c6d6" />
-              </View>
-            </View>
+              );
+            })}
           </View>
 
           <TouchableOpacity style={styles.freezeBtn} activeOpacity={0.8}>
@@ -56,8 +100,10 @@ export default function ProgressTab() {
             <MaterialIcons name="arrow-forward" size={16} color="#004ac6" />
           </TouchableOpacity>
         </View>
+        )}
 
         {/* Learning Stats Grid */}
+        {!isLoading && (
         <View style={styles.statsGrid}>
           {/* Total XP */}
           <View style={[styles.statCard, { borderColor: 'rgba(254, 166, 25, 0.2)' }]}>
@@ -65,18 +111,19 @@ export default function ProgressTab() {
               <MaterialIcons name="star" size={100} color="rgba(254, 166, 25, 0.1)" />
             </View>
             <Text style={styles.statLabel}>TOTAL XP</Text>
-            <Text style={[styles.statValue, { color: '#f59e0b' }]}>12,450</Text>
+            <Text style={[styles.statValue, { color: '#f59e0b' }]}>{(profile?.xp_balance ?? 0).toLocaleString()}</Text>
           </View>
 
-          {/* Lessons Completed */}
+          {/* Minutes Balance */}
           <View style={[styles.statCard, { borderColor: 'rgba(0, 74, 198, 0.1)' }]}>
             <View style={styles.statBgIcon}>
-              <MaterialIcons name="menu-book" size={100} color="rgba(0, 74, 198, 0.05)" />
+              <MaterialIcons name="hourglass-empty" size={100} color="rgba(0, 74, 198, 0.05)" />
             </View>
-            <Text style={styles.statLabel}>LESSONS</Text>
-            <Text style={[styles.statValue, { color: '#004ac6' }]}>342</Text>
+            <Text style={styles.statLabel}>MINUTES</Text>
+            <Text style={[styles.statValue, { color: '#004ac6' }]}>{profile?.minutes_balance ?? 0}</Text>
           </View>
         </View>
+        )}
 
         {/* Speaking History */}
         <View style={styles.historySection}>
@@ -84,15 +131,24 @@ export default function ProgressTab() {
             <Text style={styles.historyTitle}>Recent Calls</Text>
             <View style={styles.balanceBadge}>
               <MaterialIcons name="hourglass-empty" size={14} color="#004ac6" />
-              <Text style={styles.balanceText}>Balance: 120 mins</Text>
+              <Text style={styles.balanceText}>Balance: {profile?.minutes_balance ?? 0} mins</Text>
             </View>
           </View>
 
+          {callsLoading ? (
+            <ActivityIndicator size="small" color="#004ac6" style={{ marginTop: 16 }} />
+          ) : calls.length === 0 ? (
+            <View style={styles.emptyState}>
+              <MaterialIcons name="record-voice-over" size={40} color="#c3c6d6" />
+              <Text style={styles.emptyStateText}>No sessions yet</Text>
+              <Text style={styles.emptyStateSubtext}>Book your first speaking session!</Text>
+            </View>
+          ) : (
           <View style={styles.historyList}>
-            {RECENT_CALLS.map((call, index) => (
+            {calls.slice(0, 10).map((call, index) => (
               <TouchableOpacity 
                 key={call.id} 
-                style={[styles.historyRow, index !== RECENT_CALLS.length - 1 && styles.historyRowBorder]}
+                style={[styles.historyRow, index !== Math.min(calls.length, 10) - 1 && styles.historyRowBorder]}
                 activeOpacity={0.7}
               >
                 <View style={styles.historyRowLeft}>
@@ -100,14 +156,15 @@ export default function ProgressTab() {
                     <MaterialIcons name="record-voice-over" size={24} color="#004ac6" />
                   </View>
                   <View>
-                    <Text style={styles.historyRowTitle}>{call.title}</Text>
-                    <Text style={styles.historyRowSubtitle}>{call.subtitle}</Text>
+                    <Text style={styles.historyRowTitle}>{call.type === 'private' ? '1-on-1 Session' : 'Group Session'}</Text>
+                    <Text style={styles.historyRowSubtitle}>{formatCallDate(call.created_at)} • {call.billed_minutes} mins</Text>
                   </View>
                 </View>
                 <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
               </TouchableOpacity>
             ))}
           </View>
+          )}
         </View>
 
       </ScrollView>
@@ -117,6 +174,10 @@ export default function ProgressTab() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9ff' },
+  loadingContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
+  emptyState: { alignItems: 'center', paddingVertical: 40, gap: 8 },
+  emptyStateText: { fontSize: 16, fontWeight: '600', color: '#737686' },
+  emptyStateSubtext: { fontSize: 13, color: '#c3c6d6' },
   
   header: {
     paddingHorizontal: 24,

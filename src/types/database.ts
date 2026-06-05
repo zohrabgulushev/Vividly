@@ -21,6 +21,9 @@ export interface Profile {
   current_streak: number;
   longest_streak: number;
   last_lesson_date: string | null; // ISO date string
+  level: string | null; // CEFR level: A1, A2, B1, B2, C1
+  goal: string | null; // User's learning goal
+  is_onboarded: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -141,14 +144,29 @@ export interface Review {
 export interface Database {
   public: {
     Tables: {
-      profiles: { Row: Profile; Insert: Omit<Profile, 'created_at' | 'updated_at'>; Update: Partial<Profile> };
-      tutor_profiles: { Row: TutorProfile; Insert: Omit<TutorProfile, 'created_at'>; Update: Partial<TutorProfile> };
-      lessons: { Row: Lesson; Insert: Omit<Lesson, 'id' | 'created_at'>; Update: Partial<Lesson> };
-      user_lessons: { Row: UserLesson; Insert: Omit<UserLesson, 'id' | 'created_at'>; Update: Partial<UserLesson> };
-      calls: { Row: Call; Insert: Omit<Call, 'id' | 'created_at'>; Update: Partial<Call> };
-      minute_packages: { Row: MinutePackage; Insert: Omit<MinutePackage, 'id' | 'created_at'>; Update: Partial<MinutePackage> };
-      transactions: { Row: Transaction; Insert: Omit<Transaction, 'id' | 'created_at'>; Update: Partial<Transaction> };
-      reviews: { Row: Review; Insert: Omit<Review, 'id' | 'created_at'>; Update: Partial<Review> };
+      profiles: { Row: Profile; Insert: Omit<Profile, 'created_at' | 'updated_at'>; Update: Partial<Profile>; Relationships: [] };
+      tutor_profiles: { Row: TutorProfile; Insert: Omit<TutorProfile, 'created_at'>; Update: Partial<TutorProfile>; Relationships: [] };
+      lessons: { Row: Lesson; Insert: Omit<Lesson, 'id' | 'created_at'>; Update: Partial<Lesson>; Relationships: [] };
+      user_lessons: { Row: UserLesson; Insert: Omit<UserLesson, 'id' | 'created_at'>; Update: Partial<UserLesson>; Relationships: [] };
+      calls: { Row: Call; Insert: Omit<Call, 'id' | 'created_at'>; Update: Partial<Call>; Relationships: [] };
+      minute_packages: { Row: MinutePackage; Insert: Omit<MinutePackage, 'id' | 'created_at'>; Update: Partial<MinutePackage>; Relationships: [] };
+      transactions: { Row: Transaction; Insert: Omit<Transaction, 'id' | 'created_at'>; Update: Partial<Transaction>; Relationships: [] };
+      reviews: { Row: Review; Insert: Omit<Review, 'id' | 'created_at'>; Update: Partial<Review>; Relationships: [] };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      increment_xp: {
+        Args: {
+          user_id: string;
+          amount: number;
+        };
+        Returns: void;
+      };
+    };
+    Enums: {
+      [_ in never]: never;
     };
   };
 }

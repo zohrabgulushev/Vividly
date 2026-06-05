@@ -4,10 +4,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 
 export default function ProfileTab() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id ?? null);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -27,18 +31,18 @@ export default function ProfileTab() {
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
             <Image 
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPS8sIcI7c3hCLg6Pneyi6-AfXpaaGEbCpcfNj3PPmFXnEV1bI4eS7MbCB0TK3wZdw6m8RnWiebmZTQ203h2qpeiNZPzcBylE_TlnxmXQYZhqyQkaH3ZwE098LQavTFRejO5EbLP5UM945c2tHJ55oVNxpOQUw3BZyRWNIJgf9vdEeP0Lrq2INxHI0K2LZn4fnbTPVoShNu3xBbVyyM6QRjWrEQIUg2-75N0DH0aTvOGP5I2LNjydKR9ky8C2h--9KLidKipkjdiM' }} 
+              source={{ uri: profile?.avatar_url ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name ?? 'User')}&background=004ac6&color=fff&size=200` }} 
               style={styles.avatar} 
             />
-            <TouchableOpacity style={styles.editAvatarBtn} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.editAvatarBtn} activeOpacity={0.8} onPress={() => router.push('/edit-profile' as any)}>
               <MaterialIcons name="edit" size={16} color="#ffffff" />
             </TouchableOpacity>
           </View>
           
-          <Text style={styles.userName}>Alex Carter</Text>
-          <Text style={styles.userEmail}>alex@example.com</Text>
+          <Text style={styles.userName}>{profile?.full_name ?? user?.email?.split('@')[0] ?? 'User'}</Text>
+          <Text style={styles.userEmail}>{user?.email ?? ''}</Text>
           
-          <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.editProfileBtn} activeOpacity={0.8} onPress={() => router.push('/edit-profile' as any)}>
             <Text style={styles.editProfileText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
@@ -57,9 +61,9 @@ export default function ProfileTab() {
               <MaterialIcons name="bolt" size={20} color="rgba(255,255,255,0.9)" />
               <Text style={styles.balanceLabel}>CURRENT BALANCE</Text>
             </View>
-            <Text style={styles.balanceValue}>120 Minutes</Text>
+            <Text style={styles.balanceValue}>{profile?.minutes_balance ?? 0} Minutes</Text>
             
-            <TouchableOpacity style={styles.buyBtn} activeOpacity={0.9}>
+            <TouchableOpacity style={styles.buyBtn} activeOpacity={0.9} onPress={() => router.push('/top-up' as any)}>
               <Text style={styles.buyBtnText}>Buy More Minutes</Text>
             </TouchableOpacity>
           </LinearGradient>
@@ -72,7 +76,7 @@ export default function ProfileTab() {
           <View style={styles.settingsGroup}>
             <Text style={styles.groupTitle}>ACCOUNT</Text>
             <View style={styles.groupCard}>
-              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7} onPress={() => router.push('/personal-info' as any)}>
                 <View style={styles.settingIconWrapper}>
                   <MaterialIcons name="person" size={22} color="#004ac6" />
                 </View>
@@ -80,7 +84,7 @@ export default function ProfileTab() {
                 <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
               </TouchableOpacity>
               <View style={styles.divider} />
-              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7} onPress={() => router.push('/payment-methods' as any)}>
                 <View style={styles.settingIconWrapper}>
                   <MaterialIcons name="credit-card" size={22} color="#004ac6" />
                 </View>
@@ -94,7 +98,7 @@ export default function ProfileTab() {
           <View style={styles.settingsGroup}>
             <Text style={styles.groupTitle}>PREFERENCES</Text>
             <View style={styles.groupCard}>
-              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7} onPress={() => router.push('/notifications' as any)}>
                 <View style={styles.settingIconWrapper}>
                   <MaterialIcons name="notifications" size={22} color="#004ac6" />
                 </View>
@@ -102,7 +106,7 @@ export default function ProfileTab() {
                 <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
               </TouchableOpacity>
               <View style={styles.divider} />
-              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7} onPress={() => router.push('/language' as any)}>
                 <View style={styles.settingIconWrapper}>
                   <MaterialIcons name="language" size={22} color="#004ac6" />
                 </View>
@@ -130,7 +134,7 @@ export default function ProfileTab() {
           <View style={styles.settingsGroup}>
             <Text style={styles.groupTitle}>SUPPORT</Text>
             <View style={styles.groupCard}>
-              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7}>
+              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7} onPress={() => router.push('/help-center' as any)}>
                 <View style={styles.settingIconWrapper}>
                   <MaterialIcons name="help" size={22} color="#004ac6" />
                 </View>
