@@ -22,7 +22,8 @@ export function useProfile(userId: string | null) {
 
     // Real-time updates
     const channel = supabase
-      .channel(`profile-${userId}`)
+      // Add a random suffix to avoid "cannot add callbacks after subscribe" error in StrictMode
+      .channel(`profile-${userId}-${Math.random()}`)
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
