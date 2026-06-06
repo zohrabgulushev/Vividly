@@ -164,7 +164,7 @@ export default function LearnScreen() {
             <View style={styles.flagWrapper}>
               <Image
                 source={{
-                  uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-K78G6-eaWLIya0uj5c6TPCmkTFmwVUWjZXeRkXTKb0CB6JZnUJW_eWH6Q5awtkMbGFNXl0uVsvGBF86UOnPXbD7IK3OE8mCezic6G1Jvt0LJSY5J6ejxyGsM5oUazo719cCszi1Z_qY3yKEoYrX-JzsSYx9u0zl36VJYivEchfhHYEE7IQvigQYzlo5NaMuY3xoCq6VSvoH05sEbC4HFt0O1rKs-8SoO9e6Z8hrVZyxJnEr60RrFBL_Tbn7JctwR4aobJ8Z3JDL7',
+                  uri: 'https://flagcdn.com/w80/gb.png',
                 }}
                 style={styles.flagImage}
               />
@@ -226,7 +226,7 @@ export default function LearnScreen() {
             <Text style={styles.heroTag}>UNIT 1</Text>
             <Text style={styles.heroTitle}>Basics & Greetings</Text>
             <Text style={styles.heroSubtitle}>
-              Start your journey in the sun-kissed streets of Madrid.
+              Start your journey through the bustling streets of London.
             </Text>
           </View>
         </View>
@@ -324,7 +324,7 @@ export default function LearnScreen() {
                     isActive && styles.nodeLabelTextActive,
                     isLocked && styles.nodeLabelTextLocked,
                   ]}>
-                    {lesson.title || lesson.question?.substring(0, 15) || `Lesson ${index + 1}`}
+                    {lesson.title || `Lesson ${index + 1}`}
                   </Text>
                 </View>
 
@@ -372,7 +372,7 @@ export default function LearnScreen() {
 
             <View style={styles.unit2Content}>
               <Text style={styles.unit2Tag}>UNIT 2</Text>
-              <Text style={styles.unit2Title}>Shopping in the Plaza</Text>
+              <Text style={styles.unit2Title}>Everyday Conversations</Text>
               <Text style={styles.unit2Subtitle}>
                 Unlock this unit by completing all lessons in Unit 1.
               </Text>
@@ -586,10 +586,10 @@ const styles = StyleSheet.create({
   },
   activeOuterPulse: {
     position: 'absolute',
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    backgroundColor: 'rgba(249, 115, 22, 0.18)',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(249, 115, 22, 0.15)',
     zIndex: -1,
   },
   nodeLocked: {
