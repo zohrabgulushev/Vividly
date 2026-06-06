@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Platform, ActivityIndicator, Alert } from 'react-native';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { getActiveTutors } from '@/services/calls';
+import { useRouter } from 'expo-router';
 import type { TutorWithProfile } from '@/types/database';
 
 const FILTERS = ['Top Rated', 'Native Speakers', 'Business English', 'IELTS'];
@@ -13,6 +14,8 @@ const FILTERS = ['Top Rated', 'Native Speakers', 'Business English', 'IELTS'];
 export default function SpeakTab() {
   const [activeFilter, setActiveFilter] = useState('Top Rated');
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const searchInputRef = useRef<TextInput>(null);
   const { user } = useAuth();
   const { profile } = useProfile(user?.id ?? null);
   const [tutors, setTutors] = useState<TutorWithProfile[]>([]);
@@ -47,7 +50,7 @@ export default function SpeakTab() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Practice Speaking</Text>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => searchInputRef.current?.focus()}>
           <Feather name="search" size={24} color="#004ac6" />
         </TouchableOpacity>
       </View>
@@ -59,6 +62,7 @@ export default function SpeakTab() {
           <View style={styles.searchBar}>
             <Feather name="search" size={20} color="#737686" style={styles.searchIcon} />
             <TextInput 
+              ref={searchInputRef}
               style={styles.searchInput}
               placeholder="Search tutors by name or skill..."
               placeholderTextColor="#737686"
@@ -148,7 +152,7 @@ export default function SpeakTab() {
                   <MaterialIcons name="call" size={20} color="#ffffff" />
                   <Text style={styles.callButtonText}>{hasMinutes ? 'Call Now' : 'Buy Minutes'}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.scheduleButton} activeOpacity={0.8}>
+                <TouchableOpacity style={styles.scheduleButton} activeOpacity={0.8} onPress={() => router.push('/book-session')}>
                   <MaterialIcons name="calendar-today" size={20} color="#004ac6" />
                 </TouchableOpacity>
               </View>
@@ -159,14 +163,14 @@ export default function SpeakTab() {
 
         {/* Quick Links */}
         <View style={styles.quickLinksGrid}>
-          <TouchableOpacity style={[styles.quickLinkCard, { backgroundColor: 'rgba(219, 225, 255, 0.4)', borderColor: 'rgba(0, 74, 198, 0.05)' }]} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.quickLinkCard, { backgroundColor: 'rgba(219, 225, 255, 0.4)', borderColor: 'rgba(0, 74, 198, 0.05)' }]} activeOpacity={0.8} onPress={() => router.push('/session-history')}>
             <View style={[styles.quickLinkIconWrapper, { backgroundColor: '#004ac6' }]}>
               <MaterialIcons name="history" size={24} color="#ffffff" />
             </View>
             <Text style={[styles.quickLinkText, { color: '#004ac6' }]}>Session History</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.quickLinkCard, { backgroundColor: 'rgba(127, 252, 151, 0.2)', borderColor: 'rgba(0, 72, 27, 0.05)' }]} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.quickLinkCard, { backgroundColor: 'rgba(127, 252, 151, 0.2)', borderColor: 'rgba(0, 72, 27, 0.05)' }]} activeOpacity={0.8} onPress={() => router.push('/practice-prompts')}>
             <View style={[styles.quickLinkIconWrapper, { backgroundColor: '#00481b' }]}>
               <MaterialIcons name="quiz" size={24} color="#ffffff" />
             </View>

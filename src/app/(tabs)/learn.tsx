@@ -385,8 +385,8 @@ export default function LearnScreen() {
         </View>
       </ScrollView>
 
-      {/* Contextual FAB */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
+      {/* Contextual FAB - Vocabulary/Phrase book */}
+      <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => router.push('/practice-prompts')}>
         <MaterialIcons name="auto-stories" size={28} color="#ffffff" />
       </TouchableOpacity>
     </SafeAreaView>
@@ -485,13 +485,13 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   scrollContent: {
-    paddingTop: 80,
+    paddingTop: 66,
     paddingBottom: 120,
   },
   heroCard: {
     position: 'relative',
     width: '100%',
-    height: 260,
+    height: 200,
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     overflow: 'hidden',
@@ -544,6 +544,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     position: 'relative',
     marginVertical: 16,
+    backgroundColor: '#f0f3ff',
+    borderRadius: 32,
   },
   svgContainer: {
     position: 'absolute',
