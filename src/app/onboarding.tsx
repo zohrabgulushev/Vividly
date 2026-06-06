@@ -35,9 +35,7 @@ export default function OnboardingScreen() {
     <SafeAreaView style={styles.container}>
       {/* Top App Bar with Progress */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <MaterialIcons name="arrow-back" size={24} color="#004ac6" />
-        </TouchableOpacity>
+        <View style={styles.spacer} />
         <View style={styles.progressContainer}>
           <View style={styles.progressBarBg}>
             <View style={[styles.progressBarFill, { width: '33%' }]} />
