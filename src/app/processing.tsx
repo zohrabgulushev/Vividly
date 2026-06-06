@@ -25,11 +25,11 @@ export default function ProcessingScreen() {
     // Listener for text update
     const listener = progressAnim.addListener(({ value }) => {
       setProgressText(Math.floor(value));
-      if (value === 100) {
-        // Navigate when done
+      if (value >= 99) {
+        // Give extra time for DB write to propagate before _layout re-checks is_onboarded
         setTimeout(() => {
-          router.replace('/(tabs)/learn' as any); // Replace with actual path later
-        }, 500);
+          router.replace('/(tabs)/learn' as any);
+        }, 1200);
       }
     });
 
@@ -92,7 +92,7 @@ export default function ProcessingScreen() {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <MaterialIcons name="language" size={24} color="#a6e6ff" />
-          <Text style={styles.headerTitle}>Vividly AI</Text>
+          <Text style={styles.headerTitle}>Vividly</Text>
         </View>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>PROCESSING</Text>
@@ -105,7 +105,7 @@ export default function ProcessingScreen() {
         {/* Intro */}
         <View style={styles.introContainer}>
           <Text style={styles.title}>Building your curriculum...</Text>
-          <Text style={styles.subtitle}>Our AI is personalizing your learning path based on your professional goals and current proficiency.</Text>
+          <Text style={styles.subtitle}>We're personalizing your learning path based on your goals and current proficiency.</Text>
         </View>
 
         {/* Floating Card */}
@@ -139,7 +139,7 @@ export default function ProcessingScreen() {
                   <MaterialIcons name="auto-awesome" size={16} color="#14d1ff" />
                 </View>
               </View>
-              <Text style={styles.taskTextActive}>Generating AI tutors...</Text>
+              <Text style={styles.taskTextActive}>Finding your tutors...</Text>
             </View>
             <View style={styles.dotsContainer}>
               <View style={styles.dot} />
@@ -175,7 +175,7 @@ export default function ProcessingScreen() {
               <Text style={styles.avatarMoreText}>+4</Text>
             </View>
           </View>
-          <Text style={styles.engineText}>GLOBAL LANGUAGE ENGINE ACTIVE</Text>
+          <Text style={styles.engineText}>EXPERT TUTORS STANDING BY</Text>
         </View>
 
       </View>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { getProfile } from '@/services/profiles';
@@ -10,29 +10,36 @@ export default function RootLayout() {
   const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  // Fetch onboarding status whenever session changes
+  // Fetch onboarding status whenever user changes
+  const fetchOnboardingStatus = useCallback(async (userId: string) => {
+    setProfileLoading(true);
+    const { data } = await getProfile(userId);
+    setIsOnboarded(data?.is_onboarded ?? false);
+    setProfileLoading(false);
+  }, []);
+
   useEffect(() => {
     if (!session?.user?.id) {
       setIsOnboarded(null);
       return;
     }
-    setProfileLoading(true);
-    getProfile(session.user.id).then(({ data }) => {
-      setIsOnboarded(data?.is_onboarded ?? false);
-      setProfileLoading(false);
-    });
+    fetchOnboardingStatus(session.user.id);
   }, [session?.user?.id]);
 
   useEffect(() => {
+    // Wait for all async data to resolve
     if (loading || profileLoading) return;
-    // Still waiting for profile fetch after login
+    // Still fetching profile after login
     if (session && isOnboarded === null) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inOnboarding = segments[0] === 'onboarding' || segments[0] === 'goal-selection' || segments[0] === 'processing';
+    const inOnboardingFlow =
+      segments[0] === 'onboarding' ||
+      segments[0] === 'goal-selection' ||
+      segments[0] === 'processing';
 
     if (!session && !inAuthGroup) {
-      // Not logged in → login screen
+      // Not logged in → login
       router.replace('/(auth)/login');
     } else if (session && inAuthGroup) {
       // Just logged in → check if onboarding is done
@@ -41,8 +48,8 @@ export default function RootLayout() {
       } else {
         router.replace('/onboarding');
       }
-    } else if (session && !isOnboarded && !inOnboarding) {
-      // Logged in but hasn't done onboarding and navigated elsewhere
+    } else if (session && !isOnboarded && !inOnboardingFlow) {
+      // Logged in but onboarding not done and wandered outside flow
       router.replace('/onboarding');
     }
   }, [session, loading, isOnboarded, profileLoading, segments]);
