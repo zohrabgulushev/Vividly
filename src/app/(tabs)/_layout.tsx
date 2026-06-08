@@ -59,17 +59,18 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="progress"
+        name="game"
         options={{
-          title: 'Progress',
+          title: 'Game',
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabItem, focused && styles.tabItemActive]}>
-              <MaterialIcons name="calendar-today" size={24} color={focused ? '#ffffff' : '#737686'} />
-              <Text style={[styles.tabText, focused && styles.tabTextActive]}>Progress</Text>
+              <MaterialIcons name="sports-esports" size={24} color={focused ? '#ffffff' : '#737686'} />
+              <Text style={[styles.tabText, focused && styles.tabTextActive]}>Game</Text>
             </View>
           ),
         }}
       />
+      <Tabs.Screen name="progress" options={{ href: null }} />
       <Tabs.Screen
         name="profile"
         options={{

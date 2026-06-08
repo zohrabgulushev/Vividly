@@ -1,17 +1,39 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, TouchableOpacity, Switch, Platform, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
+import { getCallHistory } from '@/services/calls';
+import type { Call } from '@/types/database';
+
+function formatCallDate(isoString: string): string {
+  const d = new Date(isoString);
+  const now = new Date();
+  const diff = now.getDate() - d.getDate();
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (diff === 0) return `Today, ${time}`;
+  if (diff === 1) return `Yesterday, ${time}`;
+  return `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${time}`;
+}
 
 export default function ProfileTab() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [calls, setCalls] = useState<Call[]>([]);
+  const [callsLoading, setCallsLoading] = useState(true);
   const router = useRouter();
   const { user } = useAuth();
   const { profile } = useProfile(user?.id ?? null);
+
+  useEffect(() => {
+    if (!user?.id) { setCallsLoading(false); return; }
+    getCallHistory(user.id).then(({ data }) => {
+      setCalls((data as unknown as Call[]) ?? []);
+      setCallsLoading(false);
+    });
+  }, [user?.id]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -47,26 +69,66 @@ export default function ProfileTab() {
           </TouchableOpacity>
         </View>
 
-        {/* Balance Card */}
-        <View style={styles.balanceCardWrapper}>
-          <LinearGradient
-            colors={['#004ac6', '#00174b']}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-            style={styles.balanceCard}
-          >
-            {/* Decorative background glow */}
-            <View style={styles.glowCircle} />
-            
-            <View style={styles.balanceHeader}>
-              <MaterialIcons name="bolt" size={20} color="rgba(255,255,255,0.9)" />
-              <Text style={styles.balanceLabel}>CURRENT BALANCE</Text>
-            </View>
-            <Text style={styles.balanceValue}>{profile?.minutes_balance ?? 0} Minutes</Text>
-            
-            <TouchableOpacity style={styles.buyBtn} activeOpacity={0.9} onPress={() => router.push('/top-up' as any)}>
-              <Text style={styles.buyBtnText}>Buy More Minutes</Text>
+        {/* Stats Row — XP, Minutes, Streak */}
+        <View style={styles.statsRow}>
+          <TouchableOpacity style={styles.statChip} activeOpacity={0.8} onPress={() => router.push('/top-up' as any)}>
+            <LinearGradient colors={['#004ac6', '#1d4ed8']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.statChipGrad}>
+              <MaterialIcons name="hourglass-empty" size={22} color="#ffffff" />
+              <Text style={styles.statChipValue}>{profile?.minutes_balance ?? 0}</Text>
+              <Text style={styles.statChipLabel}>mins</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.statChip} activeOpacity={0.8} onPress={() => router.push('/store' as any)}>
+            <LinearGradient colors={['#f59e0b', '#d97706']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.statChipGrad}>
+              <MaterialIcons name="star" size={22} color="#ffffff" />
+              <Text style={styles.statChipValue}>{(profile?.xp_balance ?? 0).toLocaleString()}</Text>
+              <Text style={styles.statChipLabel}>XP</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <View style={styles.statChip}>
+            <LinearGradient colors={['#f97316', '#ea580c']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.statChipGrad}>
+              <MaterialIcons name="local-fire-department" size={22} color="#ffffff" />
+              <Text style={styles.statChipValue}>{profile?.current_streak ?? 0}</Text>
+              <Text style={styles.statChipLabel}>streak</Text>
+            </LinearGradient>
+          </View>
+        </View>
+
+        {/* Recent Calls mini-section */}
+        <View style={styles.callsSectionWrapper}>
+          <View style={styles.callsSectionHeader}>
+            <Text style={styles.callsSectionTitle}>Recent Calls</Text>
+            <TouchableOpacity onPress={() => {}} activeOpacity={0.7}>
+              <Text style={styles.callsSeeAll}>See all</Text>
             </TouchableOpacity>
-          </LinearGradient>
+          </View>
+          {callsLoading ? (
+            <ActivityIndicator size="small" color="#004ac6" style={{ marginVertical: 12 }} />
+          ) : calls.length === 0 ? (
+            <View style={styles.callsEmpty}>
+              <MaterialIcons name="record-voice-over" size={28} color="#c3c6d6" />
+              <Text style={styles.callsEmptyText}>No sessions yet — book your first one!</Text>
+            </View>
+          ) : (
+            <View style={styles.callsCard}>
+              {calls.slice(0, 3).map((call, index) => (
+                <View key={call.id}>
+                  <View style={styles.callRow}>
+                    <View style={styles.callIconWrapper}>
+                      <MaterialIcons name="record-voice-over" size={20} color="#004ac6" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.callRowTitle}>{call.type === 'private' ? '1-on-1 Session' : 'Group Session'}</Text>
+                      <Text style={styles.callRowSub}>{formatCallDate(call.created_at)} • {call.billed_minutes} mins</Text>
+                    </View>
+                  </View>
+                  {index < Math.min(calls.length, 3) - 1 && <View style={styles.callDivider} />}
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Settings Groups */}
@@ -209,14 +271,26 @@ const styles = StyleSheet.create({
   },
   editProfileText: { fontSize: 14, fontWeight: '600', color: '#434655' },
 
-  balanceCardWrapper: { marginBottom: 32, shadowColor: '#004ac6', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 20, elevation: 8 },
-  balanceCard: { borderRadius: 24, padding: 24, alignItems: 'center', overflow: 'hidden' },
-  glowCircle: { position: 'absolute', top: '-50%', left: '-50%', width: '200%', height: '200%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 1000 },
-  balanceHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 },
-  balanceLabel: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.9)', letterSpacing: 1 },
-  balanceValue: { fontSize: 36, fontWeight: '800', color: '#ffffff', letterSpacing: -1, marginBottom: 24 },
-  buyBtn: { backgroundColor: '#ffffff', width: '100%', paddingVertical: 16, borderRadius: 100, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8 },
-  buyBtnText: { color: '#004ac6', fontSize: 16, fontWeight: '700' },
+  // Stats row
+  statsRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
+  statChip: { flex: 1, borderRadius: 20, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 },
+  statChipGrad: { alignItems: 'center', justifyContent: 'center', paddingVertical: 16, gap: 2 },
+  statChipValue: { fontSize: 20, fontWeight: '800', color: '#ffffff', letterSpacing: -0.5 },
+  statChipLabel: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.85)', letterSpacing: 0.5 },
+
+  // Recent calls
+  callsSectionWrapper: { marginBottom: 28 },
+  callsSectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  callsSectionTitle: { fontSize: 18, fontWeight: '700', color: '#151c27' },
+  callsSeeAll: { fontSize: 14, fontWeight: '600', color: '#004ac6' },
+  callsEmpty: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#ffffff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#f0f3ff' },
+  callsEmptyText: { fontSize: 14, color: '#737686', flex: 1 },
+  callsCard: { backgroundColor: '#ffffff', borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(0,0,0,0.03)', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.03, shadowRadius: 8, elevation: 2 },
+  callRow: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 14 },
+  callIconWrapper: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f0f3ff', alignItems: 'center', justifyContent: 'center' },
+  callRowTitle: { fontSize: 15, fontWeight: '600', color: '#151c27', marginBottom: 2 },
+  callRowSub: { fontSize: 12, color: '#737686' },
+  callDivider: { height: 1, backgroundColor: '#f0f3ff', marginLeft: 68 },
 
   settingsContainer: { gap: 24 },
   settingsGroup: {},
