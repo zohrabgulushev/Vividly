@@ -30,19 +30,19 @@ export default function SpeakTab() {
 
   const hasMinutes = (profile?.minutes_balance ?? 0) > 0;
 
-  const handleCallNow = (tutorName: string) => {
+  const handleCallNow = (tutorId: string) => {
     if (!hasMinutes) {
       Alert.alert(
         'No Minutes Available',
         'You need to buy a minutes package to start a session.',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Buy Minutes', style: 'default', onPress: () => {} },
+          { text: 'Buy Minutes', style: 'default', onPress: () => router.push('/top-up' as any) },
         ]
       );
       return;
     }
-    // TODO: navigate to active-call screen with tutorId
+    router.push({ pathname: '/book-session' as any, params: { tutorId } });
   };
 
   return (
@@ -147,12 +147,12 @@ export default function SpeakTab() {
                 <TouchableOpacity 
                   style={[styles.callButton, !hasMinutes && styles.callButtonDisabled]}
                   activeOpacity={0.8}
-                  onPress={() => handleCallNow(tutor.profile.full_name)}
+                  onPress={() => handleCallNow(tutor.tutor_id)}
                 >
                   <MaterialIcons name="call" size={20} color="#ffffff" />
                   <Text style={styles.callButtonText}>{hasMinutes ? 'Call Now' : 'Buy Minutes'}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.scheduleButton} activeOpacity={0.8} onPress={() => router.push('/book-session')}>
+                <TouchableOpacity style={styles.scheduleButton} activeOpacity={0.8} onPress={() => router.push({ pathname: '/book-session' as any, params: { tutorId: tutor.tutor_id } })}>
                   <MaterialIcons name="calendar-today" size={20} color="#004ac6" />
                 </TouchableOpacity>
               </View>

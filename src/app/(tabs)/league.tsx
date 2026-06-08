@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 
 const LEADERBOARD = [
   { rank: 4, name: 'Emma Watson', xp: '9,450', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnbMIaV4uCttqDhcsX_g8-rC1aC4qgdhnHu9QxgDPxKiAnce_7MFYbwrTJEMZTMINZ4r6qP7PhRE6nUXtmT0FpOvXOTa2YGh6AvGUlBxdwTJB535SOmhFwn9-ynAEhsO5TMtIzYzLi0mPfiInKzA7qfcLixD3_wZxVD6iDcD0y5tZYawlnbLDyniLA7oe-bUxqLrqrZOozDFkoL0wPSB2750GQMpIHJEtPhPjI7iSa_gTdQGAdpmk8trI9fx-mOtiQigmbiywnE4k' },
@@ -10,6 +12,12 @@ const LEADERBOARD = [
 ];
 
 export default function LeagueTab() {
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id ?? null);
+  const myXP = profile?.xp_balance ?? 0;
+  const myAvatar = profile?.avatar_url ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name ?? 'You')}&background=004ac6&color=fff&size=200`;
+  const myName = profile?.full_name?.split(' ')[0] ?? 'You';
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -110,19 +118,17 @@ export default function LeagueTab() {
         <View style={styles.stickyRow}>
           <View style={styles.rowLeft}>
             <Text style={[styles.rankNumber, { color: '#ffffff', width: 24 }]}>12</Text>
+            <Image
+              source={{ uri: myAvatar }}
+              style={[styles.rowAvatar, { borderWidth: 2, borderColor: '#ffffff' }]}
+            />
             <View>
-              <Image 
-                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDoH-ZGICNYXKhMgcHOZIdfiyDgkZUj3C-qvMLOKNauQvpJKy9cwos9ZozQ0jc2vJVAl40I6K24D9pUFIVxzg4oKvO0ivXhS7cjTUXDXOEVFjv0VStxuzb0oDS0_XSamXDjrcBW1uG6VUnn2EXAQ5JFoH75NfnSvRtjHlgcednOwzZqvZ5iUngqDt0fSQFGJuKSbKq1nKHvrRFMDx8_sOVQ3Qgzt1y9BLHjbXPZg0quq9WAmmCacPbojKxuLNvGX6dZkRL44QmWNP0' }} 
-                style={[styles.rowAvatar, { borderWidth: 2, borderColor: '#ffffff' }]} 
-              />
-            </View>
-            <View>
-              <Text style={[styles.rowName, { color: '#ffffff' }]}>You</Text>
-              <Text style={styles.stickySubtitle}>350 XP to Rank 11</Text>
+              <Text style={[styles.rowName, { color: '#ffffff' }]}>{myName}</Text>
+              <Text style={styles.stickySubtitle}>Weekly ranking</Text>
             </View>
           </View>
           <View style={styles.rowRight}>
-            <Text style={[styles.rowXP, { color: '#ffffff' }]}>6,420</Text>
+            <Text style={[styles.rowXP, { color: '#ffffff' }]}>{myXP.toLocaleString()}</Text>
             <MaterialIcons name="bolt" size={20} color="#f59e0b" />
           </View>
         </View>
