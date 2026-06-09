@@ -39,10 +39,16 @@ describe('formatCallDate()', () => {
     expect(result).toMatch(/^Yesterday,/);
   });
 
-  it('returns formatted date for older entries', () => {
+  it('returns formatted date for older entries (locale-agnostic)', () => {
     const older = new Date('2024-05-15T10:00:00').toISOString();
     const result = formatCallDate(older, NOW);
-    expect(result).toMatch(/May 15/);
+    // Must NOT be "Today" or "Yesterday"
+    expect(result).not.toMatch(/^Today/);
+    expect(result).not.toMatch(/^Yesterday/);
+    // Must contain the day number
+    expect(result).toMatch(/15/);
+    // Must contain a time component
+    expect(result).toMatch(/\d{1,2}:\d{2}/);
   });
 
   it('includes time in HH:MM format', () => {
