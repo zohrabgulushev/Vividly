@@ -122,7 +122,11 @@ export default function ProfileTab() {
             })}
           </View>
 
-          <TouchableOpacity style={styles.freezeBtn} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.freezeBtn} 
+            activeOpacity={0.8}
+            onPress={() => router.push('/store' as any)}
+          >
             <Text style={styles.freezeText}>❄️ Streak Freeze available</Text>
             <MaterialIcons name="arrow-forward" size={16} color="#004ac6" />
           </TouchableOpacity>

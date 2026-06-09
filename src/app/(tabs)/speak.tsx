@@ -10,6 +10,72 @@ import type { TutorWithProfile } from '@/types/database';
 
 const FILTERS = ['Top Rated', 'Native Speakers', 'Business English', 'IELTS'];
 
+const MOCK_TUTORS: TutorWithProfile[] = [
+  {
+    tutor_id: 'mock-tutor-1',
+    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    bio: 'CELTA Certified English tutor with 5+ years of experience specializing in IELTS preparation and business communication.',
+    languages: ['English'],
+    tags: ['IELTS', 'Business English', 'Grammar', 'Speaking'],
+    rating: 4.9,
+    total_reviews: 142,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    profile: {
+      id: 'mock-tutor-profile-1',
+      full_name: 'Sarah Jenkins',
+      avatar_url: 'https://ui-avatars.com/api/?name=Sarah+Jenkins&background=004ac6&color=fff&size=300'
+    }
+  },
+  {
+    tutor_id: 'mock-tutor-2',
+    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    bio: 'Native speaker from Boston. I focus on natural conversation flow, pronunciation, and everyday idioms.',
+    languages: ['English'],
+    tags: ['Native Speakers', 'Conversational', 'Pronunciation', 'Slang'],
+    rating: 4.8,
+    total_reviews: 98,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    profile: {
+      id: 'mock-tutor-profile-2',
+      full_name: 'Michael Vance',
+      avatar_url: 'https://ui-avatars.com/api/?name=Michael+Vance&background=f97316&color=fff&size=300'
+    }
+  },
+  {
+    tutor_id: 'mock-tutor-3',
+    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    bio: 'Business English specialist. Let\'s prepare for your job interviews, presentations, and negotiate effectively.',
+    languages: ['English'],
+    tags: ['Business English', 'Interviews', 'Writing'],
+    rating: 4.7,
+    total_reviews: 64,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    profile: {
+      id: 'mock-tutor-profile-3',
+      full_name: 'Elena Rostova',
+      avatar_url: 'https://ui-avatars.com/api/?name=Elena+Rostova&background=a855f7&color=fff&size=300'
+    }
+  },
+  {
+    tutor_id: 'mock-tutor-4',
+    video_url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    bio: 'British accent coach and IELTS speaking examiner. Get your band 8.0+ goals met!',
+    languages: ['English'],
+    tags: ['IELTS', 'Native Speakers', 'Accent Coaching'],
+    rating: 5.0,
+    total_reviews: 215,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    profile: {
+      id: 'mock-tutor-profile-4',
+      full_name: 'Dr. David Lloyd',
+      avatar_url: 'https://ui-avatars.com/api/?name=David+Lloyd&background=10b981&color=fff&size=300'
+    }
+  }
+];
 
 export default function SpeakTab() {
   const [activeFilter, setActiveFilter] = useState('Top Rated');
@@ -44,6 +110,42 @@ export default function SpeakTab() {
     }
     router.push({ pathname: '/book-session' as any, params: { tutorId } });
   };
+
+  const displayTutors = tutors.length > 0 ? tutors : MOCK_TUTORS;
+
+  // Filter tutors based on search and active chip
+  const filteredTutors = displayTutors.filter(t => {
+    // 1. Search filter
+    const matchesSearch = searchQuery.trim() === '' ||
+      t.profile.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (t.bio ?? '').toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+
+    // 2. Category Filter
+    if (activeFilter === 'Top Rated') {
+      return true;
+    }
+    if (activeFilter === 'Native Speakers') {
+      return t.tags.some(tag => tag.toLowerCase().includes('native')) ||
+        (t.bio ?? '').toLowerCase().includes('native');
+    }
+    if (activeFilter === 'Business English') {
+      return t.tags.some(tag => tag.toLowerCase().includes('business')) ||
+        (t.bio ?? '').toLowerCase().includes('business');
+    }
+    if (activeFilter === 'IELTS') {
+      return t.tags.some(tag => tag.toLowerCase().includes('ielts')) ||
+        (t.bio ?? '').toLowerCase().includes('ielts');
+    }
+    
+    return true;
+  });
+
+  // Sort by rating descending if filter is 'Top Rated'
+  if (activeFilter === 'Top Rated') {
+    filteredTutors.sort((a, b) => b.rating - a.rating);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -97,21 +199,15 @@ export default function SpeakTab() {
         {/* Tutors List */}
         {tutorsLoading ? (
           <ActivityIndicator size="large" color="#004ac6" style={{ marginTop: 40 }} />
-        ) : tutors.length === 0 ? (
+        ) : filteredTutors.length === 0 ? (
           <View style={styles.emptyState}>
             <MaterialIcons name="person-search" size={48} color="#c3c6d6" />
-            <Text style={styles.emptyStateText}>No tutors available</Text>
-            <Text style={styles.emptyStateSubtext}>Check back soon!</Text>
+            <Text style={styles.emptyStateText}>No tutors found</Text>
+            <Text style={styles.emptyStateSubtext}>Try a different search or filter!</Text>
           </View>
         ) : (
         <View style={styles.tutorsContainer}>
-          {tutors
-            .filter(t =>
-              searchQuery.trim() === '' ||
-              t.profile.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              (t.bio ?? '').toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            .map((tutor) => (
+          {filteredTutors.map((tutor) => (
             <View key={tutor.tutor_id} style={styles.tutorCard}>
               <View style={styles.tutorImageContainer}>
                 <Image 

@@ -142,15 +142,21 @@ export default function LearnScreen() {
   const currentLevel = profile?.level || 'B1';
   const displayLessons = lessons.length > 0 ? lessons : (MOCK_LESSONS[currentLevel as keyof typeof MOCK_LESSONS] || MOCK_LESSONS.B1);
 
-  // Find active node index
+  // Find active node index and compute progress percentage dynamically
   let activeIndex = 0;
+  let completedCount = 0;
   if (userLessons.length > 0) {
     const completedSet = new Set(userLessons.map(ul => ul.lesson_id));
+    completedCount = displayLessons.filter(l => completedSet.has(l.id)).length;
     activeIndex = displayLessons.findIndex(l => !completedSet.has(l.id));
     if (activeIndex === -1) {
       activeIndex = displayLessons.length; // all completed
     }
   }
+
+  const progressPercent = displayLessons.length > 0 
+    ? (completedCount / displayLessons.length) * 100 
+    : 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -199,7 +205,7 @@ export default function LearnScreen() {
             colors={['#003594', '#4e00ae']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={[styles.progressBarFill, { width: '45%' }]}
+            style={[styles.progressBarFill, { width: `${progressPercent}%` }]}
           />
         </View>
       </View>
