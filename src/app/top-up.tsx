@@ -1,12 +1,18 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, ImageBackground, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, ImageBackground, Platform, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { supabase } from '@/lib/supabase';
 
 export default function TopUpScreen() {
   const router = useRouter();
   const [selectedTier, setSelectedTier] = useState(2); // 1 = 1 Hour, 2 = 5 Hours, 3 = 10 Hours
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id ?? null);
+  const [loading, setLoading] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -130,11 +136,25 @@ export default function TopUpScreen() {
 
       {/* Sticky Checkout Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Complete Purchase</Text>
-          <MaterialIcons name="arrow-forward" size={20} color="#ffffff" />
+        <TouchableOpacity 
+          style={[styles.primaryButton, loading && styles.disabledButton]} 
+          onPress={() => !loading && handleCheckout(false)}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <>
+              <Text style={styles.primaryButtonText}>Complete Purchase</Text>
+              <MaterialIcons name="arrow-forward" size={20} color="#ffffff" />
+            </>
+          )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.applePayButton}>
+        <TouchableOpacity 
+          style={[styles.applePayButton, loading && styles.disabledButton]} 
+          onPress={() => !loading && handleCheckout(true)}
+          disabled={loading}
+        >
           <MaterialIcons name="payments" size={20} color="#ffffff" />
           <Text style={styles.applePayText}>Pay with Apple Pay</Text>
         </TouchableOpacity>
@@ -142,6 +162,101 @@ export default function TopUpScreen() {
     </SafeAreaView>
   );
 }
+
+  const handleCheckout = async (isApplePay = false) => {
+    if (!user?.id) {
+      Alert.alert('Authentication Required', 'Please log in to make a purchase.');
+      return;
+    }
+
+    setLoading(true);
+
+    // Get package details
+    let packageId = 'pkg-60';
+    let name = '60 Minutes';
+    let minutesToCredit = 60;
+    let priceAzn = 15;
+
+    if (selectedTier === 2) {
+      packageId = 'pkg-300';
+      name = '300 Minutes';
+      minutesToCredit = 300;
+      priceAzn = 60;
+    } else if (selectedTier === 3) {
+      packageId = 'pkg-600';
+      name = '600 Minutes';
+      minutesToCredit = 600;
+      priceAzn = 100;
+    }
+
+    // Simulate Payment Gateway processing (2 seconds)
+    setTimeout(async () => {
+      try {
+        // 1. Credit profile balance
+        const currentBalance = profile?.minutes_balance ?? 0;
+        const newBalance = currentBalance + minutesToCredit;
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            minutes_balance: newBalance,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+
+        if (profileError) throw profileError;
+
+        // 2. Insert transaction log
+        const usdRate = 0.59;
+        const amountUsd = Math.round(priceAzn * usdRate * 100) / 100;
+
+        // Ensure minute_package exists
+        const { data: pkgData, error: pkgError } = await supabase
+          .from('minute_packages')
+          .select('id')
+          .eq('id', packageId)
+          .maybeSingle();
+
+        if (!pkgData) {
+          await supabase
+            .from('minute_packages')
+            .upsert({
+              id: packageId,
+              name,
+              group_minutes: minutesToCredit,
+              private_minutes: Math.floor(minutesToCredit / 2),
+              price_usd: amountUsd,
+              is_popular: selectedTier === 2,
+              is_active: true
+            }, { onConflict: 'id' });
+        }
+
+        // Insert the transaction record
+        await supabase
+          .from('transactions')
+          .insert({
+            user_id: user.id,
+            package_id: packageId,
+            amount_usd: amountUsd,
+            minutes_credited: minutesToCredit,
+            payment_provider: isApplePay ? 'apple_pay' : 'acquiring_bank',
+            payment_id: `sim_txn_${Math.random().toString(36).substr(2, 9)}`,
+            created_at: new Date().toISOString()
+          });
+
+        setLoading(false);
+        Alert.alert(
+          'Purchase Successful!',
+          `Successfully credited ${minutesToCredit} minutes to your balance.`,
+          [{ text: 'Great!', onPress: () => router.back() }]
+        );
+      } catch (err: any) {
+        setLoading(false);
+        console.error('Simulated checkout database error:', err);
+        Alert.alert('Database Connection Issue', 'Simulated payment succeeded, but we failed to update database balance. Please check your Supabase connection.');
+      }
+    }, 2000);
+  };
 
 const styles = StyleSheet.create({
   container: {
@@ -409,5 +524,8 @@ const styles = StyleSheet.create({
     color: '#737685',
     flex: 1,
     lineHeight: 18,
-  }
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
 });

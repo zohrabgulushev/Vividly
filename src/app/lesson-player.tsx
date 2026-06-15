@@ -7,27 +7,41 @@ import { useProfile } from '@/hooks/useProfile';
 import { supabase } from '@/lib/supabase';
 import { updateLessonProgress, awardXP, awardXPFallback } from '@/services/lessons';
 
-const MOCK_LESSONS: Record<string, Array<{ id: string; title: string; question: string; correct_answer: string; options: string[]; xp_reward: number }>> = {
+const MOCK_LESSONS: Record<
+  string,
+  Array<{
+    id: string;
+    title: string;
+    lesson_type?: 'quiz' | 'reading' | 'speaking';
+    passage_text?: string;
+    prompt_text?: string;
+    question: string;
+    correct_answer: string;
+    options: string[];
+    xp_reward: number;
+    video_clip_url?: string;
+  }>
+> = {
   A1: [
-    { id: 'mock-a1-1', title: 'Introduction', question: 'Translate: "Hello, how are you?"', correct_answer: 'Salam, necəsən?', options: ['Salam, necəsən?', 'Sağ olun.', 'Mənim adım Əlidir.', 'Sabahınız xeyir.'], xp_reward: 10 },
-    { id: 'mock-a1-2', title: 'Daily Greetings', question: 'Translate: "Good morning!"', correct_answer: 'Sabahınız xeyir!', options: ['Sabahınız xeyir!', 'Axşamınız xeyir!', 'Gecəniz xeyirə qalsın!', 'Hələlik!'], xp_reward: 10 },
-    { id: 'mock-a1-3', title: 'Numbers 1-10', question: 'What is the number "three" in Azerbaijani?', correct_answer: 'Üç', options: ['Bir', 'İki', 'Üç', 'Dörd'], xp_reward: 15 },
-    { id: 'mock-a1-4', title: 'Simple Objects', question: 'Translate: "Book"', correct_answer: 'Kitab', options: ['Kitab', 'Qələm', 'Dəftər', 'Masa'], xp_reward: 15 },
-    { id: 'mock-a1-5', title: 'Colors', question: 'What color is "Red"?', correct_answer: 'Qırmızı', options: ['Mavi', 'Yaşıl', 'Qırmızı', 'Sarı'], xp_reward: 15 },
+    { id: 'mock-a1-1', title: 'Introduction', lesson_type: 'quiz', question: 'Translate: "Hello, how are you?"', correct_answer: 'Salam, necəsən?', options: ['Salam, necəsən?', 'Sağ olun.', 'Mənim adım Əlidir.', 'Sabahınız xeyir.'], xp_reward: 10 },
+    { id: 'mock-a1-2', title: 'Daily Greetings', lesson_type: 'quiz', question: 'Translate: "Good morning!"', correct_answer: 'Sabahınız xeyir!', options: ['Sabahınız xeyir!', 'Axşamınız xeyir!', 'Gecəniz xeyirə qalsın!', 'Hələlik!'], xp_reward: 10 },
+    { id: 'mock-a1-3', title: 'Reading Time', lesson_type: 'reading', passage_text: 'The weather is very warm today. Mark is going to the park. He wants to read a book under a big tree. Later, he will meet his friend Sarah.', question: 'Where is Mark going today?', correct_answer: 'To the park', options: ['To the park', 'To school', 'To a restaurant', 'To the hospital'], xp_reward: 15 },
+    { id: 'mock-a1-4', title: 'Speaking Practice', lesson_type: 'speaking', prompt_text: 'Please say: "Nice to meet you!"', question: 'Pronounce the phrase', correct_answer: 'Nice to meet you!', options: ['Nice to meet you!', 'Hello!', 'Goodbye', 'Thank you'], xp_reward: 15, video_clip_url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+    { id: 'mock-a1-5', title: 'Colors', lesson_type: 'quiz', question: 'What color is "Red"?', correct_answer: 'Qırmızı', options: ['Mavi', 'Yaşıl', 'Qırmızı', 'Sarı'], xp_reward: 15 },
   ],
   B1: [
-    { id: 'mock-b1-1', title: 'Introduction', question: 'Complete the sentence: "If I _____ you, I would take that offer."', correct_answer: 'were', options: ['am', 'was', 'were', 'would be'], xp_reward: 15 },
-    { id: 'mock-b1-2', title: 'Daily Greetings', question: 'Select the correct phrase for: "Zəhmət olmasa bir qəhvə verin."', correct_answer: 'A coffee, please.', options: ['A coffee, please.', 'Where is the coffee?', 'I hate coffee.', 'Thank you for coffee.'], xp_reward: 15 },
-    { id: 'mock-b1-3', title: 'Ordering Coffee', question: 'Translate: "I would like to order a coffee, please."', correct_answer: 'Zəhmət olmasa bir qəhvə sifariş etmək istərdim.', options: ['Zəhmət olmasa bir qəhvə sifariş etmək istərdim.', 'Mən çay içmək istəyirəm.', 'Hesabı gətirin, zəhmət olmasa.', 'Mənə su verin.'], xp_reward: 15 },
-    { id: 'mock-b1-4', title: 'Numbers 1-20', question: 'How do you say "fifteen"?', correct_answer: 'On beş', options: ['On dörd', 'On beş', 'On altı', 'On yeddi'], xp_reward: 15 },
-    { id: 'mock-b1-5', title: 'Bonus: Culture', question: 'Which city is famous for Big Ben?', correct_answer: 'London', options: ['New York', 'London', 'Paris', 'Baku'], xp_reward: 20 },
+    { id: 'mock-b1-1', title: 'Introduction', lesson_type: 'quiz', question: 'Complete the sentence: "If I _____ you, I would take that offer."', correct_answer: 'were', options: ['am', 'was', 'were', 'would be'], xp_reward: 15 },
+    { id: 'mock-b1-2', title: 'Reading Comprehension', lesson_type: 'reading', passage_text: 'Laptops are essential tools for modern employees. They allow people to work remotely from coffee shops or while traveling. However, working out of the office requires high self-discipline and reliable internet connections.', question: 'What does remote work require?', correct_answer: 'Self-discipline and good internet', options: ['Self-discipline and good internet', 'A powerful CPU', 'Free coffee', 'A large desktop screen'], xp_reward: 15 },
+    { id: 'mock-b1-3', title: 'Speaking Coffee Order', lesson_type: 'speaking', prompt_text: 'Say this out loud: "I would like to order a coffee, please."', question: 'Order a coffee', correct_answer: 'I would like to order a coffee, please.', options: ['I would like to order a coffee, please.', 'Give me some tea.', 'Where is the menu?', 'No coffee for me.'], xp_reward: 15, video_clip_url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+    { id: 'mock-b1-4', title: 'Numbers 1-20', lesson_type: 'quiz', question: 'How do you say "fifteen"?', correct_answer: 'On beş', options: ['On dörd', 'On beş', 'On altı', 'On yeddi'], xp_reward: 15 },
+    { id: 'mock-b1-5', title: 'Bonus: Culture', lesson_type: 'quiz', question: 'Which city is famous for Big Ben?', correct_answer: 'London', options: ['New York', 'London', 'Paris', 'Baku'], xp_reward: 20 },
   ],
   C1: [
-    { id: 'mock-c1-1', title: 'Introduction', question: 'Choose the synonym of "meticulous":', correct_answer: 'thorough', options: ['careless', 'thorough', 'fast', 'sluggish'], xp_reward: 20 },
-    { id: 'mock-c1-2', title: 'Daily Greetings', question: 'What does "break a leg" mean?', correct_answer: 'good luck', options: ['get hurt', 'good luck', 'run fast', 'work hard'], xp_reward: 20 },
-    { id: 'mock-c1-3', title: 'Advanced Idioms', question: 'Complete: "He decided to play it by _____."', correct_answer: 'ear', options: ['eye', 'ear', 'mouth', 'hand'], xp_reward: 20 },
-    { id: 'mock-c1-4', title: 'Formal Writing', question: 'Translate: "Bu layihənin uğuru komanda işindən asılıdır."', correct_answer: 'The success of this project depends on teamwork.', options: ['The success of this project depends on teamwork.', 'Project success is teamwork.', 'We must work in team.', 'Teamwork is good.'], xp_reward: 20 },
-    { id: 'mock-c1-5', title: 'Bonus: Culture', question: 'What is the capital of Australia?', correct_answer: 'Canberra', options: ['Sydney', 'Melbourne', 'Canberra', 'Brisbane'], xp_reward: 25 },
+    { id: 'mock-c1-1', title: 'Introduction', lesson_type: 'quiz', question: 'Choose the synonym of "meticulous":', correct_answer: 'thorough', options: ['careless', 'thorough', 'fast', 'sluggish'], xp_reward: 20 },
+    { id: 'mock-c1-2', title: 'Reading Challenge', lesson_type: 'reading', passage_text: 'The transition to renewable energy sources, such as wind and solar power, has accelerated over the past decade. Nevertheless, fossil fuels still dominate the energy mix in major industrial sectors. Overcoming battery storage constraints remains a significant hurdle.', question: 'What is a major hurdle for decarbonization?', correct_answer: 'Battery storage constraints', options: ['Battery storage constraints', 'Cost of solar panels', 'Lack of wind turbines', 'Public opinion'], xp_reward: 20 },
+    { id: 'mock-c1-3', title: 'Speaking Idiom', lesson_type: 'speaking', prompt_text: 'Express this idiom: "He decided to play it by ear."', question: 'Say the idiom', correct_answer: 'He decided to play it by ear.', options: ['He decided to play it by ear.', 'Let us check the map.', 'I want some food.', 'Listen to music.'], xp_reward: 20, video_clip_url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+    { id: 'mock-c1-4', title: 'Formal Writing', lesson_type: 'quiz', question: 'Translate: "Bu layihənin uğuru komanda işindən asılıdır."', correct_answer: 'The success of this project depends on teamwork.', options: ['The success of this project depends on teamwork.', 'Project success is teamwork.', 'We must work in team.', 'Teamwork is good.'], xp_reward: 20 },
+    { id: 'mock-c1-5', title: 'Bonus: Culture', lesson_type: 'quiz', question: 'What is the capital of Australia?', correct_answer: 'Canberra', options: ['Sydney', 'Melbourne', 'Canberra', 'Brisbane'], xp_reward: 25 },
   ]
 };
 
@@ -43,6 +57,7 @@ export default function LessonPlayerScreen() {
   const [hasChecked, setHasChecked] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [lives, setLives] = useState(5);
+  const [speakingState, setSpeakingState] = useState<'idle' | 'recording' | 'analyzing' | 'success'>('idle');
 
   useEffect(() => {
     if (!lessonId) {
@@ -78,6 +93,34 @@ export default function LessonPlayerScreen() {
         });
     }
   }, [lessonId]);
+
+  useEffect(() => {
+    setSpeakingState('idle');
+    setSelectedAnswer(null);
+    setHasChecked(false);
+    setIsCorrect(false);
+  }, [lesson]);
+
+  const handleMicPress = () => {
+    if (speakingState !== 'idle' || !lesson) return;
+
+    setSpeakingState('recording');
+
+    // After 2.5s, switch to analyzing
+    setTimeout(() => {
+      setSpeakingState('analyzing');
+
+      // After 1.5s, finish analyzing, auto-select correct option and check
+      setTimeout(() => {
+        setSpeakingState('success');
+        setIsCorrect(true);
+        setHasChecked(true);
+        // Find correct answer index
+        const correctIdx = lesson.options.indexOf(lesson.correct_answer);
+        setSelectedAnswer(correctIdx >= 0 ? correctIdx : 0);
+      }, 1500);
+    }, 2500);
+  };
 
   const handleCheck = () => {
     if (selectedAnswer === null || !lesson) return;
@@ -204,8 +247,21 @@ export default function LessonPlayerScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Reading Passage if type is reading */}
+        {lesson.lesson_type === 'reading' && lesson.passage_text && (
+          <View style={styles.passageContainer}>
+            <ScrollView style={styles.passageScroll} nestedScrollEnabled>
+              <Text style={styles.passageText}>{lesson.passage_text}</Text>
+            </ScrollView>
+          </View>
+        )}
+
         {/* Question Area */}
-        <Text style={styles.questionTitle}>Translate this sentence</Text>
+        <Text style={styles.questionTitle}>
+          {lesson.lesson_type === 'reading' ? 'Read the passage and answer' :
+           lesson.lesson_type === 'speaking' ? 'Speaking Practice' :
+           'Translate this sentence'}
+        </Text>
         
         <View style={styles.chatSection}>
           <Image 
@@ -218,46 +274,86 @@ export default function LessonPlayerScreen() {
           </View>
         </View>
 
-        {/* Options */}
-        <View style={styles.optionsContainer}>
-          {lesson.options.map((option: string, index: number) => {
-            const isSelected = selectedAnswer === index;
-            return (
+        {/* Dynamic Options or Speaking Interface */}
+        {lesson.lesson_type === 'speaking' ? (
+          <View style={styles.speakingContainer}>
+            <Text style={styles.speakingPromptLabel}>PROMPT</Text>
+            <View style={styles.promptCard}>
+              <MaterialIcons name="volume-up" size={24} color="#004ac6" style={styles.volumeIcon} />
+              <Text style={styles.speakingPromptText}>{lesson.prompt_text || lesson.question}</Text>
+            </View>
+
+            <View style={styles.microphoneWrapper}>
               <TouchableOpacity 
-                key={index}
                 style={[
-                  styles.optionCard, 
-                  isSelected && styles.optionCardSelected,
-                  hasChecked && option === lesson.correct_answer && styles.optionCardCorrect,
-                  hasChecked && isSelected && option !== lesson.correct_answer && styles.optionCardWrong,
+                  styles.micButton, 
+                  speakingState === 'recording' && styles.micButtonRecording,
+                  speakingState === 'analyzing' && styles.micButtonAnalyzing,
+                  speakingState === 'success' && styles.micButtonSuccess,
                 ]}
-                onPress={() => !hasChecked && setSelectedAnswer(index)}
-                disabled={hasChecked}
+                onPress={handleMicPress}
+                disabled={hasChecked || speakingState === 'analyzing'}
                 activeOpacity={0.8}
               >
-                <View style={styles.optionContent}>
-                  <Text style={[
-                    styles.optionText, 
-                    isSelected && styles.optionTextSelected,
-                    hasChecked && option === lesson.correct_answer && styles.optionTextCorrect,
-                    hasChecked && isSelected && option !== lesson.correct_answer && styles.optionTextWrong,
-                  ]}>
-                    {option}
-                  </Text>
-                  {isSelected && !hasChecked && (
-                    <MaterialIcons name="check-circle" size={24} color="#004ac6" />
-                  )}
-                  {hasChecked && option === lesson.correct_answer && (
-                    <MaterialIcons name="check-circle" size={24} color="#2e7d32" />
-                  )}
-                  {hasChecked && isSelected && option !== lesson.correct_answer && (
-                    <MaterialIcons name="cancel" size={24} color="#c62828" />
-                  )}
-                </View>
+                <MaterialIcons 
+                  name={
+                    speakingState === 'idle' ? 'mic' :
+                    speakingState === 'recording' ? 'radio-button-checked' :
+                    speakingState === 'analyzing' ? 'hourglass-empty' : 'check'
+                  } 
+                  size={40} 
+                  color="#ffffff" 
+                />
               </TouchableOpacity>
-            );
-          })}
-        </View>
+              <Text style={styles.micStatusText}>
+                {speakingState === 'idle' && 'Tap mic to start speaking'}
+                {speakingState === 'recording' && 'Listening... (Speak now)'}
+                {speakingState === 'analyzing' && 'Analyzing pronunciation...'}
+                {speakingState === 'success' && 'Perfect! Audio recorded.'}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.optionsContainer}>
+            {lesson.options.map((option: string, index: number) => {
+              const isSelected = selectedAnswer === index;
+              return (
+                <TouchableOpacity 
+                  key={index}
+                  style={[
+                    styles.optionCard, 
+                    isSelected && styles.optionCardSelected,
+                    hasChecked && option === lesson.correct_answer && styles.optionCardCorrect,
+                    hasChecked && isSelected && option !== lesson.correct_answer && styles.optionCardWrong,
+                  ]}
+                  onPress={() => !hasChecked && setSelectedAnswer(index)}
+                  disabled={hasChecked}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.optionContent}>
+                    <Text style={[
+                      styles.optionText, 
+                      isSelected && styles.optionTextSelected,
+                      hasChecked && option === lesson.correct_answer && styles.optionTextCorrect,
+                      hasChecked && isSelected && option !== lesson.correct_answer && styles.optionTextWrong,
+                    ]}>
+                      {option}
+                    </Text>
+                    {isSelected && !hasChecked && (
+                      <MaterialIcons name="check-circle" size={24} color="#004ac6" />
+                    )}
+                    {hasChecked && option === lesson.correct_answer && (
+                      <MaterialIcons name="check-circle" size={24} color="#2e7d32" />
+                    )}
+                    {hasChecked && isSelected && option !== lesson.correct_answer && (
+                      <MaterialIcons name="cancel" size={24} color="#c62828" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
 
       {/* Slide-Up Bottom Banner or Static Footer */}
@@ -295,19 +391,22 @@ export default function LessonPlayerScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <View style={styles.footer}>
-          <TouchableOpacity 
-            style={[
-              styles.checkButton,
-              selectedAnswer === null && styles.checkButtonDisabled
-            ]}
-            onPress={handleCheck}
-            disabled={selectedAnswer === null}
-            activeOpacity={0.9}
-          >
-            <Text style={styles.checkButtonText}>Check</Text>
-          </TouchableOpacity>
-        </View>
+        /* Hide footer check button if speaking since mic press handles checking automatically */
+        lesson.lesson_type !== 'speaking' && (
+          <View style={styles.footer}>
+            <TouchableOpacity 
+              style={[
+                styles.checkButton,
+                selectedAnswer === null && styles.checkButtonDisabled
+              ]}
+              onPress={handleCheck}
+              disabled={selectedAnswer === null}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.checkButtonText}>Check</Text>
+            </TouchableOpacity>
+          </View>
+        )
       )}
     </SafeAreaView>
   );
@@ -576,5 +675,100 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     fontWeight: '700',
+  },
+  passageContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(195, 198, 214, 0.4)',
+    marginBottom: 24,
+    maxHeight: 180,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  passageScroll: {
+    flexGrow: 0,
+  },
+  passageText: {
+    fontSize: 16,
+    color: '#434654',
+    lineHeight: 24,
+  },
+  speakingContainer: {
+    gap: 16,
+  },
+  speakingPromptLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#004ac6',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  promptCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(195, 198, 214, 0.4)',
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  volumeIcon: {
+    backgroundColor: '#e7eefe',
+    padding: 10,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  speakingPromptText: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#151c27',
+  },
+  microphoneWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    gap: 12,
+  },
+  micButton: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#004ac6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#004ac6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  micButtonRecording: {
+    backgroundColor: '#ba1a1a',
+    shadowColor: '#ba1a1a',
+  },
+  micButtonAnalyzing: {
+    backgroundColor: '#fea619',
+    shadowColor: '#fea619',
+  },
+  micButtonSuccess: {
+    backgroundColor: '#2e7d32',
+    shadowColor: '#2e7d32',
+  },
+  micStatusText: {
+    fontSize: 14,
+    color: '#737685',
+    fontWeight: '500',
   },
 });

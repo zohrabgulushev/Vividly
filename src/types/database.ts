@@ -51,16 +51,22 @@ export interface TutorWithProfile extends TutorProfile {
 // ----------------------------------------
 // lessons
 // ----------------------------------------
+export type LessonType = 'quiz' | 'reading' | 'speaking';
+
 export interface Lesson {
   id: string;
   level: string; // 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
-  video_clip_url: string;
+  video_clip_url: string | null;
+  lesson_type?: LessonType;
+  passage_text?: string | null;
+  prompt_text?: string | null;
   question: string;
   correct_answer: string;
   options: string[];
   xp_reward: number;
   created_at: string;
 }
+
 
 // ----------------------------------------
 // user_lessons (Spaced Repetition progress)

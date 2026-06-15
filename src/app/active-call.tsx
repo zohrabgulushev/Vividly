@@ -1,14 +1,82 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Image, StatusBar, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { startCall, endCall } from '@/services/calls';
 
 export default function ActiveCallScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { tutorId, tutorName, callType } = useLocalSearchParams<{ tutorId: string; tutorName: string; callType: string }>();
 
-  const handleEndCall = () => {
-    // Navigate back to the tutor profile or history
-    router.back();
+  const activeTutorId = tutorId || 'tutor-aris';
+  const activeTutorName = tutorName || 'Dr. Aris Thorne';
+  const activeCallType = (callType === 'group' ? 'group' : 'private') as 'private' | 'group';
+
+  const [seconds, setSeconds] = useState(0);
+  const [callId, setCallId] = useState<string | null>(null);
+  const multiplierRef = useRef(activeCallType === 'private' ? 2.0 : 1.0);
+
+  // Start call timer and create DB log
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    // Start interval timer
+    interval = setInterval(() => {
+      setSeconds(prev => prev + 1);
+    }, 1000);
+
+    // Insert call log in Supabase
+    if (user?.id) {
+      startCall(user.id, activeTutorId, activeCallType).then(({ data, error }) => {
+        if (error) {
+          console.error('Error starting database call log:', error);
+        } else if (data) {
+          setCallId(data.id);
+        }
+      });
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [user?.id]);
+
+  const formatTime = (totalSecs: number) => {
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleEndCall = async () => {
+    if (!user?.id) {
+      router.back();
+      return;
+    }
+
+    // End call on Supabase and deduct minutes
+    if (callId) {
+      const { error, billedMinutes } = await endCall(
+        callId,
+        user.id,
+        seconds,
+        multiplierRef.current
+      );
+
+      if (error) {
+        console.error('Error ending database call:', error);
+      }
+
+      Alert.alert(
+        'Call Completed',
+        `Duration: ${formatTime(seconds)}\nBilled Minutes: ${billedMinutes}m (at ${multiplierRef.current}x rate)`,
+        [{ text: 'Exit Room', onPress: () => router.back() }]
+      );
+    } else {
+      router.back();
+    }
   };
 
   return (
@@ -30,10 +98,10 @@ export default function ActiveCallScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Top App Bar */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+          <TouchableOpacity onPress={handleEndCall} style={styles.iconButton}>
             <MaterialIcons name="arrow-back" size={24} color="#dae2fd" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Dr. Aris Thorne • 12:45</Text>
+          <Text style={styles.headerTitle}>{activeTutorName} • {formatTime(seconds)}</Text>
           <TouchableOpacity style={styles.iconButton}>
             <MaterialIcons name="settings" size={24} color="#dae2fd" />
           </TouchableOpacity>

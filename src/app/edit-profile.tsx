@@ -1,26 +1,75 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, TextInput, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, TextInput, Platform, Alert, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { updateProfile } from '@/services/profiles';
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { profile, loading: profileLoading } = useProfile(user?.id ?? null);
   
-  const [name, setName] = useState('Sarah Jenkins');
-  const [username, setUsername] = useState('sarah_j');
-  const [email, setEmail] = useState('sarah.jenkins@example.com');
-  const [bio, setBio] = useState('Polyglot in the making! Currently mastering French and Japanese. Passionate about linguistic nuances and global cultures.');
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.full_name || '');
+      setUsername(profile.email ? profile.email.split('@')[0] : '');
+      setEmail(profile.email || '');
+      setBio(profile.goal || '');
+    }
+  }, [profile]);
+
+  const handleSave = async () => {
+    if (!user?.id) return;
+    setSaving(true);
+    try {
+      const { error } = await updateProfile(user.id, {
+        full_name: name,
+        email: email,
+        goal: bio
+      });
+
+      if (error) throw error;
+      setSaving(false);
+      Alert.alert('Success', 'Profile updated successfully!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    } catch (err: any) {
+      setSaving(false);
+      console.error('Error saving profile:', err);
+      Alert.alert('Error', err.message || 'Failed to update profile.');
+    }
+  };
+
+  if (profileLoading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.center]}>
+        <ActivityIndicator size="large" color="#003594" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton} disabled={saving}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Vividly Profile</Text>
-        <TouchableOpacity style={styles.headerButton}>
-          <Text style={styles.saveText}>Save</Text>
+        <TouchableOpacity style={styles.headerButton} onPress={handleSave} disabled={saving}>
+          {saving ? (
+            <ActivityIndicator size="small" color="#003594" />
+          ) : (
+            <Text style={styles.saveText}>Save</Text>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -327,5 +376,9 @@ const styles = StyleSheet.create({
     color: '#737685',
     textAlign: 'center',
     paddingHorizontal: 32,
-  }
+  },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
