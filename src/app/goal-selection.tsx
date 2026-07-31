@@ -34,7 +34,7 @@ export default function GoalSelectionScreen() {
     <SafeAreaView style={styles.container}>
       {/* Top App Bar with Progress */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.canGoBack() ? router.back() : router.replace('/onboarding' as any)}>
           <MaterialIcons name="arrow-back" size={24} color="#004ac6" />
         </TouchableOpacity>
         <View style={styles.progressContainer}>

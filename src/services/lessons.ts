@@ -1,4 +1,71 @@
 import { supabase } from '@/lib/supabase';
+import lessonsData from '@/constants/lessonsData.json';
+
+export interface LessonSection {
+  section_id: number;
+  lesson_id: number;
+  title_az: string;
+  title_en: string;
+  source_type: string;
+  source_value: any;
+  order: number;
+  vocabulary: Array<{
+    Lesson_id: number;
+    Category: string;
+    Word_en: string;
+    Word_az: string;
+    Level: string;
+    Chunk: number;
+  }>;
+  grammar: Array<{
+    Grammar_id: number;
+    Lesson_id: number;
+    Topic_az: string;
+    Topic_en: string;
+    Explanation_az: string;
+    Explanation_en: string;
+    Example_en: string;
+    Example_az: string;
+  }>;
+  exercises: Array<{
+    Exercise_id: number;
+    Lesson_id: number;
+    Section_id: number;
+    Type: string;
+    Instruction_az: string;
+    Instruction_en: string;
+    question_az: string;
+    question_en: string;
+    Answer: string;
+    Option1: string;
+    Option2: string;
+    Option3: string;
+    Result_az: string;
+    Xp: number;
+  }>;
+}
+
+export interface StructuredLesson {
+  lesson_id: number;
+  sections: LessonSection[];
+}
+
+// Get full structured lesson pipeline (L1 to L34)
+export function getStructuredLessonData(lessonId: number | string): StructuredLesson | null {
+  const numericId = typeof lessonId === 'string' ? parseInt(lessonId.replace(/\D/g, ''), 10) || 1 : lessonId;
+  const data = (lessonsData as Record<string, StructuredLesson>)[String(numericId)];
+  return data || (lessonsData as Record<string, StructuredLesson>)['1'] || null;
+}
+
+// Map Lesson ID to Level
+export function getLevelForLesson(lessonId: number): string {
+  if (lessonId <= 7) return 'A1';
+  if (lessonId <= 14) return 'A2';
+  if (lessonId <= 21) return 'B1';
+  if (lessonId <= 26) return 'B2';
+  if (lessonId <= 31) return 'C1';
+  return 'C2';
+}
 
 // Get today's lessons for a student (SRS: due for review)
 export async function getDueLessons(studentId: string, limit = 10) {
@@ -26,7 +93,6 @@ export async function getNewLessons(level: string, excludeIds: string[], limit =
 }
 
 // After answering: update SRS box and next review date
-// Leitner System: correct = move to next box, wrong = back to box 1
 export async function updateLessonProgress(
   studentId: string,
   lessonId: string,
@@ -58,7 +124,7 @@ export async function updateLessonProgress(
   });
 }
 
-// Award XP to a student — uses Supabase RPC for atomic increment (no race condition)
+// Award XP to a student — uses Supabase RPC for atomic increment
 export async function awardXP(studentId: string, xpAmount: number) {
   return supabase.rpc('increment_xp', {
     user_id: studentId,
@@ -66,7 +132,7 @@ export async function awardXP(studentId: string, xpAmount: number) {
   });
 }
 
-// Fallback XP award if RPC not available (client-side increment)
+// Fallback XP award if RPC not available
 export async function awardXPFallback(studentId: string, xpAmount: number) {
   const { data: profile } = await supabase
     .from('profiles')

@@ -5,30 +5,38 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { updateProfile } from '@/services/profiles';
 
-type Level = 'beginner' | 'intermediate' | 'advanced';
+type LevelCode = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+
+interface LevelOption {
+  code: LevelCode;
+  title: string;
+  subtitle: string;
+  iconName: any;
+  color: string;
+}
+
+const LEVEL_OPTIONS: LevelOption[] = [
+  { code: 'A1', title: 'A1 • Beginner', subtitle: 'Just starting my English journey', iconName: 'seed-outline', color: '#0284c7' },
+  { code: 'A2', title: 'A2 • Elementary', subtitle: 'Can understand basic everyday phrases', iconName: 'sprout-outline', color: '#059669' },
+  { code: 'B1', title: 'B1 • Intermediate', subtitle: 'Can hold simple conversations & travel', iconName: 'local-fire-department', color: '#d97706' },
+  { code: 'B2', title: 'B2 • Upper-Intermediate', subtitle: 'Can speak confidently on complex topics', iconName: 'lightning-bolt', color: '#ea580c' },
+  { code: 'C1', title: 'C1 • Advanced', subtitle: 'Fluent & professional communication', iconName: 'rocket-launch', color: '#7c3aed' },
+  { code: 'C2', title: 'C2 • Native / Mastery', subtitle: 'Complete mastery of nuances & idioms', iconName: 'crown', color: '#4e00ae' },
+];
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const [selectedLevel, setSelectedLevel] = useState<Level>('intermediate');
+  const [selectedLevel, setSelectedLevel] = useState<LevelCode>('B1');
   const [saving, setSaving] = useState(false);
 
-  // Map UI level to CEFR code stored in DB
-  const LEVEL_MAP: Record<Level, string> = {
-    beginner: 'A1',
-    intermediate: 'B1',
-    advanced: 'C1',
-  };
-
   const handleContinue = async () => {
-    const cefrLevel = LEVEL_MAP[selectedLevel];
     if (user?.id) {
       setSaving(true);
-      // Pre-save level; goal-selection will do the final saveOnboardingData call
-      await updateProfile(user.id, { level: cefrLevel } as any);
+      await updateProfile(user.id, { level: selectedLevel } as any);
       setSaving(false);
     }
-    router.push({ pathname: '/goal-selection' as any, params: { level: cefrLevel } });
+    router.push({ pathname: '/goal-selection' as any, params: { level: selectedLevel } });
   };
 
   return (
@@ -47,75 +55,50 @@ export default function OnboardingScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Headline Section */}
         <View style={styles.headlineSection}>
-          <Text style={styles.headline}>What's your English level?</Text>
-          <Text style={styles.subtitle}>We'll tailor your learning journey based on your current proficiency.</Text>
+          <Text style={styles.headline}>Select Your English Level</Text>
+          <Text style={styles.subtitle}>
+            Choose your starting level. All levels up to your selection will be unlocked immediately!
+          </Text>
         </View>
 
         {/* Levels List */}
         <View style={styles.levelsList}>
-          
-          {/* Beginner Card */}
-          <TouchableOpacity 
-            style={[styles.levelCard, selectedLevel === 'beginner' && styles.levelCardActive]}
-            onPress={() => setSelectedLevel('beginner')}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.iconWrapper, selectedLevel === 'beginner' && styles.iconWrapperActive]}>
-              <MaterialCommunityIcons name="seed-outline" size={32} color="#004ac6" />
-            </View>
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardTitle}>Beginner</Text>
-              <Text style={styles.cardSubtitle}>I'm just starting out</Text>
-            </View>
-            {selectedLevel === 'beginner' && (
-              <MaterialIcons name="check-circle" size={24} color="#004ac6" style={styles.checkIcon} />
-            )}
-          </TouchableOpacity>
-
-          {/* Intermediate Card */}
-          <TouchableOpacity 
-            style={[styles.levelCard, selectedLevel === 'intermediate' && styles.levelCardActive]}
-            onPress={() => setSelectedLevel('intermediate')}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.iconWrapper, selectedLevel === 'intermediate' && styles.iconWrapperActive]}>
-              <MaterialIcons name="local-fire-department" size={32} color="#004ac6" />
-            </View>
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardTitle}>Intermediate</Text>
-              <Text style={styles.cardSubtitle}>I can hold basic conversations</Text>
-            </View>
-            {selectedLevel === 'intermediate' && (
-              <MaterialIcons name="check-circle" size={24} color="#004ac6" style={styles.checkIcon} />
-            )}
-          </TouchableOpacity>
-
-          {/* Advanced Card */}
-          <TouchableOpacity 
-            style={[styles.levelCard, selectedLevel === 'advanced' && styles.levelCardActive]}
-            onPress={() => setSelectedLevel('advanced')}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.iconWrapper, selectedLevel === 'advanced' && styles.iconWrapperActive]}>
-              <MaterialIcons name="rocket-launch" size={32} color="#004ac6" />
-            </View>
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardTitle}>Advanced</Text>
-              <Text style={styles.cardSubtitle}>I speak fluently and professionally</Text>
-            </View>
-            {selectedLevel === 'advanced' && (
-              <MaterialIcons name="check-circle" size={24} color="#004ac6" style={styles.checkIcon} />
-            )}
-          </TouchableOpacity>
-
+          {LEVEL_OPTIONS.map((opt) => {
+            const isSelected = selectedLevel === opt.code;
+            return (
+              <TouchableOpacity 
+                key={opt.code}
+                style={[styles.levelCard, isSelected && { borderColor: opt.color, backgroundColor: '#f0f4ff' }]}
+                onPress={() => setSelectedLevel(opt.code)}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.iconWrapper, { backgroundColor: '#f0f3ff' }, isSelected && { backgroundColor: `${opt.color}20` }]}>
+                  <MaterialCommunityIcons name={opt.iconName} size={28} color={opt.color} />
+                </View>
+                <View style={styles.cardTextContainer}>
+                  <Text style={styles.cardTitle}>{opt.title}</Text>
+                  <Text style={styles.cardSubtitle}>{opt.subtitle}</Text>
+                </View>
+                {isSelected && (
+                  <MaterialIcons name="check-circle" size={24} color={opt.color} style={styles.checkIcon} />
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
       {/* Bottom Footer Action */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.continueButton} onPress={handleContinue} activeOpacity={0.9}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-          <MaterialIcons name="arrow-forward" size={20} color="#ffffff" />
+        <TouchableOpacity style={styles.continueButton} onPress={handleContinue} activeOpacity={0.9} disabled={saving}>
+          {saving ? (
+            <ActivityIndicator color="#ffffff" size="small" />
+          ) : (
+            <>
+              <Text style={styles.continueButtonText}>Continue with Level {selectedLevel}</Text>
+              <MaterialIcons name="arrow-forward" size={20} color="#ffffff" />
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -133,10 +116,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     height: 56,
     marginTop: Platform.OS === 'android' ? 24 : 0,
-  },
-  backButton: {
-    padding: 8,
-    marginLeft: -8,
   },
   progressContainer: {
     flex: 1,
@@ -158,74 +137,64 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingTop: 32,
+    paddingTop: 24,
     paddingBottom: 120,
   },
   headlineSection: {
-    marginBottom: 40,
+    marginBottom: 24,
   },
   headline: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#151c27',
-    marginBottom: 12,
+    marginBottom: 8,
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 15,
     color: '#737686',
-    lineHeight: 26,
+    lineHeight: 22,
   },
   levelsList: {
-    gap: 16,
+    gap: 12,
   },
   levelCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 24,
+    padding: 14,
+    borderRadius: 20,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: '#e8ecf8',
     shadowColor: '#151c27',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 20,
+    shadowOpacity: 0.03,
+    shadowRadius: 12,
     elevation: 2,
   },
-  levelCardActive: {
-    borderColor: '#004ac6',
-    backgroundColor: '#f0f3ff',
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 8 },
-  },
   iconWrapper: {
-    width: 56,
-    height: 56,
-    backgroundColor: '#f0f3ff',
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
-  },
-  iconWrapperActive: {
-    backgroundColor: 'rgba(0, 74, 198, 0.15)',
+    marginRight: 14,
   },
   cardTextContainer: {
     flex: 1,
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#151c27',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   cardSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#737686',
   },
   checkIcon: {
-    marginLeft: 12,
+    marginLeft: 8,
   },
   footer: {
     position: 'absolute',
@@ -236,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: Platform.OS === 'ios' ? 34 : 20,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.02)',
+    borderTopColor: 'rgba(0,0,0,0.04)',
   },
   continueButton: {
     backgroundColor: '#004ac6',
@@ -254,7 +223,7 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
   },
 });

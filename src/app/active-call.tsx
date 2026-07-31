@@ -21,7 +21,7 @@ export default function ActiveCallScreen() {
 
   // Start call timer and create DB log
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     
     // Start interval timer
     interval = setInterval(() => {
