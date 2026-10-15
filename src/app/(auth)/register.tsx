@@ -1,7 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { signUp } from '@/services/auth';
+import { signInWithGoogle } from '@/services/oauth';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
@@ -9,6 +10,7 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   
   const [nameFocused, setNameFocused] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
@@ -22,15 +24,27 @@ export default function RegisterScreen() {
     if (password.length < 8) return Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
     
     setLoading(true);
-    const { error } = await signUp(email, password, fullName);
+    const { data, error } = await signUp(email, password, fullName);
     setLoading(false);
     
     if (error) {
       Alert.alert('Registration Failed', error.message);
+    } else if (data?.user && !data?.session) {
+      Alert.alert(
+        'Verify Your Email 📩',
+        `We've sent a verification link to ${email}. Please check your inbox and click the link to confirm your account, then sign in.`,
+        [{ text: 'Sign In', onPress: () => router.push('/(auth)/login') }]
+      );
     } else {
-      // Redirect immediately to onboarding — let them start the journey
       router.replace('/onboarding' as any);
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    const { error } = await signInWithGoogle();
+    setGoogleLoading(false);
+    if (error) Alert.alert('Google Sign-In Failed', error.message);
   };
 
   return (
@@ -134,6 +148,25 @@ export default function RegisterScreen() {
               activeOpacity={0.8}
             >
               <Text style={styles.buttonText}>{loading ? 'Processing...' : 'Create Account'}</Text>
+            </TouchableOpacity>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OR CONTINUE WITH</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Google Sign-In */}
+            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin} disabled={googleLoading} activeOpacity={0.8}>
+              {googleLoading ? (
+                <ActivityIndicator size="small" color="#151c27" />
+              ) : (
+                <>
+                  <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png' }} style={styles.googleIcon} />
+                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                </>
+              )}
             </TouchableOpacity>
 
             {/* Footer Inside Card */}
@@ -274,6 +307,14 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.7 },
   buttonText: { color: '#ffffff', fontSize: 18, fontWeight: '700' },
+
+  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#c3c6d6' },
+  dividerText: { marginHorizontal: 16, fontSize: 12, fontWeight: '600', color: '#737686' },
+
+  googleButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 60, backgroundColor: '#ffffff', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(195, 198, 215, 0.5)', gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 1 },
+  googleIcon: { width: 22, height: 22 },
+  googleButtonText: { fontSize: 16, fontWeight: '600', color: '#151c27' },
 
   cardFooter: {
     flexDirection: 'row',

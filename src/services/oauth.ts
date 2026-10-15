@@ -6,6 +6,25 @@ import { Platform } from 'react-native';
 WebBrowser.maybeCompleteAuthSession();
 
 export async function signInWithGoogle() {
+  // On Web, perform full-browser redirect to avoid popup blocker issues and cross-origin messaging failures
+  if (Platform.OS === 'web') {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: origin,
+      },
+    });
+
+    if (error) return { error };
+    if (data?.url && typeof window !== 'undefined') {
+      window.location.href = data.url;
+      return { error: null };
+    }
+    return { error: new Error('No OAuth URL returned') };
+  }
+
+  // Native Mobile (iOS / Android) flow via AuthSession & Deep Linking
   const redirectTo = AuthSession.makeRedirectUri({
     scheme: 'vividly',
     path: 'auth/callback',
