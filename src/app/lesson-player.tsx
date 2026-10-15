@@ -40,20 +40,21 @@ export default function LessonPlayerScreen() {
     setLessonData(loadedData);
 
     if (loadedData && loadedData.sections.length > 0) {
-      setCurrentSectionIndex(0);
+      let targetSecIdx = 0;
+      if (mode) {
+        const matchingSecIdx = loadedData.sections.findIndex(s => s.source_type.toLowerCase() === mode.toLowerCase());
+        if (matchingSecIdx !== -1) {
+          targetSecIdx = matchingSecIdx;
+        }
+      }
+
+      setCurrentSectionIndex(targetSecIdx);
       setCurrentExerciseIndex(0);
       setCurrentVocabIndex(0);
       setTransitionModal(null);
       
-      if (mode) {
-        const matchingSecIdx = loadedData.sections.findIndex(s => s.source_type.toLowerCase() === mode.toLowerCase());
-        if (matchingSecIdx !== -1) {
-          setCurrentSectionIndex(matchingSecIdx);
-        }
-      }
-
-      const firstSec = loadedData.sections[0];
-      if (firstSec.source_type === 'exercise' || (firstSec.vocabulary.length === 0 && firstSec.grammar.length === 0 && firstSec.source_type !== 'dialogue')) {
+      const targetSec = loadedData.sections[targetSecIdx] || loadedData.sections[0];
+      if (mode === 'exercise' || targetSec.source_type === 'exercise' || (targetSec.vocabulary.length === 0 && targetSec.grammar.length === 0 && targetSec.source_type !== 'dialogue')) {
         setStage('exercising');
       } else {
         setStage('learning');
@@ -179,12 +180,51 @@ export default function LessonPlayerScreen() {
   };
 
   // Options list for current exercise
-  const optionsList = currentExercise ? [
-    currentExercise.Option1 || currentExercise.Answer,
-    currentExercise.Option2,
-    currentExercise.Option3,
-    currentExercise.Answer
-  ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i) : [];
+  const optionsList = (() => {
+    if (!currentExercise) return [];
+
+    const rawExplicit = [
+      currentExercise.Option1,
+      currentExercise.Option2,
+      currentExercise.Option3,
+      currentExercise.Answer
+    ].filter(Boolean).map(s => String(s).trim());
+
+    const uniqueExplicit = Array.from(new Set(rawExplicit));
+    const seed = currentExercise.Exercise_id || 1;
+
+    if (uniqueExplicit.length >= 2) {
+      return uniqueExplicit.sort((a, b) => {
+        const hashA = (a.length * 31 + seed) % 17;
+        const hashB = (b.length * 31 + seed) % 17;
+        return hashA - hashB;
+      });
+    }
+
+    // Fallback: Pull distractors from other exercises in the lesson when explicit options are missing (e.g. MATCH / ORDER)
+    const distractors: string[] = [];
+    if (lessonData) {
+      lessonData.sections.forEach(sec => {
+        sec.exercises.forEach(ex => {
+          if (ex.Answer && String(ex.Answer).trim() !== String(currentExercise.Answer).trim()) {
+            distractors.push(String(ex.Answer).trim());
+          }
+        });
+      });
+    }
+
+    const uniqueDistractors = Array.from(new Set(distractors));
+    const selectedDistractors = uniqueDistractors
+      .sort((a, b) => ((a.length * 13 + seed) % 11) - ((b.length * 13 + seed) % 11))
+      .slice(0, 3);
+
+    const fullOptions = Array.from(new Set([String(currentExercise.Answer).trim(), ...selectedDistractors]));
+    return fullOptions.sort((a, b) => {
+      const hashA = (a.length * 31 + seed) % 17;
+      const hashB = (b.length * 31 + seed) % 17;
+      return hashA - hashB;
+    });
+  })();
 
   return (
     <SafeAreaView style={styles.container}>

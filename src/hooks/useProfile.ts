@@ -14,27 +14,36 @@ export function useProfile(userId: string | null) {
       return;
     }
 
-    getProfile(userId).then(({ data, error }) => {
-      if (error) setError(error.message);
-      else setProfile(data);
-      setLoading(false);
-    });
-
-    // Real-time updates
-    const channel = supabase
-      // Add a random suffix to avoid "cannot add callbacks after subscribe" error in StrictMode
-      .channel(`profile-${userId}-${Math.random()}`)
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'profiles',
-        filter: `id=eq.${userId}`,
-      }, (payload) => {
-        setProfile(payload.new as Profile);
+    getProfile(userId)
+      .then(({ data, error }) => {
+        if (error) setError(error.message);
+        else setProfile(data);
+        setLoading(false);
       })
-      .subscribe();
+      .catch((err) => {
+        console.warn('Profile fetch failed (network/unreachable):', err);
+        setError('Network error');
+        setLoading(false);
+      });
 
-    return () => { supabase.removeChannel(channel); };
+    // Real-time updates safely
+    try {
+      const channel = supabase
+        .channel(`profile-${userId}-${Math.random()}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${userId}`,
+        }, (payload) => {
+          setProfile(payload.new as Profile);
+        })
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Realtime channel error:', e);
+    }
   }, [userId]);
 
   return { profile, loading, error };

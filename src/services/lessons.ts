@@ -59,11 +59,11 @@ export function getStructuredLessonData(lessonId: number | string): StructuredLe
 
 // Map Lesson ID to Level
 export function getLevelForLesson(lessonId: number): string {
-  if (lessonId <= 7) return 'A1';
-  if (lessonId <= 14) return 'A2';
-  if (lessonId <= 21) return 'B1';
-  if (lessonId <= 26) return 'B2';
-  if (lessonId <= 31) return 'C1';
+  if (lessonId <= 24) return 'A1';
+  if (lessonId <= 35) return 'A2';
+  if (lessonId <= 45) return 'B1';
+  if (lessonId <= 55) return 'B2';
+  if (lessonId <= 65) return 'C1';
   return 'C2';
 }
 

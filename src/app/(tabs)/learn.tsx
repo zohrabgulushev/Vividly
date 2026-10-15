@@ -20,6 +20,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { supabase } from '@/lib/supabase';
+import lessonsData from '@/constants/lessonsData.json';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -160,27 +161,42 @@ export default function LearnScreen() {
   useEffect(() => {
     if (!user?.id) return;
 
+    const userId = user.id;
+    let isMounted = true;
     setLoadingLessons(true);
-    supabase
-      .from('lessons')
-      .select('*')
-      .eq('level', selectedLevel)
-      .order('created_at', { ascending: true })
-      .then(({ data: lData, error: lErr }) => {
+
+    async function loadData() {
+      try {
+        const { data: lData, error: lErr } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('level', selectedLevel)
+          .order('created_at', { ascending: true });
+
         if (lErr) console.error('Error fetching lessons:', lErr);
-        
-        supabase
+
+        const { data: ulData, error: ulErr } = await supabase
           .from('user_lessons')
           .select('*')
-          .eq('student_id', user.id)
-          .then(({ data: ulData, error: ulErr }) => {
-            if (ulErr) console.error('Error fetching user lessons:', ulErr);
-            
-            setLessons(lData || []);
-            setUserLessons(ulData || []);
-            setLoadingLessons(false);
-          });
-      });
+          .eq('student_id', userId);
+
+        if (ulErr) console.error('Error fetching user lessons:', ulErr);
+
+        if (isMounted) {
+          setLessons(lData || []);
+          setUserLessons(ulData || []);
+        }
+      } catch (err) {
+        console.warn('Lessons fetch failed (network/unreachable):', err);
+      } finally {
+        if (isMounted) {
+          setLoadingLessons(false);
+        }
+      }
+    }
+
+    loadData();
+    return () => { isMounted = false; };
   }, [user?.id, selectedLevel]);
 
   useEffect(() => {
@@ -340,9 +356,30 @@ export default function LearnScreen() {
     });
   };
 
+  const getStructuredLessonsForLevel = (level: string) => {
+    if (level === 'A1') {
+      return Array.from({ length: 24 }, (_, i) => {
+        const id = i + 1;
+        const lData = (lessonsData as Record<string, any>)[String(id)];
+        const secTitles = lData?.sections?.map((s: any) => s.title_en).filter((t: string) => t && !['Dialogue', 'Grammar', 'Exercises', 'Mixed Practice', 'Final Task'].includes(t));
+        const topic = secTitles?.length > 0 ? secTitles.join(', ') : (lData?.sections?.[0]?.title_en || `Lesson ${id}`);
+        return { id: String(id), title: `Lesson ${id}: ${topic}` };
+      });
+    } else if (level === 'A2') {
+      return Array.from({ length: 11 }, (_, i) => {
+        const id = i + 25;
+        const lData = (lessonsData as Record<string, any>)[String(id)];
+        const secTitles = lData?.sections?.map((s: any) => s.title_en).filter((t: string) => t && !['Dialogue', 'Grammar', 'Exercises', 'Mixed Practice', 'Final Task'].includes(t));
+        const topic = secTitles?.length > 0 ? secTitles.join(', ') : (lData?.sections?.[0]?.title_en || `Lesson ${id}`);
+        return { id: String(id), title: `Lesson ${id}: ${topic}` };
+      });
+    }
+    return MOCK_LESSONS[level as keyof typeof MOCK_LESSONS] || MOCK_LESSONS.A1;
+  };
+
   const displayLessons = lessons.length > 0 
     ? lessons 
-    : (MOCK_LESSONS[selectedLevel as keyof typeof MOCK_LESSONS] || MOCK_LESSONS.A1);
+    : getStructuredLessonsForLevel(selectedLevel);
 
   let activeIndex = 0;
   let completedCount = 0;
@@ -462,10 +499,10 @@ export default function LearnScreen() {
         </View>
 
         {/* Learning Pathway Map Area */}
-        <View style={styles.pathwayMapContainer}>
+        <View style={[styles.pathwayMapContainer, { height: Math.max(950, displayLessons.length * 180 + 120) }]}>
           {/* SVG Connector Lines */}
           <View style={styles.svgContainer}>
-            <Svg width="360" height="950" viewBox="0 0 360 950">
+            <Svg width="360" height={Math.max(950, displayLessons.length * 180 + 120)} viewBox={`0 0 360 ${Math.max(950, displayLessons.length * 180 + 120)}`}>
               <Defs>
                 <SvgLinearGradient id="pathGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                   <Stop offset="0%" stopColor={activeMeta.color} stopOpacity="1" />
@@ -473,7 +510,7 @@ export default function LearnScreen() {
                 </SvgLinearGradient>
               </Defs>
               <Path
-                d="M 180 50 Q 280 150 180 250 T 180 450 T 180 650 T 180 850"
+                d={`M 180 50 ${displayLessons.map((_, i) => `Q ${i % 2 === 0 ? 270 : 90} ${i * 180 + 140} 180 ${i * 180 + 230}`).join(' ')}`}
                 fill="none"
                 stroke="rgba(0, 53, 148, 0.1)"
                 strokeWidth="10"
@@ -481,7 +518,7 @@ export default function LearnScreen() {
                 strokeDasharray="8 8"
               />
               <Path
-                d="M 180 50 Q 280 150 180 250 T 180 450"
+                d={`M 180 50 ${displayLessons.slice(0, activeIndex + 1).map((_, i) => `Q ${i % 2 === 0 ? 270 : 90} ${i * 180 + 140} 180 ${i * 180 + 230}`).join(' ')}`}
                 fill="none"
                 stroke="url(#pathGrad)"
                 strokeWidth="10"
@@ -491,12 +528,12 @@ export default function LearnScreen() {
           </View>
 
           {/* Dynamic Nodes Mapping */}
-          {displayLessons.slice(0, 5).map((lesson, index) => {
+          {displayLessons.map((lesson, index) => {
             const isCompleted = index < activeIndex;
             const isActive = index === activeIndex;
             const isLocked = index > activeIndex;
-            const pos = NODE_POSITIONS[index] || NODE_POSITIONS[0];
-            const isBonus = index === 4;
+            const pos = { top: index * 180 + 20, left: index % 2 === 0 ? 170 : 50 };
+            const isBonus = (index + 1) % 5 === 0;
 
             return (
               <View key={lesson.id} style={[styles.nodeContainer, { top: pos.top, left: pos.left }]}>
