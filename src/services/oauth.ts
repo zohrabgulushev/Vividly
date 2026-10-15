@@ -9,10 +9,11 @@ export async function signInWithGoogle() {
   // On Web, perform full-browser redirect to avoid popup blocker issues and cross-origin messaging failures
   if (Platform.OS === 'web') {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const redirectTo = `${origin}/auth/callback`;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: origin,
+        redirectTo,
       },
     });
 
