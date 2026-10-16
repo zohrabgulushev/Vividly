@@ -172,20 +172,18 @@ export default function LoginScreen() {
             <Text style={[styles.footerText, isCompact && styles.footerTextCompact]}>Don't have an account? <Text style={styles.footerBold}>Create an account</Text></Text>
           </TouchableOpacity>
 
-          {/* Social Proof (shown only on large screens so mobile view never requires scrolling) */}
-          {!isCompact && (
-            <View style={styles.socialProof}>
-              <View style={styles.avatarGroup}>
-                <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCoKl3VnTuZpgi_WMzRAYJpOw_ygZuV-LMQMWYakKJI78OTIa-n4cASrUWrShAcE95A-eUeXdC-vfYP2AOOmhQvp-D018WgNgdsLDBxI6jnZnpVMElfmVVTFZBkoz_0_UDdHWF9uUppmnqW8Zgv07-FxfxWvimL2H_crdUkMRhiULrFs7jscl0yR0Y0-Rfe5F1Lyw0OTdJ6hMuvirgbaYKvyFcQMezPqTZKjy8LLjwMemsNClgHH1rRiigydbINfreMHwV7mIdL0n8' }} style={[styles.avatar, { zIndex: 3 }]} />
-                <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOM5Bb1eIzxk5nre8-8xM5dQ89Ac58LeRpKk5JwOPY97XF5X9D-bbLimW4Zsduam-vV2vrObIsmlOFjUpLMoxMS4BqS0GviWPaZ3Z-bMlrxW9uWuKX3chrTILhBNisj7JQDxEMnhOfFRmuAD932YWYgLzXIP5aSIh0ZzkY-lEu3AD7Xsn_OyIX04hqbDfsIWxhazuz1TR2X02PUZuK_dp6HdoLaKRMuxxQFhxxQv9U-iCspweCENH-KzYUN6piVS6NunQ8SxlLOj8' }} style={[styles.avatar, styles.avatarOverlap, { zIndex: 2 }]} />
-                <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-suB2Rrh7c51upjwHCzsa6E0UmV0VldQCe5VYRbxhJzwFzi0G2kXRywDz3xLByOA1eaS2JsPGnFs2O6g6HXVRBkucQEY2-pdmBaOwmr28R5qBVhRMeW4PABqYyGDezYq7qLnDC_O34Y6OCieqZcXogBQUUqjzvGOlEzkLXyJvX-PKtLps5q9FX2aVRCccPEbdfHBPr14veHh7-kYye2Sp5UCI9x_MgyME1CkRCzZhyOA7IvTXH9MApYL72pfYWmGZYoti9IIudrI' }} style={[styles.avatar, styles.avatarOverlap, { zIndex: 1 }]} />
-              </View>
-              <View style={styles.starsContainer}>
-                {[1,2,3,4,5].map(i => <MaterialIcons key={i} name="star" size={18} color="#bc4800" />)}
-                <Text style={styles.socialProofText}>Joined by 2M+ learners worldwide</Text>
-              </View>
+          {/* Social Proof */}
+          <View style={[styles.socialProof, isCompact && styles.socialProofCompact]}>
+            <View style={[styles.avatarGroup, isCompact && styles.avatarGroupCompact]}>
+              <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCoKl3VnTuZpgi_WMzRAYJpOw_ygZuV-LMQMWYakKJI78OTIa-n4cASrUWrShAcE95A-eUeXdC-vfYP2AOOmhQvp-D018WgNgdsLDBxI6jnZnpVMElfmVVTFZBkoz_0_UDdHWF9uUppmnqW8Zgv07-FxfxWvimL2H_crdUkMRhiULrFs7jscl0yR0Y0-Rfe5F1Lyw0OTdJ6hMuvirgbaYKvyFcQMezPqTZKjy8LLjwMemsNClgHH1rRiigydbINfreMHwV7mIdL0n8' }} style={[styles.avatar, isCompact && styles.avatarCompact, { zIndex: 3 }]} />
+              <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOM5Bb1eIzxk5nre8-8xM5dQ89Ac58LeRpKk5JwOPY97XF5X9D-bbLimW4Zsduam-vV2vrObIsmlOFjUpLMoxMS4BqS0GviWPaZ3Z-bMlrxW9uWuKX3chrTILhBNisj7JQDxEMnhOfFRmuAD932YWYgLzXIP5aSIh0ZzkY-lEu3AD7Xsn_OyIX04hqbDfsIWxhazuz1TR2X02PUZuK_dp6HdoLaKRMuxxQFhxxQv9U-iCspweCENH-KzYUN6piVS6NunQ8SxlLOj8' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 2 }]} />
+              <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-suB2Rrh7c51upjwHCzsa6E0UmV0VldQCe5VYRbxhJzwFzi0G2kXRywDz3xLByOA1eaS2JsPGnFs2O6g6HXVRBkucQEY2-pdmBaOwmr28R5qBVhRMeW4PABqYyGDezYq7qLnDC_O34Y6OCieqZcXogBQUUqjzvGOlEzkLXyJvX-PKtLps5q9FX2aVRCccPEbdfHBPr14veHh7-kYye2Sp5UCI9x_MgyME1CkRCzZhyOA7IvTXH9MApYL72pfYWmGZYoti9IIudrI' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 1 }]} />
             </View>
-          )}
+            <View style={styles.starsContainer}>
+              {[1,2,3,4,5].map(i => <MaterialIcons key={i} name="star" size={isCompact ? 13 : 18} color="#bc4800" />)}
+              <Text style={[styles.socialProofText, isCompact && styles.socialProofTextCompact]}>Joined by 2M+ learners worldwide</Text>
+            </View>
+          </View>
 
         </ScrollView>
       </KeyboardAvoidingView>
@@ -386,8 +384,13 @@ const styles = StyleSheet.create({
   googleIconCompact: { width: 18, height: 18 },
   googleButtonTextCompact: { fontSize: 14 },
 
-  footerLinkCompact: { marginTop: 10 },
+  footerLinkCompact: { marginTop: 8 },
   footerTextCompact: { fontSize: 13 },
+
+  socialProofCompact: { marginTop: 8, opacity: 0.85 },
+  avatarGroupCompact: { marginBottom: 4 },
+  avatarCompact: { width: 26, height: 26, borderRadius: 13 },
+  socialProofTextCompact: { fontSize: 10, marginLeft: 4 },
 
   // Modal Styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

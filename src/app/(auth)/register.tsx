@@ -190,13 +190,11 @@ export default function RegisterScreen() {
             </Text>
           </View>
 
-          {/* Security Badge (large screens only) */}
-          {!isCompact && (
-            <View style={styles.securityBadge}>
-              <MaterialIcons name="verified-user" size={16} color="#737686" />
-              <Text style={styles.securityText}>END-TO-END ENCRYPTION</Text>
-            </View>
-          )}
+          {/* Security Badge */}
+          <View style={[styles.securityBadge, isCompact && styles.securityBadgeCompact]}>
+            <MaterialIcons name="verified-user" size={isCompact ? 13 : 16} color="#737686" />
+            <Text style={[styles.securityText, isCompact && styles.securityTextCompact]}>END-TO-END ENCRYPTION</Text>
+          </View>
 
         </ScrollView>
       </KeyboardAvoidingView>
@@ -349,95 +347,102 @@ const styles = StyleSheet.create({
   // Responsive Compact Styles for Mobile
   scrollContentCompact: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    paddingBottom: 14,
+    paddingVertical: 8,
+    paddingBottom: 10,
     justifyContent: 'center',
   },
   topHeaderCompact: {
-    height: 36,
+    height: 32,
     marginTop: 0,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   backButtonCompact: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   logoTextCompact: {
-    fontSize: 20,
+    fontSize: 18,
   },
   heroHeaderCompact: {
-    marginBottom: 8,
+    marginBottom: 6,
   },
   titleCompact: {
-    fontSize: 22,
+    fontSize: 20,
     marginBottom: 2,
   },
   subtitleCompact: {
-    fontSize: 13,
+    fontSize: 12,
   },
   cardCompact: {
-    padding: 14,
+    padding: 12,
     borderRadius: 16,
   },
   formGroupCompact: {
-    marginBottom: 8,
+    marginBottom: 6,
   },
   labelCompact: {
-    fontSize: 12,
-    marginBottom: 3,
+    fontSize: 11,
+    marginBottom: 2,
   },
   inputContainerCompact: {
-    height: 42,
+    height: 38,
     borderRadius: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
   },
   inputCompactText: {
-    fontSize: 14,
+    fontSize: 13,
   },
   buttonCompact: {
-    height: 42,
+    height: 38,
     borderRadius: 10,
     marginTop: 4,
   },
   buttonTextCompact: {
-    fontSize: 15,
+    fontSize: 14,
   },
   dividerContainerCompact: {
-    marginVertical: 8,
+    marginVertical: 6,
   },
   dividerTextCompact: {
     fontSize: 10,
     marginHorizontal: 8,
   },
   googleButtonCompact: {
-    height: 40,
+    height: 38,
     borderRadius: 10,
     gap: 8,
   },
   googleIconCompact: {
-    width: 18,
-    height: 18,
+    width: 16,
+    height: 16,
   },
   googleButtonTextCompact: {
-    fontSize: 14,
+    fontSize: 13,
   },
   cardFooterCompact: {
-    marginTop: 10,
-    paddingTop: 8,
+    marginTop: 8,
+    paddingTop: 6,
   },
   footerTextCompact: {
-    fontSize: 13,
+    fontSize: 12,
   },
   footerBoldCompact: {
-    fontSize: 13,
+    fontSize: 12,
   },
   termsContainerCompact: {
-    marginTop: 8,
-    paddingHorizontal: 10,
+    marginTop: 6,
+    paddingHorizontal: 8,
   },
   termsTextCompact: {
-    fontSize: 11,
-    lineHeight: 16,
+    fontSize: 10,
+    lineHeight: 14,
+  },
+  securityBadgeCompact: {
+    marginTop: 6,
+    gap: 4,
+  },
+  securityTextCompact: {
+    fontSize: 10,
   },
 });
