@@ -14,8 +14,8 @@ export default function Index() {
   }
 
   if (session) {
-    return <Redirect href="/learn" />;
+    return <Redirect href="/(tabs)/learn" />;
   }
 
-  return <Redirect href="/login" />;
+  return <Redirect href="/(auth)/login" />;
 }

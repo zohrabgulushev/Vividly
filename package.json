@@ -58,7 +58,7 @@
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watch",
     "test:coverage": "jest --config jest.config.json --coverage",
-    "build:web": "expo export --platform web",
+    "build:web": "expo export --platform web && node scripts/copy-dist.js",
     "serve": "serve dist -s"
   },
   "private": true

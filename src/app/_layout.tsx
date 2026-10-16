@@ -50,11 +50,11 @@ export default function RootLayout() {
 
     if (!session && !inAuthGroup) {
       // Not logged in → login
-      router.replace('/login');
+      router.replace('/(auth)/login');
     } else if (session && inAuthGroup) {
       // Just logged in → check if onboarding is done
       if (isOnboarded) {
-        router.replace('/learn');
+        router.replace('/(tabs)/learn');
       } else {
         router.replace('/onboarding');
       }
