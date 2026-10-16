@@ -103,16 +103,17 @@ export default function LoginScreen() {
       <KeyboardAvoidingView style={styles.keyboardView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={[styles.scrollContent, isCompact && styles.scrollContentCompact]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           
-          {/* Header */}
-          <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
-            <MaterialIcons name="language" size={isCompact ? 24 : 30} color="#004ac6" />
-            <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
-          </View>
+          {/* Top Section */}
+          <View style={styles.topSection}>
+            <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
+              <MaterialIcons name="language" size={isCompact ? 26 : 30} color="#004ac6" />
+              <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
+            </View>
 
-          {/* Hero */}
-          <View style={[styles.heroHeader, isCompact && styles.heroHeaderCompact]}>
-            <Text style={[styles.title, isCompact && styles.titleCompact]}>Welcome Back</Text>
-            <Text style={[styles.subtitle, isCompact && styles.subtitleCompact]}>Learn English with the world's best.</Text>
+            <View style={[styles.heroHeader, isCompact && styles.heroHeaderCompact]}>
+              <Text style={[styles.title, isCompact && styles.titleCompact]}>Welcome Back</Text>
+              <Text style={[styles.subtitle, isCompact && styles.subtitleCompact]}>Learn English with the world's best.</Text>
+            </View>
           </View>
 
           {/* Form Card */}
@@ -167,21 +168,24 @@ export default function LoginScreen() {
 
           </View>
 
-          {/* Footer */}
-          <TouchableOpacity onPress={() => router.push('/(auth)/register')} style={[styles.footerLink, isCompact && styles.footerLinkCompact]}>
-            <Text style={[styles.footerText, isCompact && styles.footerTextCompact]}>Don't have an account? <Text style={styles.footerBold}>Create an account</Text></Text>
-          </TouchableOpacity>
+          {/* Bottom Section */}
+          <View style={styles.bottomSection}>
+            {/* Footer */}
+            <TouchableOpacity onPress={() => router.push('/(auth)/register')} style={[styles.footerLink, isCompact && styles.footerLinkCompact]}>
+              <Text style={[styles.footerText, isCompact && styles.footerTextCompact]}>Don't have an account? <Text style={styles.footerBold}>Create an account</Text></Text>
+            </TouchableOpacity>
 
-          {/* Social Proof */}
-          <View style={[styles.socialProof, isCompact && styles.socialProofCompact]}>
-            <View style={[styles.avatarGroup, isCompact && styles.avatarGroupCompact]}>
-              <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCoKl3VnTuZpgi_WMzRAYJpOw_ygZuV-LMQMWYakKJI78OTIa-n4cASrUWrShAcE95A-eUeXdC-vfYP2AOOmhQvp-D018WgNgdsLDBxI6jnZnpVMElfmVVTFZBkoz_0_UDdHWF9uUppmnqW8Zgv07-FxfxWvimL2H_crdUkMRhiULrFs7jscl0yR0Y0-Rfe5F1Lyw0OTdJ6hMuvirgbaYKvyFcQMezPqTZKjy8LLjwMemsNClgHH1rRiigydbINfreMHwV7mIdL0n8' }} style={[styles.avatar, isCompact && styles.avatarCompact, { zIndex: 3 }]} />
-              <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOM5Bb1eIzxk5nre8-8xM5dQ89Ac58LeRpKk5JwOPY97XF5X9D-bbLimW4Zsduam-vV2vrObIsmlOFjUpLMoxMS4BqS0GviWPaZ3Z-bMlrxW9uWuKX3chrTILhBNisj7JQDxEMnhOfFRmuAD932YWYgLzXIP5aSIh0ZzkY-lEu3AD7Xsn_OyIX04hqbDfsIWxhazuz1TR2X02PUZuK_dp6HdoLaKRMuxxQFhxxQv9U-iCspweCENH-KzYUN6piVS6NunQ8SxlLOj8' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 2 }]} />
-              <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-suB2Rrh7c51upjwHCzsa6E0UmV0VldQCe5VYRbxhJzwFzi0G2kXRywDz3xLByOA1eaS2JsPGnFs2O6g6HXVRBkucQEY2-pdmBaOwmr28R5qBVhRMeW4PABqYyGDezYq7qLnDC_O34Y6OCieqZcXogBQUUqjzvGOlEzkLXyJvX-PKtLps5q9FX2aVRCccPEbdfHBPr14veHh7-kYye2Sp5UCI9x_MgyME1CkRCzZhyOA7IvTXH9MApYL72pfYWmGZYoti9IIudrI' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 1 }]} />
-            </View>
-            <View style={styles.starsContainer}>
-              {[1,2,3,4,5].map(i => <MaterialIcons key={i} name="star" size={isCompact ? 13 : 18} color="#bc4800" />)}
-              <Text style={[styles.socialProofText, isCompact && styles.socialProofTextCompact]}>Joined by 2M+ learners worldwide</Text>
+            {/* Social Proof */}
+            <View style={[styles.socialProof, isCompact && styles.socialProofCompact]}>
+              <View style={[styles.avatarGroup, isCompact && styles.avatarGroupCompact]}>
+                <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCoKl3VnTuZpgi_WMzRAYJpOw_ygZuV-LMQMWYakKJI78OTIa-n4cASrUWrShAcE95A-eUeXdC-vfYP2AOOmhQvp-D018WgNgdsLDBxI6jnZnpVMElfmVVTFZBkoz_0_UDdHWF9uUppmnqW8Zgv07-FxfxWvimL2H_crdUkMRhiULrFs7jscl0yR0Y0-Rfe5F1Lyw0OTdJ6hMuvirgbaYKvyFcQMezPqTZKjy8LLjwMemsNClgHH1rRiigydbINfreMHwV7mIdL0n8' }} style={[styles.avatar, isCompact && styles.avatarCompact, { zIndex: 3 }]} />
+                <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOM5Bb1eIzxk5nre8-8xM5dQ89Ac58LeRpKk5JwOPY97XF5X9D-bbLimW4Zsduam-vV2vrObIsmlOFjUpLMoxMS4BqS0GviWPaZ3Z-bMlrxW9uWuKX3chrTILhBNisj7JQDxEMnhOfFRmuAD932YWYgLzXIP5aSIh0ZzkY-lEu3AD7Xsn_OyIX04hqbDfsIWxhazuz1TR2X02PUZuK_dp6HdoLaKRMuxxQFhxxQv9U-iCspweCENH-KzYUN6piVS6NunQ8SxlLOj8' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 2 }]} />
+                <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-suB2Rrh7c51upjwHCzsa6E0UmV0VldQCe5VYRbxhJzwFzi0G2kXRywDz3xLByOA1eaS2JsPGnFs2O6g6HXVRBkucQEY2-pdmBaOwmr28R5qBVhRMeW4PABqYyGDezYq7qLnDC_O34Y6OCieqZcXogBQUUqjzvGOlEzkLXyJvX-PKtLps5q9FX2aVRCccPEbdfHBPr14veHh7-kYye2Sp5UCI9x_MgyME1CkRCzZhyOA7IvTXH9MApYL72pfYWmGZYoti9IIudrI' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 1 }]} />
+              </View>
+              <View style={styles.starsContainer}>
+                {[1,2,3,4,5].map(i => <MaterialIcons key={i} name="star" size={isCompact ? 13 : 18} color="#bc4800" />)}
+                <Text style={[styles.socialProofText, isCompact && styles.socialProofTextCompact]}>Joined by 2M+ learners worldwide</Text>
+              </View>
             </View>
           </View>
 
@@ -307,7 +311,10 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9ff', overflow: 'hidden' },
   keyboardView: { flex: 1 },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 48, alignItems: 'center', justifyContent: 'center' },
+  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24, alignItems: 'center', justifyContent: 'space-between' },
+
+  topSection: { width: '100%', alignItems: 'center' },
+  bottomSection: { width: '100%', alignItems: 'center' },
 
   bgBlob: { position: 'absolute', width: 300, height: 300, borderRadius: 150, opacity: 0.5 },
   bgBlobTop: { top: -50, right: -50, backgroundColor: 'rgba(37, 99, 235, 0.08)' },
@@ -356,31 +363,31 @@ const styles = StyleSheet.create({
   starsContainer: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   socialProofText: { fontSize: 12, fontWeight: '600', color: '#5c6274', marginLeft: 6 },
 
-  scrollContentCompact: { paddingHorizontal: 16, paddingVertical: 12, paddingBottom: 16, justifyContent: 'center' },
+  scrollContentCompact: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 16, justifyContent: 'space-between' },
 
-  topHeaderCompact: { height: 36, marginTop: 0, marginBottom: 4 },
-  logoTextCompact: { fontSize: 20 },
+  topHeaderCompact: { height: 42, marginTop: 4, marginBottom: 2 },
+  logoTextCompact: { fontSize: 22 },
 
-  heroHeaderCompact: { marginBottom: 8 },
-  titleCompact: { fontSize: 22, marginBottom: 2 },
+  heroHeaderCompact: { marginBottom: 6 },
+  titleCompact: { fontSize: 24, marginBottom: 2 },
   subtitleCompact: { fontSize: 13 },
 
-  cardCompact: { padding: 14, borderRadius: 16 },
+  cardCompact: { padding: 16, borderRadius: 18 },
 
   formGroupCompact: { marginBottom: 8 },
   labelCompact: { fontSize: 12, marginBottom: 3 },
-  forgotPasswordCompact: { fontSize: 11 },
+  forgotPasswordCompact: { fontSize: 12 },
 
-  inputContainerCompact: { height: 42, borderRadius: 10, paddingHorizontal: 12 },
-  inputCompactText: { fontSize: 14 },
+  inputContainerCompact: { height: 46, borderRadius: 12, paddingHorizontal: 14 },
+  inputCompactText: { fontSize: 15 },
 
-  buttonCompact: { height: 42, borderRadius: 10, marginTop: 4 },
-  buttonTextCompact: { fontSize: 15 },
+  buttonCompact: { height: 46, borderRadius: 12, marginTop: 4 },
+  buttonTextCompact: { fontSize: 16 },
 
   dividerContainerCompact: { marginVertical: 8 },
   dividerTextCompact: { fontSize: 10, marginHorizontal: 8 },
 
-  googleButtonCompact: { height: 40, borderRadius: 10, gap: 8 },
+  googleButtonCompact: { height: 44, borderRadius: 12, gap: 8 },
   googleIconCompact: { width: 18, height: 18 },
   googleButtonTextCompact: { fontSize: 14 },
 
@@ -389,8 +396,8 @@ const styles = StyleSheet.create({
 
   socialProofCompact: { marginTop: 8, opacity: 0.85 },
   avatarGroupCompact: { marginBottom: 4 },
-  avatarCompact: { width: 26, height: 26, borderRadius: 13 },
-  socialProofTextCompact: { fontSize: 10, marginLeft: 4 },
+  avatarCompact: { width: 28, height: 28, borderRadius: 14 },
+  socialProofTextCompact: { fontSize: 11, marginLeft: 4 },
 
   // Modal Styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

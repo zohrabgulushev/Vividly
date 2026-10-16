@@ -65,25 +65,27 @@ export default function RegisterScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Top Header with Back Button and Logo */}
-          <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
-            <TouchableOpacity onPress={() => router.back()} style={[styles.backButton, isCompact && styles.backButtonCompact]}>
-              <Feather name="arrow-left" size={isCompact ? 18 : 24} color="#004ac6" />
-            </TouchableOpacity>
-            
-            <View style={styles.logoContainer}>
-              <MaterialIcons name="language" size={isCompact ? 22 : 28} color="#004ac6" />
-              <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
+          {/* Top Section */}
+          <View style={styles.topSection}>
+            <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
+              <TouchableOpacity onPress={() => router.back()} style={[styles.backButton, isCompact && styles.backButtonCompact]}>
+                <Feather name="arrow-left" size={isCompact ? 18 : 24} color="#004ac6" />
+              </TouchableOpacity>
+              
+              <View style={styles.logoContainer}>
+                <MaterialIcons name="language" size={isCompact ? 22 : 28} color="#004ac6" />
+                <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
+              </View>
+              
+              {/* Spacer to balance the back button */}
+              <View style={{ width: isCompact ? 34 : 44 }} />
             </View>
-            
-            {/* Spacer to balance the back button */}
-            <View style={{ width: isCompact ? 34 : 44 }} />
-          </View>
 
-          {/* Hero Header */}
-          <View style={[styles.heroHeader, isCompact && styles.heroHeaderCompact]}>
-            <Text style={[styles.title, isCompact && styles.titleCompact]}>Create Account</Text>
-            <Text style={[styles.subtitle, isCompact && styles.subtitleCompact]}>Start your English learning journey today.</Text>
+            {/* Hero Header */}
+            <View style={[styles.heroHeader, isCompact && styles.heroHeaderCompact]}>
+              <Text style={[styles.title, isCompact && styles.titleCompact]}>Create Account</Text>
+              <Text style={[styles.subtitle, isCompact && styles.subtitleCompact]}>Start your English learning journey today.</Text>
+            </View>
           </View>
 
           {/* Registration Form Card */}
@@ -181,19 +183,22 @@ export default function RegisterScreen() {
             
           </View>
 
-          {/* External Terms */}
-          <View style={[styles.termsContainer, isCompact && styles.termsContainerCompact]}>
-            <Text style={[styles.termsText, isCompact && styles.termsTextCompact]}>
-              By creating an account, you agree to our{' '}
-              <Text style={styles.termsBold}>Terms</Text> and{' '}
-              <Text style={styles.termsBold}>Privacy Policy</Text>.
-            </Text>
-          </View>
+          {/* Bottom Section */}
+          <View style={styles.bottomSection}>
+            {/* External Terms */}
+            <View style={[styles.termsContainer, isCompact && styles.termsContainerCompact]}>
+              <Text style={[styles.termsText, isCompact && styles.termsTextCompact]}>
+                By creating an account, you agree to our{' '}
+                <Text style={styles.termsBold}>Terms</Text> and{' '}
+                <Text style={styles.termsBold}>Privacy Policy</Text>.
+              </Text>
+            </View>
 
-          {/* Security Badge */}
-          <View style={[styles.securityBadge, isCompact && styles.securityBadgeCompact]}>
-            <MaterialIcons name="verified-user" size={isCompact ? 13 : 16} color="#737686" />
-            <Text style={[styles.securityText, isCompact && styles.securityTextCompact]}>END-TO-END ENCRYPTION</Text>
+            {/* Security Badge */}
+            <View style={[styles.securityBadge, isCompact && styles.securityBadgeCompact]}>
+              <MaterialIcons name="verified-user" size={isCompact ? 13 : 16} color="#737686" />
+              <Text style={[styles.securityText, isCompact && styles.securityTextCompact]}>END-TO-END ENCRYPTION</Text>
+            </View>
           </View>
 
         </ScrollView>
@@ -209,10 +214,14 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingBottom: 48,
+    paddingTop: 16,
+    paddingBottom: 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
+
+  topSection: { width: '100%', alignItems: 'center' },
+  bottomSection: { width: '100%', alignItems: 'center' },
 
   bgBlob: {
     position: 'absolute',
@@ -347,59 +356,59 @@ const styles = StyleSheet.create({
   // Responsive Compact Styles for Mobile
   scrollContentCompact: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    paddingBottom: 10,
-    justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 16,
+    justifyContent: 'space-between',
   },
   topHeaderCompact: {
-    height: 32,
-    marginTop: 0,
+    height: 38,
+    marginTop: 2,
     marginBottom: 2,
   },
   backButtonCompact: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
   },
   logoTextCompact: {
-    fontSize: 18,
+    fontSize: 20,
   },
   heroHeaderCompact: {
     marginBottom: 6,
   },
   titleCompact: {
-    fontSize: 20,
+    fontSize: 22,
     marginBottom: 2,
   },
   subtitleCompact: {
-    fontSize: 12,
+    fontSize: 13,
   },
   cardCompact: {
-    padding: 12,
-    borderRadius: 16,
+    padding: 14,
+    borderRadius: 18,
   },
   formGroupCompact: {
     marginBottom: 6,
   },
   labelCompact: {
-    fontSize: 11,
+    fontSize: 12,
     marginBottom: 2,
   },
   inputContainerCompact: {
-    height: 38,
+    height: 40,
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
   },
   inputCompactText: {
-    fontSize: 13,
+    fontSize: 14,
   },
   buttonCompact: {
-    height: 38,
+    height: 40,
     borderRadius: 10,
     marginTop: 4,
   },
   buttonTextCompact: {
-    fontSize: 14,
+    fontSize: 15,
   },
   dividerContainerCompact: {
     marginVertical: 6,
@@ -409,34 +418,34 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   googleButtonCompact: {
-    height: 38,
+    height: 40,
     borderRadius: 10,
     gap: 8,
   },
   googleIconCompact: {
-    width: 16,
-    height: 16,
+    width: 18,
+    height: 18,
   },
   googleButtonTextCompact: {
-    fontSize: 13,
+    fontSize: 14,
   },
   cardFooterCompact: {
     marginTop: 8,
     paddingTop: 6,
   },
   footerTextCompact: {
-    fontSize: 12,
+    fontSize: 13,
   },
   footerBoldCompact: {
-    fontSize: 12,
+    fontSize: 13,
   },
   termsContainerCompact: {
     marginTop: 6,
     paddingHorizontal: 8,
   },
   termsTextCompact: {
-    fontSize: 10,
-    lineHeight: 14,
+    fontSize: 11,
+    lineHeight: 15,
   },
   securityBadgeCompact: {
     marginTop: 6,
