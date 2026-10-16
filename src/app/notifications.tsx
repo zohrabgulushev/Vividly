@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, Switch } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, Switch, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ export default function NotificationsScreen() {
   const [tutorMessages, setTutorMessages] = useState(true);
   const [promotions, setPromotions] = useState(false);
   const [weeklyReport, setWeeklyReport] = useState(true);
+  const [focusModeActive, setFocusModeActive] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -154,8 +155,19 @@ export default function NotificationsScreen() {
           <View style={styles.focusModeContent}>
             <Text style={styles.focusModeTitle}>Focus Mode</Text>
             <Text style={styles.focusModeSubtitle}>Pause all notifications for 2 hours with a single tap.</Text>
-            <TouchableOpacity style={styles.focusModeButton}>
-              <Text style={styles.focusModeButtonText}>Enable Now</Text>
+            <TouchableOpacity 
+              style={[styles.focusModeButton, focusModeActive && { backgroundColor: '#10b981' }]}
+              activeOpacity={0.8}
+              onPress={() => {
+                const next = !focusModeActive;
+                setFocusModeActive(next);
+                Alert.alert(
+                  next ? 'Focus Mode Enabled' : 'Focus Mode Disabled',
+                  next ? 'All lesson notifications will be silenced for 2 hours.' : 'Normal notification schedule resumed.'
+                );
+              }}
+            >
+              <Text style={styles.focusModeButtonText}>{focusModeActive ? 'Active (2h left)' : 'Enable Now'}</Text>
             </TouchableOpacity>
           </View>
         </View>

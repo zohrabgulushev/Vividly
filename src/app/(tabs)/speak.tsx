@@ -202,7 +202,11 @@ export default function SpeakTab() {
         <View style={styles.tutorsContainer}>
           {filteredTutors.map((tutor) => (
             <View key={tutor.tutor_id} style={styles.tutorCard}>
-              <View style={styles.tutorImageContainer}>
+              <TouchableOpacity 
+                style={styles.tutorImageContainer}
+                activeOpacity={0.9}
+                onPress={() => router.push('/tutor-profile')}
+              >
                 <Image 
                   source={{ uri: tutor.profile.avatar_url ?? 'https://ui-avatars.com/api/?name=' + encodeURIComponent(tutor.profile.full_name) + '&background=004ac6&color=fff&size=300' }}
                   style={styles.tutorImage}
@@ -230,7 +234,7 @@ export default function SpeakTab() {
                     </View>
                   </View>
                 </LinearGradient>
-              </View>
+              </TouchableOpacity>
 
               <View style={styles.cardActions}>
                 <TouchableOpacity 

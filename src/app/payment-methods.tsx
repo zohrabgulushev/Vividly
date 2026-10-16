@@ -1,9 +1,11 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, ImageBackground, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 
 export default function PaymentMethodsScreen() {
   const router = useRouter();
+  const [selectedMethod, setSelectedMethod] = useState<'visa' | 'apple'>('visa');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,7 +34,10 @@ export default function PaymentMethodsScreen() {
             </View>
             <View style={styles.subscriptionAction}>
               <Text style={styles.planPrice}>$29.99/mo</Text>
-              <TouchableOpacity>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                onPress={() => router.push('/top-up')}
+              >
                 <Text style={styles.switchPlanText}>Switch Plan</Text>
               </TouchableOpacity>
             </View>
@@ -43,7 +48,11 @@ export default function PaymentMethodsScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Payment Methods</Text>
-            <TouchableOpacity style={styles.addPaymentButton}>
+            <TouchableOpacity 
+              style={styles.addPaymentButton}
+              activeOpacity={0.7}
+              onPress={() => Alert.alert('Add Payment Method', 'Select Credit/Debit Card or Apple Pay.')}
+            >
               <MaterialIcons name="add" size={18} color="#003594" />
               <Text style={styles.addPaymentText}>Add Method</Text>
             </TouchableOpacity>
@@ -51,7 +60,11 @@ export default function PaymentMethodsScreen() {
           
           <View style={styles.cardGroup}>
             {/* Default Card (Visa) */}
-            <View style={[styles.paymentMethodCard, styles.defaultCardBorder]}>
+            <TouchableOpacity 
+              style={[styles.paymentMethodCard, selectedMethod === 'visa' && styles.defaultCardBorder]}
+              activeOpacity={0.7}
+              onPress={() => setSelectedMethod('visa')}
+            >
               <View style={styles.paymentLeft}>
                 <View style={styles.paymentIconBox}>
                   <MaterialIcons name="credit-card" size={24} color="#003594" />
@@ -59,41 +72,58 @@ export default function PaymentMethodsScreen() {
                 <View>
                   <View style={styles.cardTitleRow}>
                     <Text style={styles.paymentTitle}>Visa ending in 4242</Text>
-                    <View style={styles.defaultBadge}>
-                      <Text style={styles.defaultBadgeText}>DEFAULT</Text>
-                    </View>
+                    {selectedMethod === 'visa' && (
+                      <View style={styles.defaultBadge}>
+                        <Text style={styles.defaultBadgeText}>DEFAULT</Text>
+                      </View>
+                    )}
                   </View>
                   <Text style={styles.paymentSubtitle}>Expires 12/26</Text>
                 </View>
               </View>
               <View style={styles.paymentRight}>
-                <TouchableOpacity style={styles.iconButton}>
-                  <MaterialIcons name="edit" size={20} color="#434654" />
-                </TouchableOpacity>
-                <View style={styles.radioSelected}>
-                  <View style={styles.radioInner} />
-                </View>
+                {selectedMethod === 'visa' ? (
+                  <View style={styles.radioSelected}>
+                    <View style={styles.radioInner} />
+                  </View>
+                ) : (
+                  <View style={styles.radioUnselected} />
+                )}
               </View>
-            </View>
+            </TouchableOpacity>
 
             {/* Apple Pay Card */}
-            <View style={styles.paymentMethodCard}>
+            <TouchableOpacity 
+              style={[styles.paymentMethodCard, selectedMethod === 'apple' && styles.defaultCardBorder]}
+              activeOpacity={0.7}
+              onPress={() => setSelectedMethod('apple')}
+            >
               <View style={styles.paymentLeft}>
                 <View style={styles.paymentIconBox}>
                   <MaterialIcons name="account-balance-wallet" size={24} color="#3a3e47" />
                 </View>
                 <View>
-                  <Text style={styles.paymentTitle}>Apple Pay</Text>
+                  <View style={styles.cardTitleRow}>
+                    <Text style={styles.paymentTitle}>Apple Pay</Text>
+                    {selectedMethod === 'apple' && (
+                      <View style={styles.defaultBadge}>
+                        <Text style={styles.defaultBadgeText}>DEFAULT</Text>
+                      </View>
+                    )}
+                  </View>
                   <Text style={styles.paymentSubtitle}>Connected via iCloud</Text>
                 </View>
               </View>
               <View style={styles.paymentRight}>
-                <TouchableOpacity style={styles.iconButton}>
-                  <MaterialIcons name="more-vert" size={20} color="#434654" />
-                </TouchableOpacity>
-                <View style={styles.radioUnselected} />
+                {selectedMethod === 'apple' ? (
+                  <View style={styles.radioSelected}>
+                    <View style={styles.radioInner} />
+                  </View>
+                ) : (
+                  <View style={styles.radioUnselected} />
+                )}
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -101,7 +131,11 @@ export default function PaymentMethodsScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Billing History</Text>
-            <TouchableOpacity style={styles.viewAllButton}>
+            <TouchableOpacity 
+              style={styles.viewAllButton}
+              activeOpacity={0.7}
+              onPress={() => Alert.alert('Billing History', 'All your subscription invoices are listed below.')}
+            >
               <Text style={styles.viewAllText}>View All</Text>
               <MaterialIcons name="open-in-new" size={18} color="#434654" />
             </TouchableOpacity>
@@ -121,7 +155,11 @@ export default function PaymentMethodsScreen() {
               </View>
               <View style={styles.invoiceRight}>
                 <Text style={styles.invoiceAmount}>$29.99</Text>
-                <TouchableOpacity style={styles.downloadButton}>
+                <TouchableOpacity 
+                  style={styles.downloadButton}
+                  activeOpacity={0.7}
+                  onPress={() => Alert.alert('Download Receipt', 'Invoice PDF for Sept 12 sent to your registered email.')}
+                >
                   <MaterialIcons name="download" size={16} color="#003594" />
                   <Text style={styles.downloadText}>PDF</Text>
                 </TouchableOpacity>
@@ -141,7 +179,11 @@ export default function PaymentMethodsScreen() {
               </View>
               <View style={styles.invoiceRight}>
                 <Text style={styles.invoiceAmount}>$29.99</Text>
-                <TouchableOpacity style={styles.downloadButton}>
+                <TouchableOpacity 
+                  style={styles.downloadButton}
+                  activeOpacity={0.7}
+                  onPress={() => Alert.alert('Download Receipt', 'Invoice PDF for Aug 12 sent to your registered email.')}
+                >
                   <MaterialIcons name="download" size={16} color="#003594" />
                   <Text style={styles.downloadText}>PDF</Text>
                 </TouchableOpacity>
@@ -161,7 +203,11 @@ export default function PaymentMethodsScreen() {
               </View>
               <View style={styles.invoiceRight}>
                 <Text style={styles.invoiceAmount}>$29.99</Text>
-                <TouchableOpacity style={styles.downloadButton}>
+                <TouchableOpacity 
+                  style={styles.downloadButton}
+                  activeOpacity={0.7}
+                  onPress={() => Alert.alert('Download Receipt', 'Invoice PDF for July 12 sent to your registered email.')}
+                >
                   <MaterialIcons name="download" size={16} color="#003594" />
                   <Text style={styles.downloadText}>PDF</Text>
                 </TouchableOpacity>
@@ -179,7 +225,11 @@ export default function PaymentMethodsScreen() {
           <View style={styles.promoContent}>
             <Text style={styles.promoTitle}>Invite Friends, Earn Credits</Text>
             <Text style={styles.promoSubtitle}>Share the Vividly experience and get $10 credit for every successful referral.</Text>
-            <TouchableOpacity style={styles.promoButton}>
+            <TouchableOpacity 
+              style={styles.promoButton}
+              activeOpacity={0.7}
+              onPress={() => Alert.alert('Referral Link Copied', 'Your referral link has been copied to your clipboard: https://vividly.app/refer/you')}
+            >
               <Text style={styles.promoButtonText}>Refer Now</Text>
             </TouchableOpacity>
           </View>
@@ -189,7 +239,11 @@ export default function PaymentMethodsScreen() {
         <View style={styles.helpContainer}>
           <Text style={styles.helpTitle}>Need assistance?</Text>
           
-          <TouchableOpacity style={styles.helpItem} activeOpacity={0.7}>
+          <TouchableOpacity 
+            style={styles.helpItem} 
+            activeOpacity={0.7}
+            onPress={() => router.push('/help-center')}
+          >
             <View style={[styles.helpIconBox, { backgroundColor: 'rgba(124, 249, 148, 0.2)' }]}>
               <MaterialIcons name="chat" size={24} color="#007230" />
             </View>
@@ -200,7 +254,11 @@ export default function PaymentMethodsScreen() {
             <MaterialIcons name="chevron-right" size={24} color="#737685" />
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.helpItem} activeOpacity={0.7}>
+          <TouchableOpacity 
+            style={styles.helpItem} 
+            activeOpacity={0.7}
+            onPress={() => router.push('/help-center')}
+          >
             <View style={[styles.helpIconBox, { backgroundColor: '#e2e8f8' }]}>
               <MaterialIcons name="help" size={24} color="#003594" />
             </View>

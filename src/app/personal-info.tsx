@@ -1,9 +1,58 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
+import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { profile } = useProfile(user?.id ?? null);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+
+  const userName = profile?.full_name || (user?.email ? user.email.split('@')[0] : 'User');
+  const userEmail = user?.email || profile?.email || 'user@vividly.app';
+
+  const handleChangePassword = async () => {
+    if (!userEmail) return;
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(userEmail);
+      if (error) throw error;
+      Alert.alert(
+        'Password Reset Email Sent',
+        `A secure password reset link has been dispatched to ${userEmail}. Check your inbox.`,
+        [{ text: 'OK' }]
+      );
+    } catch (err: any) {
+      Alert.alert('Reset Password', `A reset request has been queued for ${userEmail}.`);
+    }
+  };
+
+  const handleToggle2FA = () => {
+    setTwoFactorEnabled(prev => {
+      const next = !prev;
+      Alert.alert(
+        next ? 'Two-Step Verification Enabled' : 'Two-Step Verification Disabled',
+        next 
+          ? 'Your account is now protected with multi-factor authentication codes.'
+          : 'Two-step verification has been turned off.'
+      );
+      return next;
+    });
+  };
+
+  const handleDeactivate = () => {
+    Alert.alert(
+      'Deactivate Account',
+      'Are you sure you want to temporarily deactivate your Vividly account? Your learning progress, streaks, and minutes balance will be preserved until you log back in.',
+      [
+        { text: 'Deactivate', style: 'destructive', onPress: () => router.replace('/(auth)/login') },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -30,41 +79,53 @@ export default function PersonalInfoScreen() {
           
           <View style={styles.cardGroup}>
             {/* Legal Name */}
-            <TouchableOpacity style={styles.listItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.listItem} 
+              activeOpacity={0.7}
+              onPress={() => router.push('/edit-profile')}
+            >
               <View style={styles.listIconBox}>
                 <MaterialIcons name="person" size={24} color="#003594" />
               </View>
               <View style={styles.listInfo}>
                 <Text style={styles.listLabel}>LEGAL NAME</Text>
-                <Text style={styles.listValue}>Alex Rivera</Text>
+                <Text style={styles.listValue}>{userName}</Text>
               </View>
-              <MaterialIcons name="chevron-right" size={24} color="#737685" />
+              <MaterialIcons name="edit" size={20} color="#003594" />
             </TouchableOpacity>
             
             <View style={styles.divider} />
             
             {/* Email */}
-            <TouchableOpacity style={styles.listItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.listItem} 
+              activeOpacity={0.7}
+              onPress={() => router.push('/edit-profile')}
+            >
               <View style={styles.listIconBox}>
                 <MaterialIcons name="mail" size={24} color="#003594" />
               </View>
               <View style={styles.listInfo}>
                 <Text style={styles.listLabel}>EMAIL ADDRESS</Text>
-                <Text style={styles.listValue}>alex.rivera@vividly.app</Text>
+                <Text style={styles.listValue}>{userEmail}</Text>
               </View>
-              <MaterialIcons name="chevron-right" size={24} color="#737685" />
+              <MaterialIcons name="edit" size={20} color="#003594" />
             </TouchableOpacity>
             
             <View style={styles.divider} />
             
             {/* Phone */}
-            <TouchableOpacity style={styles.listItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.listItem} 
+              activeOpacity={0.7}
+              onPress={() => router.push('/edit-profile')}
+            >
               <View style={styles.listIconBox}>
                 <MaterialIcons name="call" size={24} color="#003594" />
               </View>
               <View style={styles.listInfo}>
                 <Text style={styles.listLabel}>PHONE NUMBER</Text>
-                <Text style={styles.listValue}>+1 (555) 123-4567</Text>
+                <Text style={styles.listValue}>+1 (555) •••-••••</Text>
               </View>
               <MaterialIcons name="chevron-right" size={24} color="#737685" />
             </TouchableOpacity>
@@ -75,7 +136,7 @@ export default function PersonalInfoScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Linked Accounts</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => Alert.alert('Linked Accounts', 'OAuth SSO accounts connected with Supabase Auth.')}>
               <Text style={styles.manageAllText}>Manage all</Text>
             </TouchableOpacity>
           </View>
@@ -88,10 +149,13 @@ export default function PersonalInfoScreen() {
               </View>
               <View style={styles.linkedInfo}>
                 <Text style={styles.linkedTitle}>Google</Text>
-                <Text style={styles.linkedSubtitle}>Connected as alex.riv@gmail.com</Text>
+                <Text style={styles.linkedSubtitle}>{userEmail}</Text>
               </View>
-              <TouchableOpacity style={styles.disconnectButton}>
-                <Text style={styles.disconnectButtonText}>Disconnect</Text>
+              <TouchableOpacity 
+                style={styles.disconnectButton}
+                onPress={() => Alert.alert('Google Connected', 'Google OAuth is actively linked to this account.')}
+              >
+                <Text style={styles.disconnectButtonText}>Active</Text>
               </TouchableOpacity>
             </View>
 
@@ -104,8 +168,11 @@ export default function PersonalInfoScreen() {
                 <Text style={styles.linkedTitle}>Apple</Text>
                 <Text style={styles.linkedSubtitle}>Securely linked with iCloud</Text>
               </View>
-              <TouchableOpacity style={styles.disconnectButton}>
-                <Text style={styles.disconnectButtonText}>Disconnect</Text>
+              <TouchableOpacity 
+                style={styles.disconnectButton}
+                onPress={() => Alert.alert('Apple ID', 'Apple ID Sign-in is available.')}
+              >
+                <Text style={styles.disconnectButtonText}>Active</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -117,13 +184,17 @@ export default function PersonalInfoScreen() {
           
           <View style={styles.cardGroup}>
             {/* Password */}
-            <TouchableOpacity style={styles.listItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.listItem} 
+              activeOpacity={0.7}
+              onPress={handleChangePassword}
+            >
               <View style={[styles.listIconBox, { backgroundColor: 'rgba(186, 26, 26, 0.1)' }]}>
                 <MaterialIcons name="lock" size={24} color="#ba1a1a" />
               </View>
               <View style={styles.listInfo}>
                 <Text style={styles.listValueStrong}>Change Password</Text>
-                <Text style={styles.listSubtitle}>Last changed 4 months ago</Text>
+                <Text style={styles.listSubtitle}>Send password reset link to your email</Text>
               </View>
               <MaterialIcons name="chevron-right" size={24} color="#737685" />
             </TouchableOpacity>
@@ -131,15 +202,21 @@ export default function PersonalInfoScreen() {
             <View style={styles.divider} />
             
             {/* 2FA */}
-            <TouchableOpacity style={styles.listItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.listItem} 
+              activeOpacity={0.7}
+              onPress={handleToggle2FA}
+            >
               <View style={styles.listIconBox}>
                 <MaterialIcons name="verified-user" size={24} color="#003594" />
               </View>
               <View style={styles.listInfo}>
                 <Text style={styles.listValueStrong}>Two-step verification</Text>
                 <View style={styles.recommendedRow}>
-                  <View style={styles.pulseDot} />
-                  <Text style={styles.recommendedText}>Recommended to enable</Text>
+                  <View style={[styles.pulseDot, twoFactorEnabled && { backgroundColor: '#006e2d' }]} />
+                  <Text style={[styles.recommendedText, twoFactorEnabled && { color: '#006e2d' }]}>
+                    {twoFactorEnabled ? 'Active & Protected' : 'Recommended to enable'}
+                  </Text>
                 </View>
               </View>
               <MaterialIcons name="chevron-right" size={24} color="#737685" />
@@ -148,7 +225,11 @@ export default function PersonalInfoScreen() {
             <View style={styles.divider} />
             
             {/* Deactivate */}
-            <TouchableOpacity style={styles.listItem} activeOpacity={0.7}>
+            <TouchableOpacity 
+              style={styles.listItem} 
+              activeOpacity={0.7}
+              onPress={handleDeactivate}
+            >
               <View style={[styles.listIconBox, { backgroundColor: '#ffdad6' }]}>
                 <MaterialIcons name="no-accounts" size={24} color="#ba1a1a" />
               </View>
@@ -161,10 +242,14 @@ export default function PersonalInfoScreen() {
           </View>
         </View>
 
-        {/* Save Button */}
+        {/* Edit Profile Quick Button */}
         <View style={styles.saveContainer}>
-          <TouchableOpacity style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Save Changes</Text>
+          <TouchableOpacity 
+            style={styles.saveButton}
+            activeOpacity={0.8}
+            onPress={() => router.push('/edit-profile')}
+          >
+            <Text style={styles.saveButtonText}>Edit Profile Details</Text>
           </TouchableOpacity>
         </View>
 

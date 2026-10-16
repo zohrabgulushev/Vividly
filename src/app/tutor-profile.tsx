@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, ScrollView, Image, Dimensions, Modal, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
@@ -10,12 +10,30 @@ export default function TutorProfileScreen() {
   const router = useRouter();
   const [bioExpanded, setBioExpanded] = useState(false);
   const [selectedTime, setSelectedTime] = useState('10:00 AM');
+  const [showIntroModal, setShowIntroModal] = useState(false);
 
   const timeSlots = ['10:00 AM', '1:30 PM', '4:00 PM', '5:30 PM', '7:00 PM'];
 
   const handleBook = () => {
-    // Navigate to booking modal or confirm
-    router.replace('/(tabs)/speak' as any); // Mock behavior
+    router.push({
+      pathname: '/book-session' as any,
+      params: { tutorName: 'Emma Watson', tutorId: 'tutor-emma', time: selectedTime }
+    });
+  };
+
+  const handleMessage = () => {
+    Alert.alert(
+      'Message Emma Watson',
+      'Send a note before your session: What specific topics or goals would you like to focus on?',
+      [
+        { text: 'Send Practice Request', onPress: () => Alert.alert('Sent!', 'Emma has been notified and will reply shortly.') },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
+
+  const handleShare = () => {
+    Alert.alert('Share Profile', 'Tutor profile link copied to clipboard!');
   };
 
   return (
@@ -46,7 +64,11 @@ export default function TutorProfileScreen() {
             </TouchableOpacity>
           </SafeAreaView>
 
-          <TouchableOpacity style={styles.playOverlay} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.playOverlay} 
+            activeOpacity={0.8}
+            onPress={() => setShowIntroModal(true)}
+          >
             <View style={styles.playButton}>
               <MaterialIcons name="play-arrow" size={40} color="#ffffff" />
             </View>
@@ -63,10 +85,10 @@ export default function TutorProfileScreen() {
               <MaterialIcons name="verified" size={20} color="#004ac6" style={styles.verifiedIcon} />
             </View>
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={styles.messageButton}>
+              <TouchableOpacity style={styles.messageButton} activeOpacity={0.8} onPress={handleMessage}>
                 <Text style={styles.messageButtonText}>Message</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.shareButton}>
+              <TouchableOpacity style={styles.shareButton} activeOpacity={0.8} onPress={handleShare}>
                 <MaterialIcons name="share" size={20} color="#434654" />
               </TouchableOpacity>
             </View>
@@ -147,6 +169,52 @@ export default function TutorProfileScreen() {
           <Text style={styles.bookButtonText}>Book Session</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Video Intro Modal */}
+      {showIntroModal && (
+        <Modal
+          visible={true}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowIntroModal(false)}
+        >
+          <View style={styles.videoModalOverlay}>
+            <View style={styles.videoModalCard}>
+              <View style={styles.videoHeader}>
+                <Text style={styles.videoTitle}>Emma's Video Introduction</Text>
+                <TouchableOpacity onPress={() => setShowIntroModal(false)}>
+                  <MaterialIcons name="close" size={24} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.videoPlayerBox}>
+                <Image
+                  source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOmxDIMcZ_lI0isn32BjAz2c8qLf6vFeaIHg42R_JOr17Qfi47Rck0aKoNEZf-MQ6YvRnQG0Kj5tDOp9tCScZYIPF9ngYfi9sY5g4GoeKkLl1TRAfExhwzWfMNIp5Gn_iYMDfpFfzu8F0sSUHte4g2ksSKcWiGb0xEV_6w0DA9Se0fgSJxJ9kgB7ZffxZBUumPbanj6-dLVFdgWY5aPMfge4GvJPlmnAAM0Pn0E9AxCvxDg89PHMitfg4XHeVOplgguuNk_etYzNk' }}
+                  style={styles.modalVideoImage}
+                />
+                <View style={styles.modalPlayButton}>
+                  <MaterialIcons name="play-circle-filled" size={64} color="#ffffff" />
+                </View>
+              </View>
+
+              <Text style={styles.videoCaption}>
+                "Hi! I'm Emma. Over the past 8 years, I've coached students from across the globe in natural pronunciation and corporate confidence. Looking forward to our conversation!"
+              </Text>
+
+              <TouchableOpacity 
+                style={styles.modalBookButton}
+                activeOpacity={0.8}
+                onPress={() => {
+                  setShowIntroModal(false);
+                  handleBook();
+                }}
+              >
+                <Text style={styles.modalBookButtonText}>Book Session with Emma ($15)</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -407,6 +475,73 @@ const styles = StyleSheet.create({
   bookButtonText: {
     color: '#ffffff',
     fontSize: 16,
+    fontWeight: '700',
+  },
+  videoModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  videoModalCard: {
+    width: '100%',
+    maxWidth: 480,
+    backgroundColor: '#151c27',
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  videoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  videoTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  videoPlayerBox: {
+    width: '100%',
+    height: 220,
+    borderRadius: 16,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000',
+  },
+  modalVideoImage: {
+    width: '100%',
+    height: '100%',
+    opacity: 0.75,
+  },
+  modalPlayButton: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoCaption: {
+    color: '#dae2fd',
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 16,
+    fontStyle: 'italic',
+  },
+  modalBookButton: {
+    marginTop: 20,
+    backgroundColor: '#004ac6',
+    borderRadius: 16,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalBookButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
     fontWeight: '700',
   },
 });

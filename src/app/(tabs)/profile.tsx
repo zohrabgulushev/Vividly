@@ -1,6 +1,6 @@
 import {
   View, Text, StyleSheet, SafeAreaView, ScrollView, Image,
-  TouchableOpacity, Switch, Platform, ActivityIndicator,
+  TouchableOpacity, Switch, Platform, ActivityIndicator, Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
@@ -260,7 +260,11 @@ export default function ProfileTab() {
                 <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
               </TouchableOpacity>
               <View style={styles.divider} />
-              <TouchableOpacity style={styles.settingRow} activeOpacity={0.7}>
+              <TouchableOpacity 
+                style={styles.settingRow} 
+                activeOpacity={0.7}
+                onPress={() => Alert.alert('Privacy Policy', 'Vividly protects your voice data, learning progress, and personal details according to GDPR and international privacy standards.')}
+              >
                 <View style={styles.settingIconWrapper}><MaterialIcons name="shield" size={22} color="#004ac6" /></View>
                 <Text style={styles.settingText}>Privacy Policy</Text>
                 <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />

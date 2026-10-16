@@ -1,10 +1,99 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Platform, TextInput, Alert, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
+
+interface FAQ {
+  id: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
+  title: string;
+  category: 'billing' | 'tutors' | 'league' | 'audio' | 'general';
+  answer: string;
+}
+
+const FAQS: FAQ[] = [
+  {
+    id: 'faq-1',
+    icon: 'credit-card',
+    category: 'billing',
+    title: 'Managing Subscriptions & Minutes',
+    answer: 'You can purchase minute packages anytime from the Top Up screen. Minutes are automatically credited to your balance upon checkout and do not expire. To view receipts or change your payment method, visit the Payment Methods page in your Profile settings.',
+  },
+  {
+    id: 'faq-2',
+    icon: 'school',
+    category: 'tutors',
+    title: 'Working with Tutors & Booking',
+    answer: 'Browse certified native speakers in the Speak tab. You can call available tutors instantly if you have active minutes, or schedule a custom 1-on-1 session in advance through their tutor profile calendar.',
+  },
+  {
+    id: 'faq-3',
+    icon: 'leaderboard',
+    category: 'league',
+    title: 'League Rankings & XP Guide',
+    answer: 'Every completed lesson, practice prompt, and speaking call earns XP. The leaderboard resets weekly on Sunday at midnight UTC. The top 10 learners in each division earn promotion to the next tier and exclusive rewards.',
+  },
+  {
+    id: 'faq-4',
+    icon: 'volume-up',
+    category: 'audio',
+    title: 'Audio & Pronunciation Issues',
+    answer: 'Ensure your microphone permissions are granted in your browser or device settings. In call rooms, you can mute/unmute your microphone using the control bar at the bottom. Use headphones for the best echo-free experience.',
+  },
+  {
+    id: 'faq-5',
+    icon: 'ac-unit',
+    category: 'general',
+    title: 'Streak Freezes & Double XP',
+    answer: 'Protect your hard-earned daily practice streak by equipping a Streak Freeze from the Store for 200 XP. You can hold up to 2 freezes at once. Double XP boosts amplify your learning rewards for 15 minutes!',
+  },
+];
 
 export default function HelpCenterScreen() {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
+
+  const toggleFaq = (id: string) => {
+    setExpandedFaqId(prev => (prev === id ? null : id));
+  };
+
+  const filteredFaqs = FAQS.filter(faq => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return faq.title.toLowerCase().includes(q) || faq.answer.toLowerCase().includes(q);
+  });
+
+  const handleChat = () => {
+    Alert.alert(
+      'Live Support Agent',
+      'Vividly AI Support is online 24/7. How can we help you today?',
+      [
+        { text: 'Billing Question', onPress: () => router.push('/payment-methods') },
+        { text: 'Tutor Inquiry', onPress: () => router.push('/(tabs)/speak') },
+        { text: 'Close', style: 'cancel' }
+      ]
+    );
+  };
+
+  const handleEmail = () => {
+    if (Platform.OS === 'web') {
+      window.open('mailto:support@vividly.app?subject=Vividly%20Support%20Inquiry', '_blank');
+    } else {
+      Linking.openURL('mailto:support@vividly.app?subject=Vividly%20Support%20Inquiry').catch(() => {
+        Alert.alert('Email Support', 'Contact us directly at support@vividly.app');
+      });
+    }
+  };
+
+  const handlePolicy = (title: string) => {
+    Alert.alert(
+      title,
+      `Vividly is committed to protecting your learning data, speech privacy, and payment security. For our full legal documentation, contact legal@vividly.app.`,
+      [{ text: 'Got it' }]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,15 +124,26 @@ export default function HelpCenterScreen() {
             <MaterialIcons name="search" size={24} color="#737685" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Search for guides, billing, etc."
+              placeholder="Search guides, billing, audio..."
               placeholderTextColor="#737685"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <MaterialIcons name="close" size={20} color="#737685" />
+              </TouchableOpacity>
+            )}
           </View>
         </LinearGradient>
 
         {/* Quick Links / Bento Grid style */}
         <View style={styles.quickLinksContainer}>
-          <TouchableOpacity style={styles.quickLinkCard} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.quickLinkCard} 
+            activeOpacity={0.8}
+            onPress={() => router.push('/edit-profile')}
+          >
             <View style={[styles.quickLinkIconBox, { backgroundColor: '#dbe1ff' }]}>
               <MaterialIcons name="account-circle" size={24} color="#003594" />
             </View>
@@ -51,7 +151,11 @@ export default function HelpCenterScreen() {
             <Text style={styles.quickLinkSubtitle}>Profile & Login</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.quickLinkCard} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.quickLinkCard} 
+            activeOpacity={0.8}
+            onPress={() => router.push('/payment-methods')}
+          >
             <View style={[styles.quickLinkIconBox, { backgroundColor: '#e5f1ff' }]}>
               <MaterialIcons name="payments" size={24} color="#003594" />
             </View>
@@ -64,47 +168,48 @@ export default function HelpCenterScreen() {
         <View style={styles.faqSection}>
           <View style={styles.faqHeaderRow}>
             <Text style={styles.faqSectionTitle}>Popular Topics</Text>
-            <TouchableOpacity>
-              <Text style={styles.viewAllText}>View All</Text>
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Text style={styles.viewAllText}>Reset Filter</Text>
             </TouchableOpacity>
           </View>
           
           <View style={styles.faqList}>
-            {/* FAQ 1 */}
-            <TouchableOpacity style={styles.faqItem} activeOpacity={0.7}>
-              <View style={styles.faqIconBox}>
-                <MaterialIcons name="credit-card" size={20} color="#003594" />
+            {filteredFaqs.length === 0 ? (
+              <View style={{ paddingVertical: 24, alignItems: 'center' }}>
+                <MaterialIcons name="search-off" size={40} color="#c3c6d6" />
+                <Text style={{ marginTop: 8, color: '#737685', fontSize: 14 }}>No answers matching "{searchQuery}"</Text>
               </View>
-              <Text style={styles.faqText}>Managing Subscriptions</Text>
-              <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
-            </TouchableOpacity>
-            
-            {/* FAQ 2 */}
-            <TouchableOpacity style={styles.faqItem} activeOpacity={0.7}>
-              <View style={styles.faqIconBox}>
-                <MaterialIcons name="school" size={20} color="#003594" />
-              </View>
-              <Text style={styles.faqText}>Working with Tutors</Text>
-              <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
-            </TouchableOpacity>
-            
-            {/* FAQ 3 */}
-            <TouchableOpacity style={styles.faqItem} activeOpacity={0.7}>
-              <View style={styles.faqIconBox}>
-                <MaterialIcons name="leaderboard" size={20} color="#003594" />
-              </View>
-              <Text style={styles.faqText}>League Rankings Guide</Text>
-              <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
-            </TouchableOpacity>
-            
-            {/* FAQ 4 */}
-            <TouchableOpacity style={styles.faqItem} activeOpacity={0.7}>
-              <View style={styles.faqIconBox}>
-                <MaterialIcons name="volume-up" size={20} color="#003594" />
-              </View>
-              <Text style={styles.faqText}>Audio & Pronunciation issues</Text>
-              <MaterialIcons name="chevron-right" size={24} color="#c3c6d6" />
-            </TouchableOpacity>
+            ) : (
+              filteredFaqs.map(faq => {
+                const isExpanded = expandedFaqId === faq.id;
+                return (
+                  <View key={faq.id} style={{ marginBottom: 12 }}>
+                    <TouchableOpacity 
+                      style={[styles.faqItem, isExpanded && { borderColor: '#004ac6', backgroundColor: 'rgba(0, 74, 198, 0.04)' }]} 
+                      activeOpacity={0.7}
+                      onPress={() => toggleFaq(faq.id)}
+                    >
+                      <View style={[styles.faqIconBox, isExpanded && { backgroundColor: '#004ac6' }]}>
+                        <MaterialIcons name={faq.icon} size={20} color={isExpanded ? '#ffffff' : '#003594'} />
+                      </View>
+                      <Text style={[styles.faqText, isExpanded && { color: '#004ac6', fontWeight: '700' }]}>{faq.title}</Text>
+                      <MaterialIcons 
+                        name={isExpanded ? 'expand-less' : 'expand-more'} 
+                        size={24} 
+                        color={isExpanded ? '#004ac6' : '#c3c6d6'} 
+                      />
+                    </TouchableOpacity>
+                    {isExpanded && (
+                      <View style={{ backgroundColor: '#ffffff', padding: 16, borderBottomLeftRadius: 16, borderBottomRightRadius: 16, borderLeftWidth: 1, borderRightWidth: 1, borderBottomWidth: 1, borderColor: '#004ac6', marginTop: -4 }}>
+                        <Text style={{ fontSize: 14, color: '#434654', lineHeight: 22 }}>
+                          {faq.answer}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                );
+              })
+            )}
           </View>
         </View>
 
@@ -122,12 +227,12 @@ export default function HelpCenterScreen() {
           </Text>
           
           <View style={styles.contactButtons}>
-            <TouchableOpacity style={styles.primaryContactButton}>
+            <TouchableOpacity style={styles.primaryContactButton} activeOpacity={0.8} onPress={handleChat}>
               <MaterialIcons name="chat" size={20} color="#ffffff" />
               <Text style={styles.primaryContactButtonText}>Chat With Us</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.secondaryContactButton}>
+            <TouchableOpacity style={styles.secondaryContactButton} activeOpacity={0.8} onPress={handleEmail}>
               <Text style={styles.secondaryContactButtonText}>Send Email</Text>
             </TouchableOpacity>
           </View>
@@ -137,13 +242,13 @@ export default function HelpCenterScreen() {
         <View style={styles.footer}>
           <Text style={styles.footerLogo}>Vividly</Text>
           <View style={styles.footerLinks}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handlePolicy('Privacy Policy')}>
               <Text style={styles.footerLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handlePolicy('Terms of Service')}>
               <Text style={styles.footerLinkText}>Terms of Service</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handlePolicy('Cookie Settings')}>
               <Text style={styles.footerLinkText}>Cookies</Text>
             </TouchableOpacity>
           </View>

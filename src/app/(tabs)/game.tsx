@@ -44,24 +44,36 @@ export default function GameTab() {
         </LinearGradient>
 
         {/* Upcoming features */}
-        <Text style={styles.sectionTitle}>WHAT'S COMING</Text>
+        <Text style={styles.sectionTitle}>PLAYABLE MINI-GAMES & PRACTICE</Text>
         <View style={styles.featuresCard}>
           {UPCOMING_FEATURES.map((f, i) => (
-            <View key={f.label}>
-              <View style={styles.featureRow}>
-                <View style={styles.featureIconWrapper}>
-                  <MaterialIcons name={f.icon as any} size={22} color="#004ac6" />
-                </View>
-                <View style={styles.featureText}>
-                  <Text style={styles.featureLabel}>{f.label}</Text>
-                  <Text style={styles.featureDesc}>{f.desc}</Text>
-                </View>
-                <View style={styles.lockBadge}>
-                  <MaterialIcons name="lock" size={14} color="#737686" />
-                </View>
+            <TouchableOpacity 
+              key={f.label}
+              style={styles.featureRow}
+              activeOpacity={0.7}
+              onPress={() => {
+                if (f.label === 'Flashcards') {
+                  router.push({ pathname: '/lesson-player', params: { lessonId: '1', mode: 'vocabulary' } });
+                } else if (f.label === 'Translation Drill') {
+                  router.push({ pathname: '/lesson-player', params: { lessonId: '1', mode: 'exercise' } });
+                } else if (f.label === 'Word Match') {
+                  router.push({ pathname: '/lesson-player', params: { lessonId: '2', mode: 'exercise' } });
+                } else {
+                  router.push('/practice-prompts');
+                }
+              }}
+            >
+              <View style={styles.featureIconWrapper}>
+                <MaterialIcons name={f.icon as any} size={22} color="#004ac6" />
               </View>
-              {i < UPCOMING_FEATURES.length - 1 && <View style={styles.divider} />}
-            </View>
+              <View style={styles.featureText}>
+                <Text style={styles.featureLabel}>{f.label}</Text>
+                <Text style={styles.featureDesc}>{f.desc}</Text>
+              </View>
+              <View style={styles.playBadge}>
+                <MaterialIcons name="play-arrow" size={18} color="#004ac6" />
+              </View>
+            </TouchableOpacity>
           ))}
         </View>
 
@@ -183,6 +195,14 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 14,
     backgroundColor: '#f3f3fd',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 74, 198, 0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },

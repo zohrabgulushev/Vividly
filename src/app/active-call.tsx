@@ -17,6 +17,8 @@ export default function ActiveCallScreen() {
 
   const [seconds, setSeconds] = useState(0);
   const [callId, setCallId] = useState<string | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
   const multiplierRef = useRef(activeCallType === 'private' ? 2.0 : 1.0);
 
   // Start call timer and create DB log
@@ -114,7 +116,10 @@ export default function ActiveCallScreen() {
             <MaterialIcons name="arrow-back" size={24} color="#dae2fd" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{activeTutorName} • {formatTime(seconds)}</Text>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity 
+            style={styles.iconButton}
+            onPress={() => Alert.alert('Call Settings', 'Audio Device: Default Speaker\nSpeech Recognition: Enabled\nCaptions: Azerbaijani / English')}
+          >
             <MaterialIcons name="settings" size={24} color="#dae2fd" />
           </TouchableOpacity>
         </View>
@@ -122,13 +127,19 @@ export default function ActiveCallScreen() {
         <View style={styles.content}>
           {/* User PiP */}
           <View style={styles.pipContainer}>
-            <Image 
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCGqsJmzryjwuWz6BuzMK15OT6gg7KSgIfnm-gkGHYcF6YtrNgJaFvJ0uzIJsL284oUVTln6J13vCzp3eG6ZfhaiZ9MKmRj9l1KZ41ZAoH2SiIzFx3Ip_e_p-asokAOnnOXgjU69B-WX7dMGNkjSDgBqkv7ECoM3yWGXUZKevi9V66AVzJxIjfqpuLEeNUdMC2cLzStm4cJddjKi8fCl0_sp5wxb3brOLGsyWbgT5pw8SsH5V1CkgLFnr07C6ekteNNPhfdcHSRIR8' }}
-              style={styles.pipVideo}
-            />
+            {isVideoOff ? (
+              <View style={[styles.pipVideo, { backgroundColor: '#151c27', alignItems: 'center', justifyContent: 'center' }]}>
+                <MaterialIcons name="videocam-off" size={28} color="#737685" />
+              </View>
+            ) : (
+              <Image 
+                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCGqsJmzryjwuWz6BuzMK15OT6gg7KSgIfnm-gkGHYcF6YtrNgJaFvJ0uzIJsL284oUVTln6J13vCzp3eG6ZfhaiZ9MKmRj9l1KZ41ZAoH2SiIzFx3Ip_e_p-asokAOnnOXgjU69B-WX7dMGNkjSDgBqkv7ECoM3yWGXUZKevi9V66AVzJxIjfqpuLEeNUdMC2cLzStm4cJddjKi8fCl0_sp5wxb3brOLGsyWbgT5pw8SsH5V1CkgLFnr07C6ekteNNPhfdcHSRIR8' }}
+                style={styles.pipVideo}
+              />
+            )}
             <View style={styles.pipLabelContainer}>
-              <MaterialIcons name="mic" size={14} color="#b4c5ff" />
-              <Text style={styles.pipLabel}>You</Text>
+              <MaterialIcons name={isMuted ? 'mic-off' : 'mic'} size={14} color={isMuted ? '#ffb4ab' : '#b4c5ff'} />
+              <Text style={styles.pipLabel}>{isMuted ? 'Muted' : 'You'}</Text>
             </View>
           </View>
 
@@ -142,7 +153,11 @@ export default function ActiveCallScreen() {
                 <Text style={styles.translationLabel}>Dr. Thorne is saying...</Text>
                 <Text style={styles.tutorSpeech}>"L'accentuation est cruciale pour la compréhension."</Text>
               </View>
-              <TouchableOpacity style={styles.replayButton}>
+              <TouchableOpacity 
+                style={styles.replayButton}
+                activeOpacity={0.7}
+                onPress={() => Alert.alert('Audio Replayed', 'Replaying last sentence with emphasis...')}
+              >
                 <MaterialIcons name="replay-5" size={24} color="#dae2fd" />
               </TouchableOpacity>
             </View>
@@ -155,15 +170,27 @@ export default function ActiveCallScreen() {
         {/* Bottom Control Hub */}
         <View style={styles.bottomControls}>
           <View style={styles.controlBar}>
-            <TouchableOpacity style={styles.controlButton}>
-              <MaterialIcons name="mic" size={28} color="#dae2fd" />
+            <TouchableOpacity 
+              style={[styles.controlButton, isMuted && { backgroundColor: '#ffdad6' }]}
+              onPress={() => setIsMuted(prev => !prev)}
+            >
+              <MaterialIcons name={isMuted ? 'mic-off' : 'mic'} size={28} color={isMuted ? '#ba1a1a' : '#dae2fd'} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={[styles.controlButton, styles.controlButtonActive]}>
-              <MaterialIcons name="videocam" size={28} color="#00174b" />
+            <TouchableOpacity 
+              style={[styles.controlButton, !isVideoOff ? styles.controlButtonActive : { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}
+              onPress={() => setIsVideoOff(prev => !prev)}
+            >
+              <MaterialIcons name={isVideoOff ? 'videocam-off' : 'videocam'} size={28} color={isVideoOff ? '#dae2fd' : '#00174b'} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.controlButton}>
+            <TouchableOpacity 
+              style={styles.controlButton}
+              onPress={() => Alert.alert('In-call Chat', 'Type a message to your tutor:', [
+                { text: 'Send: Can you repeat that?', onPress: () => Alert.alert('Message Sent', 'Dr. Thorne received your note.') },
+                { text: 'Cancel', style: 'cancel' }
+              ])}
+            >
               <MaterialIcons name="chat" size={28} color="#dae2fd" />
               <View style={styles.notificationDot} />
             </TouchableOpacity>

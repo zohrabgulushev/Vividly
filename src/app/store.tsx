@@ -17,6 +17,25 @@ export default function StoreScreen() {
   const [doubleXPActive, setDoubleXPActive] = useState(false);
   const [amuletActive, setAmuletActive] = useState(false);
 
+  const handleTryPro = () => {
+    Alert.alert(
+      'Vividly Pro Free Trial',
+      'Start your 14-day free trial of Vividly Pro with unlimited hearts, AI practice, and 0 ads!',
+      [
+        { text: 'Start Free Trial', onPress: () => Alert.alert('Welcome to Vividly Pro!', 'Your 14-day free trial has been activated.') },
+        { text: 'Top Up Minutes', onPress: () => router.push('/top-up') },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
+
+  const handleLearnMore = () => {
+    Alert.alert(
+      'Power-Ups Information',
+      '• Streak Freeze (200 XP): Automatically preserves your streak if you miss a day.\n• Double XP (100 XP): Boosts all lesson XP rewards by 2x for 15 minutes.\n• Weekend Amulet (500 XP): Protects your streak during Saturday and Sunday.'
+    );
+  };
+
   // Load local power-up states
   useEffect(() => {
     AsyncStorage.getItem('vividly_streak_freeze').then(val => {
@@ -163,7 +182,7 @@ export default function StoreScreen() {
             </View>
           </View>
  
-          <TouchableOpacity style={styles.proButton}>
+          <TouchableOpacity style={styles.proButton} activeOpacity={0.8} onPress={handleTryPro}>
             <Text style={styles.proButtonText}>Try 2 Weeks Free</Text>
           </TouchableOpacity>
         </LinearGradient>
@@ -172,7 +191,7 @@ export default function StoreScreen() {
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Power-Ups</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleLearnMore}>
               <Text style={styles.sectionLink}>Learn More</Text>
             </TouchableOpacity>
           </View>

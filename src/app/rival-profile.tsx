@@ -1,9 +1,62 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Platform, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 
 export default function RivalProfileScreen() {
   const router = useRouter();
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isChallenged, setIsChallenged] = useState(false);
+
+  const handleToggleFollow = () => {
+    setIsFollowing(prev => {
+      const next = !prev;
+      Alert.alert(
+        next ? 'Following Alex Chen' : 'Unfollowed Alex Chen',
+        next 
+          ? "You will now see Alex's weekly progress and leaderboard milestones."
+          : "Alex Chen has been removed from your following feed."
+      );
+      return next;
+    });
+  };
+
+  const handleMessage = () => {
+    Alert.alert(
+      'Cheer Alex Chen',
+      'Send a motivational shoutout to Alex!',
+      [
+        { text: '🔥 Great streak!', onPress: () => Alert.alert('Sent!', 'Alex received your cheer!') },
+        { text: '⚡ See you at the top!', onPress: () => Alert.alert('Sent!', 'Alex received your cheer!') },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
+
+  const handleChallenge = () => {
+    if (isChallenged) {
+      Alert.alert('Challenge Active', 'You already challenged Alex to a 24h XP race! Current margin: Alex +265 XP.');
+      return;
+    }
+    setIsChallenged(true);
+    Alert.alert(
+      '⚔️ Challenge Sent!',
+      '24-Hour Duel started! Complete lessons to catch up and overtake Alex Chen for a +50 XP bonus reward.',
+      [{ text: 'Start Practice Now', onPress: () => router.push('/(tabs)/learn') }, { text: 'Later' }]
+    );
+  };
+
+  const handleMoreOptions = () => {
+    Alert.alert(
+      'Alex Chen',
+      'Select action',
+      [
+        { text: 'Share Profile', onPress: () => Alert.alert('Link copied to clipboard!') },
+        { text: 'Report Inappropriate Name/Avatar', style: 'destructive', onPress: () => Alert.alert('Report received. Thank you.') },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -15,7 +68,7 @@ export default function RivalProfileScreen() {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Vividly Profile</Text>
         </View>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={handleMoreOptions}>
           <MaterialIcons name="more-vert" size={24} color="#434654" />
         </TouchableOpacity>
       </View>
@@ -38,10 +91,20 @@ export default function RivalProfileScreen() {
           <Text style={styles.userSubtitle}>Diamond League Champion • UX/UI Track</Text>
 
           <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.followButton}>
-              <Text style={styles.followButtonText}>Follow</Text>
+            <TouchableOpacity 
+              style={[styles.followButton, isFollowing && { backgroundColor: '#ffffff', borderWidth: 1.5, borderColor: '#003594' }]} 
+              activeOpacity={0.8}
+              onPress={handleToggleFollow}
+            >
+              <Text style={[styles.followButtonText, isFollowing && { color: '#003594' }]}>
+                {isFollowing ? '✓ Following' : 'Follow'}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.messageButton}>
+            <TouchableOpacity 
+              style={styles.messageButton} 
+              activeOpacity={0.8}
+              onPress={handleMessage}
+            >
               <Text style={styles.messageButtonText}>Message</Text>
             </TouchableOpacity>
           </View>
@@ -110,8 +173,8 @@ export default function RivalProfileScreen() {
               <MaterialIcons name="trending-up" size={20} color="#fea619" />
               <Text style={styles.h2hFooterText}>Alex is in the lead by 265 XP</Text>
             </View>
-            <TouchableOpacity style={styles.challengeButton}>
-              <Text style={styles.challengeButtonText}>Challenge</Text>
+            <TouchableOpacity style={styles.challengeButton} activeOpacity={0.8} onPress={handleChallenge}>
+              <Text style={styles.challengeButtonText}>{isChallenged ? 'Active Duel' : 'Challenge'}</Text>
             </TouchableOpacity>
           </View>
         </View>

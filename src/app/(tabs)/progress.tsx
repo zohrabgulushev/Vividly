@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { getCallHistory } from '@/services/calls';
@@ -28,6 +29,7 @@ function formatCallDate(isoString: string): string {
 }
 
 export default function ProgressTab() {
+  const router = useRouter();
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile(user?.id ?? null);
   const [calls, setCalls] = useState<Call[]>([]);
@@ -72,7 +74,7 @@ export default function ProgressTab() {
           {/* 7-Day Dynamic Calendar */}
           <View style={styles.calendarRow}>
             {weekDays.map((day, i) => {
-              const isStreakDay = !day.isToday && i < 6; // simplified: past days = active if streak > 0
+              const isStreakDay = !day.isToday && i < 6;
               const hasStreak = (profile?.current_streak ?? 0) > 0;
               return (
                 <View key={i} style={styles.calendarDay}>
@@ -95,7 +97,11 @@ export default function ProgressTab() {
             })}
           </View>
 
-          <TouchableOpacity style={styles.freezeBtn} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.freezeBtn} 
+            activeOpacity={0.8}
+            onPress={() => router.push('/store')}
+          >
             <Text style={styles.freezeText}>❄️ Streak Freeze available</Text>
             <MaterialIcons name="arrow-forward" size={16} color="#004ac6" />
           </TouchableOpacity>
@@ -106,43 +112,59 @@ export default function ProgressTab() {
         {!isLoading && (
         <View style={styles.statsGrid}>
           {/* Total XP */}
-          <View style={[styles.statCard, { borderColor: 'rgba(254, 166, 25, 0.2)' }]}>
+          <TouchableOpacity 
+            style={[styles.statCard, { borderColor: 'rgba(254, 166, 25, 0.2)' }]}
+            activeOpacity={0.8}
+            onPress={() => router.push('/store')}
+          >
             <View style={styles.statBgIcon}>
               <MaterialIcons name="star" size={100} color="rgba(254, 166, 25, 0.1)" />
             </View>
             <Text style={styles.statLabel}>TOTAL XP</Text>
             <Text style={[styles.statValue, { color: '#f59e0b' }]}>{(profile?.xp_balance ?? 0).toLocaleString()}</Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Minutes Balance */}
-          <View style={[styles.statCard, { borderColor: 'rgba(0, 74, 198, 0.1)' }]}>
+          <TouchableOpacity 
+            style={[styles.statCard, { borderColor: 'rgba(0, 74, 198, 0.1)' }]}
+            activeOpacity={0.8}
+            onPress={() => router.push('/top-up')}
+          >
             <View style={styles.statBgIcon}>
               <MaterialIcons name="hourglass-empty" size={100} color="rgba(0, 74, 198, 0.05)" />
             </View>
             <Text style={styles.statLabel}>MINUTES</Text>
             <Text style={[styles.statValue, { color: '#004ac6' }]}>{profile?.minutes_balance ?? 0}</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         )}
 
         {/* Speaking History */}
         <View style={styles.historySection}>
-          <View style={styles.historyHeader}>
+          <TouchableOpacity 
+            style={styles.historyHeader}
+            activeOpacity={0.8}
+            onPress={() => router.push('/session-history')}
+          >
             <Text style={styles.historyTitle}>Recent Calls</Text>
             <View style={styles.balanceBadge}>
               <MaterialIcons name="hourglass-empty" size={14} color="#004ac6" />
               <Text style={styles.balanceText}>Balance: {profile?.minutes_balance ?? 0} mins</Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {callsLoading ? (
             <ActivityIndicator size="small" color="#004ac6" style={{ marginTop: 16 }} />
           ) : calls.length === 0 ? (
-            <View style={styles.emptyState}>
+            <TouchableOpacity 
+              style={styles.emptyState}
+              activeOpacity={0.7}
+              onPress={() => router.push('/(tabs)/speak')}
+            >
               <MaterialIcons name="record-voice-over" size={40} color="#c3c6d6" />
               <Text style={styles.emptyStateText}>No sessions yet</Text>
-              <Text style={styles.emptyStateSubtext}>Book your first speaking session!</Text>
-            </View>
+              <Text style={styles.emptySubtext}>Book your first speaking session!</Text>
+            </TouchableOpacity>
           ) : (
           <View style={styles.historyList}>
             {calls.slice(0, 10).map((call, index) => (
@@ -150,6 +172,7 @@ export default function ProgressTab() {
                 key={call.id} 
                 style={[styles.historyRow, index !== Math.min(calls.length, 10) - 1 && styles.historyRowBorder]}
                 activeOpacity={0.7}
+                onPress={() => router.push('/session-history')}
               >
                 <View style={styles.historyRowLeft}>
                   <View style={styles.historyIconWrapper}>
