@@ -40,7 +40,7 @@ export default function TutorProfileScreen() {
           <SafeAreaView style={styles.heroSafeArea}>
             <TouchableOpacity 
               style={styles.backButton} 
-              onPress={() => router.back()}
+              onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/speak')}
             >
               <MaterialIcons name="arrow-back" size={24} color="#ffffff" />
             </TouchableOpacity>

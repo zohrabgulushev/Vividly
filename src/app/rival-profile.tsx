@@ -10,7 +10,7 @@ export default function RivalProfileScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+          <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/league')} style={styles.iconButton}>
             <MaterialIcons name="arrow-back" size={24} color="#003594" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Vividly Profile</Text>

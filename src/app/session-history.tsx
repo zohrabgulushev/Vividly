@@ -9,7 +9,7 @@ export default function SessionHistoryScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/speak')} style={styles.iconButton}>
           <MaterialIcons name="arrow-back" size={24} color="#434654" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Session History</Text>

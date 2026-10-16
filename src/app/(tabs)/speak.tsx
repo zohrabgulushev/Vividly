@@ -98,14 +98,7 @@ export default function SpeakTab() {
 
   const handleCallNow = (tutorId: string) => {
     if (!hasMinutes) {
-      Alert.alert(
-        'No Minutes Available',
-        'You need to buy a minutes package to start a session.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Buy Minutes', style: 'default', onPress: () => router.push('/top-up' as any) },
-        ]
-      );
+      router.push('/top-up' as any);
       return;
     }
     router.push({ pathname: '/book-session' as any, params: { tutorId } });

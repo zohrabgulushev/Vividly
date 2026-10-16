@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Platform, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 
@@ -15,11 +16,20 @@ const MOCK_LEAGUE_PLAYERS = [
 ];
 
 export default function LeagueTab() {
+  const router = useRouter();
   const { user } = useAuth();
   const { profile } = useProfile(user?.id ?? null);
   const myXP = profile?.xp_balance ?? 0;
   const myAvatar = profile?.avatar_url ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name ?? 'You')}&background=004ac6&color=fff&size=200`;
   const myName = profile?.full_name?.split(' ')[0] ?? 'You';
+
+  const handlePlayerPress = (isCurrentUser: boolean) => {
+    if (isCurrentUser) {
+      router.push('/(tabs)/profile');
+    } else {
+      router.push('/rival-profile');
+    }
+  };
 
   // Merge current user dynamically into leaderboard
   const allPlayers = [
@@ -77,7 +87,11 @@ export default function LeagueTab() {
           
           {/* 2nd Place */}
           {secondPlace && (
-            <View style={[styles.podiumColumn, { height: 180 }]}>
+            <TouchableOpacity 
+              style={[styles.podiumColumn, { height: 180 }]}
+              onPress={() => handlePlayerPress(secondPlace.isCurrentUser)}
+              activeOpacity={0.8}
+            >
               <View style={styles.avatarWrapper}>
                 <Image 
                   source={{ uri: secondPlace.image }} 
@@ -101,12 +115,16 @@ export default function LeagueTab() {
                   {secondPlace.xp.toLocaleString()}
                 </Text>
               </LinearGradient>
-            </View>
+            </TouchableOpacity>
           )}
 
           {/* 1st Place */}
           {firstPlace && (
-            <View style={[styles.podiumColumn, { height: 230, zIndex: 10 }]}>
+            <TouchableOpacity 
+              style={[styles.podiumColumn, { height: 230, zIndex: 10 }]}
+              onPress={() => handlePlayerPress(firstPlace.isCurrentUser)}
+              activeOpacity={0.8}
+            >
               <View style={styles.avatarWrapper}>
                 <View style={styles.crownContainer}>
                   <MaterialIcons name="star" size={32} color="#f59e0b" />
@@ -145,12 +163,16 @@ export default function LeagueTab() {
                   {firstPlace.xp.toLocaleString()}
                 </Text>
               </LinearGradient>
-            </View>
+            </TouchableOpacity>
           )}
 
           {/* 3rd Place */}
           {thirdPlace && (
-            <View style={[styles.podiumColumn, { height: 160 }]}>
+            <TouchableOpacity 
+              style={[styles.podiumColumn, { height: 160 }]}
+              onPress={() => handlePlayerPress(thirdPlace.isCurrentUser)}
+              activeOpacity={0.8}
+            >
               <View style={styles.avatarWrapper}>
                 <Image 
                   source={{ uri: thirdPlace.image }} 
@@ -174,7 +196,7 @@ export default function LeagueTab() {
                   {thirdPlace.xp.toLocaleString()}
                 </Text>
               </LinearGradient>
-            </View>
+            </TouchableOpacity>
           )}
 
         </View>
@@ -184,13 +206,15 @@ export default function LeagueTab() {
           {listPlayers.map((player, index) => {
             const isMe = player.isCurrentUser;
             return (
-              <View 
+              <TouchableOpacity 
                 key={player.name + '-' + player.rank} 
                 style={[
                   styles.listRow, 
                   isMe && styles.listRowMe,
                   index !== listPlayers.length - 1 && styles.borderBottom
                 ]}
+                onPress={() => handlePlayerPress(isMe)}
+                activeOpacity={0.7}
               >
                 <View style={styles.rowLeft}>
                   <Text style={[styles.rankNumber, isMe && { color: '#004ac6', fontWeight: '700' }]}>{player.rank}</Text>
@@ -205,7 +229,7 @@ export default function LeagueTab() {
                   </Text>
                   <MaterialIcons name="bolt" size={16} color={isMe ? '#f59e0b' : '#004ac6'} />
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -214,7 +238,11 @@ export default function LeagueTab() {
 
       {/* Sticky You Row */}
       <View style={styles.stickyRowContainer}>
-        <View style={styles.stickyRow}>
+        <TouchableOpacity 
+          style={styles.stickyRow} 
+          onPress={() => handlePlayerPress(true)}
+          activeOpacity={0.8}
+        >
           <View style={styles.rowLeft}>
             <Text style={[styles.rankNumber, { color: '#ffffff', width: 24 }]}>{myRank}</Text>
             <Image
@@ -230,7 +258,7 @@ export default function LeagueTab() {
             <Text style={[styles.rowXP, { color: '#ffffff' }]}>{myXP.toLocaleString()}</Text>
             <MaterialIcons name="bolt" size={20} color="#f59e0b" />
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
 
     </SafeAreaView>

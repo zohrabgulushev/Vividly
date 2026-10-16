@@ -430,14 +430,22 @@ export default function LearnScreen() {
               <Text style={styles.statEmoji}>📞</Text>
               <Text style={[styles.statText, styles.minutesText]}>{profile?.minutes_balance ?? 0}m</Text>
             </TouchableOpacity>
-            <View style={styles.statBadge}>
+            <TouchableOpacity 
+              style={styles.statBadge}
+              activeOpacity={0.7}
+              onPress={() => router.push('/store')}
+            >
               <Text style={styles.statEmoji}>🔥</Text>
               <Text style={styles.statText}>{profile?.current_streak ?? 0}</Text>
-            </View>
-            <View style={styles.statBadge}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.statBadge}
+              activeOpacity={0.7}
+              onPress={() => router.push('/store')}
+            >
               <Text style={styles.statEmoji}>💎</Text>
               <Text style={styles.statText}>{profile?.xp_balance ?? 0}</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 

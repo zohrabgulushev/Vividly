@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { saveOnboardingData } from '@/services/profiles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Goal = 'career' | 'travel' | 'brain' | 'social';
 
@@ -22,12 +23,22 @@ export default function GoalSelectionScreen() {
   };
 
   const handleContinue = async () => {
-    if (user?.id) {
-      setSaving(true);
-      await saveOnboardingData(user.id, level ?? 'B1', selectedGoal);
+    setSaving(true);
+    try {
+      if (user?.id) {
+        await AsyncStorage.setItem(`vividly_onboarded_${user.id}`, 'true');
+        await AsyncStorage.setItem('vividly_onboarded_global', 'true');
+        await AsyncStorage.setItem(`vividly_goal_${user.id}`, selectedGoal);
+        await saveOnboardingData(user.id, level ?? 'B1', selectedGoal);
+      } else {
+        await AsyncStorage.setItem('vividly_onboarded_global', 'true');
+      }
+    } catch (err) {
+      console.warn('handleContinue goal-selection error:', err);
+    } finally {
       setSaving(false);
+      router.push('/processing' as any);
     }
-    router.push('/processing' as any);
   };
 
   return (
@@ -42,7 +53,21 @@ export default function GoalSelectionScreen() {
             <View style={[styles.progressBarFill, { width: '66%' }]} />
           </View>
         </View>
-        <View style={styles.spacer} />
+        <TouchableOpacity
+          onPress={async () => {
+            try {
+              if (user?.id) {
+                await AsyncStorage.setItem(`vividly_onboarded_${user.id}`, 'true');
+              }
+              await AsyncStorage.setItem('vividly_onboarded_global', 'true');
+            } catch {}
+            router.replace('/(tabs)/learn');
+          }}
+          style={styles.skipButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.skipButtonText}>Skip</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -203,6 +228,17 @@ const styles = StyleSheet.create({
   },
   spacer: {
     width: 40,
+  },
+  skipButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 74, 198, 0.08)',
+  },
+  skipButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#004ac6',
   },
   content: {
     paddingHorizontal: 20,

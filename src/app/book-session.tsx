@@ -26,15 +26,17 @@ export default function BookSessionScreen() {
   const durations = [45, 60, 90];
 
   const handleConfirm = () => {
-    // Navigate to a success screen or back to home
-    router.replace('/(tabs)/speak' as any); // mock return
+    router.push({
+      pathname: '/active-call',
+      params: { tutorName: 'Emma Watson', tutorId: 'tutor-emma', callType: 'private' }
+    });
   };
 
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.headerSafeArea}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+          <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/speak')} style={styles.iconButton}>
             <MaterialIcons name="arrow-back" size={24} color="#004ac6" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Vividly</Text>

@@ -17,7 +17,7 @@ export default function LanguageScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/profile')} style={styles.backButton}>
           <MaterialIcons name="arrow-back-ios" size={20} color="#003594" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>App Language</Text>

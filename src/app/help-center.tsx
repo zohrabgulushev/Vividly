@@ -10,7 +10,7 @@ export default function HelpCenterScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/profile')} style={styles.backButton}>
           <MaterialIcons name="arrow-back" size={24} color="#003594" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Help Center</Text>

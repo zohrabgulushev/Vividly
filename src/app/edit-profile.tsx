@@ -39,8 +39,14 @@ export default function EditProfileScreen() {
       if (error) throw error;
       setSaving(false);
       Alert.alert('Success', 'Profile updated successfully!', [
-        { text: 'OK', onPress: () => router.back() }
+        { text: 'OK', onPress: () => router.canGoBack() ? router.back() : router.replace('/(tabs)/profile') }
       ]);
+      if (Platform.OS === 'web') {
+        setTimeout(() => {
+          if (router.canGoBack()) router.back();
+          else router.replace('/(tabs)/profile');
+        }, 1200);
+      }
     } catch (err: any) {
       setSaving(false);
       console.error('Error saving profile:', err);
@@ -60,7 +66,7 @@ export default function EditProfileScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton} disabled={saving}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/profile')} style={styles.headerButton} disabled={saving}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Vividly Profile</Text>

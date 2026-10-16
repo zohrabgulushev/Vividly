@@ -52,7 +52,8 @@ export default function ActiveCallScreen() {
 
   const handleEndCall = async () => {
     if (!user?.id) {
-      router.back();
+      if (router.canGoBack()) router.back();
+      else router.replace('/(tabs)/speak');
       return;
     }
 
@@ -72,10 +73,21 @@ export default function ActiveCallScreen() {
       Alert.alert(
         'Call Completed',
         `Duration: ${formatTime(seconds)}\nBilled Minutes: ${billedMinutes}m (at ${multiplierRef.current}x rate)`,
-        [{ text: 'Exit Room', onPress: () => router.back() }]
+        [{ text: 'Exit Room', onPress: () => {
+          if (router.canGoBack()) router.back();
+          else router.replace('/(tabs)/speak');
+        }}]
       );
+
+      if (Platform.OS === 'web') {
+        setTimeout(() => {
+          if (router.canGoBack()) router.back();
+          else router.replace('/(tabs)/speak');
+        }, 1500);
+      }
     } else {
-      router.back();
+      if (router.canGoBack()) router.back();
+      else router.replace('/(tabs)/speak');
     }
   };
 

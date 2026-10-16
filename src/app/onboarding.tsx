@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { updateProfile } from '@/services/profiles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type LevelCode = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
@@ -31,12 +32,18 @@ export default function OnboardingScreen() {
   const [saving, setSaving] = useState(false);
 
   const handleContinue = async () => {
-    if (user?.id) {
-      setSaving(true);
-      await updateProfile(user.id, { level: selectedLevel } as any);
+    setSaving(true);
+    try {
+      if (user?.id) {
+        await AsyncStorage.setItem(`vividly_level_${user.id}`, selectedLevel);
+        await updateProfile(user.id, { level: selectedLevel } as any);
+      }
+    } catch (err) {
+      console.warn('handleContinue error:', err);
+    } finally {
       setSaving(false);
+      router.push({ pathname: '/goal-selection' as any, params: { level: selectedLevel } });
     }
-    router.push({ pathname: '/goal-selection' as any, params: { level: selectedLevel } });
   };
 
   return (
@@ -49,7 +56,21 @@ export default function OnboardingScreen() {
             <View style={[styles.progressBarFill, { width: '33%' }]} />
           </View>
         </View>
-        <View style={styles.spacer} />
+        <TouchableOpacity
+          onPress={async () => {
+            try {
+              if (user?.id) {
+                await AsyncStorage.setItem(`vividly_onboarded_${user.id}`, 'true');
+              }
+              await AsyncStorage.setItem('vividly_onboarded_global', 'true');
+            } catch {}
+            router.replace('/(tabs)/learn');
+          }}
+          style={styles.skipButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.skipButtonText}>Skip</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -134,6 +155,17 @@ const styles = StyleSheet.create({
   },
   spacer: {
     width: 40,
+  },
+  skipButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 74, 198, 0.08)',
+  },
+  skipButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#004ac6',
   },
   content: {
     paddingHorizontal: 20,

@@ -4,9 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/hooks/useAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProcessingScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   
   const [progressText, setProgressText] = useState(0);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -26,10 +29,13 @@ export default function ProcessingScreen() {
     const listener = progressAnim.addListener(({ value }) => {
       setProgressText(Math.floor(value));
       if (value >= 99) {
-        // Give extra time for DB write to propagate before _layout re-checks is_onboarded
+        if (user?.id) {
+          AsyncStorage.setItem(`vividly_onboarded_${user.id}`, 'true').catch(() => {});
+        }
+        AsyncStorage.setItem('vividly_onboarded_global', 'true').catch(() => {});
         setTimeout(() => {
           router.replace('/(tabs)/learn' as any);
-        }, 1200);
+        }, 800);
       }
     });
 
