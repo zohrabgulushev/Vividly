@@ -311,10 +311,10 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9ff', overflow: 'hidden' },
   keyboardView: { flex: 1 },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24, alignItems: 'center', justifyContent: 'space-between' },
+  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingVertical: 24, alignItems: 'center', justifyContent: 'center' },
 
-  topSection: { width: '100%', alignItems: 'center' },
-  bottomSection: { width: '100%', alignItems: 'center' },
+  topSection: { width: '100%', alignItems: 'center', marginBottom: 12 },
+  bottomSection: { width: '100%', alignItems: 'center', marginTop: 12 },
 
   bgBlob: { position: 'absolute', width: 300, height: 300, borderRadius: 150, opacity: 0.5 },
   bgBlobTop: { top: -50, right: -50, backgroundColor: 'rgba(37, 99, 235, 0.08)' },
@@ -363,41 +363,41 @@ const styles = StyleSheet.create({
   starsContainer: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   socialProofText: { fontSize: 12, fontWeight: '600', color: '#5c6274', marginLeft: 6 },
 
-  scrollContentCompact: { paddingHorizontal: 18, paddingTop: 12, paddingBottom: 16, justifyContent: 'space-between' },
+  scrollContentCompact: { paddingHorizontal: 18, paddingVertical: 18, justifyContent: 'center' },
 
-  topHeaderCompact: { height: 46, marginTop: 4, marginBottom: 2, gap: 8 },
-  logoTextCompact: { fontSize: 26, fontWeight: '700' },
+  topHeaderCompact: { height: 42, marginTop: 0, marginBottom: 2, gap: 8 },
+  logoTextCompact: { fontSize: 24, fontWeight: '700' },
 
-  heroHeaderCompact: { marginBottom: 8 },
-  titleCompact: { fontSize: 28, fontWeight: '700', marginBottom: 4 },
-  subtitleCompact: { fontSize: 15 },
+  heroHeaderCompact: { marginBottom: 6 },
+  titleCompact: { fontSize: 26, fontWeight: '700', marginBottom: 2 },
+  subtitleCompact: { fontSize: 14 },
 
-  cardCompact: { padding: 20, borderRadius: 22 },
+  cardCompact: { padding: 18, borderRadius: 20 },
 
-  formGroupCompact: { marginBottom: 12 },
-  labelCompact: { fontSize: 14, fontWeight: '600', marginBottom: 5 },
-  forgotPasswordCompact: { fontSize: 13, fontWeight: '600' },
+  formGroupCompact: { marginBottom: 10 },
+  labelCompact: { fontSize: 13, fontWeight: '600', marginBottom: 4 },
+  forgotPasswordCompact: { fontSize: 12, fontWeight: '600' },
 
-  inputContainerCompact: { height: 52, borderRadius: 14, paddingHorizontal: 16 },
-  inputCompactText: { fontSize: 16 },
+  inputContainerCompact: { height: 48, borderRadius: 12, paddingHorizontal: 14 },
+  inputCompactText: { fontSize: 15 },
 
-  buttonCompact: { height: 52, borderRadius: 14, marginTop: 6 },
-  buttonTextCompact: { fontSize: 17, fontWeight: '700' },
+  buttonCompact: { height: 48, borderRadius: 12, marginTop: 4 },
+  buttonTextCompact: { fontSize: 16, fontWeight: '700' },
 
-  dividerContainerCompact: { marginVertical: 12 },
-  dividerTextCompact: { fontSize: 12, marginHorizontal: 10 },
+  dividerContainerCompact: { marginVertical: 10 },
+  dividerTextCompact: { fontSize: 11, marginHorizontal: 10 },
 
-  googleButtonCompact: { height: 50, borderRadius: 14, gap: 10 },
-  googleIconCompact: { width: 20, height: 20 },
+  googleButtonCompact: { height: 46, borderRadius: 12, gap: 10 },
+  googleIconCompact: { width: 18, height: 18 },
   googleButtonTextCompact: { fontSize: 15, fontWeight: '600' },
 
-  footerLinkCompact: { marginTop: 10 },
-  footerTextCompact: { fontSize: 15 },
+  footerLinkCompact: { marginTop: 4 },
+  footerTextCompact: { fontSize: 14 },
 
-  socialProofCompact: { marginTop: 10, opacity: 0.9 },
-  avatarGroupCompact: { marginBottom: 6 },
-  avatarCompact: { width: 32, height: 32, borderRadius: 16 },
-  socialProofTextCompact: { fontSize: 12, fontWeight: '600', marginLeft: 6 },
+  socialProofCompact: { marginTop: 8, opacity: 0.9 },
+  avatarGroupCompact: { marginBottom: 4 },
+  avatarCompact: { width: 28, height: 28, borderRadius: 14 },
+  socialProofTextCompact: { fontSize: 11, fontWeight: '600', marginLeft: 6 },
 
   // Modal Styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

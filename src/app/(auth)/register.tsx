@@ -214,14 +214,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingVertical: 24,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
 
-  topSection: { width: '100%', alignItems: 'center' },
-  bottomSection: { width: '100%', alignItems: 'center' },
+  topSection: { width: '100%', alignItems: 'center', marginBottom: 10 },
+  bottomSection: { width: '100%', alignItems: 'center', marginTop: 10 },
 
   bgBlob: {
     position: 'absolute',
@@ -356,102 +355,101 @@ const styles = StyleSheet.create({
   // Responsive Compact Styles for Mobile
   scrollContentCompact: {
     paddingHorizontal: 18,
-    paddingTop: 12,
-    paddingBottom: 16,
-    justifyContent: 'space-between',
+    paddingVertical: 16,
+    justifyContent: 'center',
   },
   topHeaderCompact: {
-    height: 44,
-    marginTop: 4,
+    height: 40,
+    marginTop: 0,
     marginBottom: 2,
   },
   backButtonCompact: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   logoTextCompact: {
-    fontSize: 24,
+    fontSize: 22,
   },
   heroHeaderCompact: {
-    marginBottom: 8,
+    marginBottom: 6,
   },
   titleCompact: {
-    fontSize: 26,
+    fontSize: 24,
     marginBottom: 2,
   },
   subtitleCompact: {
-    fontSize: 14,
+    fontSize: 13,
   },
   cardCompact: {
-    padding: 18,
-    borderRadius: 20,
+    padding: 16,
+    borderRadius: 18,
   },
   formGroupCompact: {
-    marginBottom: 8,
+    marginBottom: 6,
   },
   labelCompact: {
-    fontSize: 13,
-    marginBottom: 4,
+    fontSize: 12,
+    marginBottom: 3,
   },
   inputContainerCompact: {
-    height: 46,
-    borderRadius: 12,
-    paddingHorizontal: 14,
+    height: 42,
+    borderRadius: 10,
+    paddingHorizontal: 12,
   },
   inputCompactText: {
-    fontSize: 15,
+    fontSize: 14,
   },
   buttonCompact: {
-    height: 46,
-    borderRadius: 12,
-    marginTop: 6,
+    height: 42,
+    borderRadius: 10,
+    marginTop: 4,
   },
   buttonTextCompact: {
-    fontSize: 16,
+    fontSize: 15,
   },
   dividerContainerCompact: {
-    marginVertical: 8,
+    marginVertical: 6,
   },
   dividerTextCompact: {
-    fontSize: 11,
+    fontSize: 10,
     marginHorizontal: 8,
   },
   googleButtonCompact: {
-    height: 44,
-    borderRadius: 12,
-    gap: 10,
+    height: 42,
+    borderRadius: 10,
+    gap: 8,
   },
   googleIconCompact: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
   },
   googleButtonTextCompact: {
-    fontSize: 15,
+    fontSize: 14,
   },
   cardFooterCompact: {
-    marginTop: 10,
-    paddingTop: 8,
+    marginTop: 8,
+    paddingTop: 6,
   },
   footerTextCompact: {
-    fontSize: 14,
+    fontSize: 13,
   },
   footerBoldCompact: {
-    fontSize: 14,
+    fontSize: 13,
   },
   termsContainerCompact: {
-    marginTop: 8,
-    paddingHorizontal: 10,
+    marginTop: 6,
+    paddingHorizontal: 8,
   },
   termsTextCompact: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 15,
   },
   securityBadgeCompact: {
-    marginTop: 8,
-    gap: 6,
+    marginTop: 6,
+    gap: 5,
   },
   securityTextCompact: {
-    fontSize: 11,
+    fontSize: 10,
   },
 });
