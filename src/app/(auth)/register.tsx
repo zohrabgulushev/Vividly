@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Image, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { signUp } from '@/services/auth';
@@ -6,6 +6,9 @@ import { signInWithGoogle } from '@/services/oauth';
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
+  const { height, width } = useWindowDimensions();
+  const isCompact = height < 820 || width < 500;
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,40 +61,40 @@ export default function RegisterScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, isCompact && styles.scrollContentCompact]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           {/* Top Header with Back Button and Logo */}
-          <View style={styles.topHeader}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <Feather name="arrow-left" size={18} color="#004ac6" />
+          <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
+            <TouchableOpacity onPress={() => router.back()} style={[styles.backButton, isCompact && styles.backButtonCompact]}>
+              <Feather name="arrow-left" size={isCompact ? 18 : 24} color="#004ac6" />
             </TouchableOpacity>
             
             <View style={styles.logoContainer}>
-              <MaterialIcons name="language" size={24} color="#004ac6" />
-              <Text style={styles.logoText}>Vividly</Text>
+              <MaterialIcons name="language" size={isCompact ? 22 : 28} color="#004ac6" />
+              <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
             </View>
             
             {/* Spacer to balance the back button */}
-            <View style={{ width: 36 }} />
+            <View style={{ width: isCompact ? 34 : 44 }} />
           </View>
 
           {/* Hero Header */}
-          <View style={styles.heroHeader}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Start your English learning journey today.</Text>
+          <View style={[styles.heroHeader, isCompact && styles.heroHeaderCompact]}>
+            <Text style={[styles.title, isCompact && styles.titleCompact]}>Create Account</Text>
+            <Text style={[styles.subtitle, isCompact && styles.subtitleCompact]}>Start your English learning journey today.</Text>
           </View>
 
           {/* Registration Form Card */}
-          <View style={styles.card}>
+          <View style={[styles.card, isCompact && styles.cardCompact]}>
             
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <View style={[styles.inputContainer, nameFocused && styles.inputFocused]}>
-                <Feather name="user" size={18} color={nameFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+            <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
+              <Text style={[styles.label, isCompact && styles.labelCompact]}>Full Name</Text>
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, nameFocused && styles.inputFocused]}>
+                <Feather name="user" size={isCompact ? 18 : 20} color={nameFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, isCompact && styles.inputCompactText]}
                   placeholder="John Doe"
                   placeholderTextColor="#737686"
                   value={fullName}
@@ -102,12 +105,12 @@ export default function RegisterScreen() {
               </View>
             </View>
 
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Email Address</Text>
-              <View style={[styles.inputContainer, emailFocused && styles.inputFocused]}>
-                <Feather name="mail" size={18} color={emailFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+            <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
+              <Text style={[styles.label, isCompact && styles.labelCompact]}>Email Address</Text>
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, emailFocused && styles.inputFocused]}>
+                <Feather name="mail" size={isCompact ? 18 : 20} color={emailFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, isCompact && styles.inputCompactText]}
                   placeholder="name@example.com"
                   placeholderTextColor="#737686"
                   value={email}
@@ -120,13 +123,13 @@ export default function RegisterScreen() {
               </View>
             </View>
 
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Password</Text>
-              <View style={[styles.inputContainer, passwordFocused && styles.inputFocused]}>
-                <Feather name="lock" size={18} color={passwordFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+            <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
+              <Text style={[styles.label, isCompact && styles.labelCompact]}>Password</Text>
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, passwordFocused && styles.inputFocused]}>
+                <Feather name="lock" size={isCompact ? 18 : 20} color={passwordFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
                 <TextInput
-                  style={styles.input}
-                  placeholder="•••••••• (min 8 chars)"
+                  style={[styles.input, isCompact && styles.inputCompactText]}
+                  placeholder="••••••••"
                   placeholderTextColor="#737686"
                   value={password}
                   onChangeText={setPassword}
@@ -135,63 +138,65 @@ export default function RegisterScreen() {
                   onBlur={() => setPasswordFocused(false)}
                 />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                  <Feather name={showPassword ? "eye-off" : "eye"} size={18} color="#737686" />
+                  <Feather name={showPassword ? "eye-off" : "eye"} size={isCompact ? 18 : 20} color="#737686" />
                 </TouchableOpacity>
               </View>
             </View>
 
             <TouchableOpacity 
-              style={[styles.button, loading && styles.buttonDisabled]} 
+              style={[styles.button, isCompact && styles.buttonCompact, loading && styles.buttonDisabled]} 
               onPress={handleRegister} 
               disabled={loading} 
               activeOpacity={0.8}
             >
-              <Text style={styles.buttonText}>{loading ? 'Processing...' : 'Create Account'}</Text>
+              <Text style={[styles.buttonText, isCompact && styles.buttonTextCompact]}>{loading ? 'Processing...' : 'Create Account'}</Text>
             </TouchableOpacity>
 
             {/* Divider */}
-            <View style={styles.dividerContainer}>
+            <View style={[styles.dividerContainer, isCompact && styles.dividerContainerCompact]}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR CONTINUE WITH</Text>
+              <Text style={[styles.dividerText, isCompact && styles.dividerTextCompact]}>OR CONTINUE WITH</Text>
               <View style={styles.dividerLine} />
             </View>
 
             {/* Google Sign-In */}
-            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin} disabled={googleLoading} activeOpacity={0.8}>
+            <TouchableOpacity style={[styles.googleButton, isCompact && styles.googleButtonCompact]} onPress={handleGoogleLogin} disabled={googleLoading} activeOpacity={0.8}>
               {googleLoading ? (
                 <ActivityIndicator size="small" color="#151c27" />
               ) : (
                 <>
-                  <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png' }} style={styles.googleIcon} />
-                  <Text style={styles.googleButtonText}>Continue with Google</Text>
+                  <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png' }} style={[styles.googleIcon, isCompact && styles.googleIconCompact]} />
+                  <Text style={[styles.googleButtonText, isCompact && styles.googleButtonTextCompact]}>Continue with Google</Text>
                 </>
               )}
             </TouchableOpacity>
 
             {/* Footer Inside Card */}
-            <View style={styles.cardFooter}>
-              <Text style={styles.footerText}>Already have an account? </Text>
+            <View style={[styles.cardFooter, isCompact && styles.cardFooterCompact]}>
+              <Text style={[styles.footerText, isCompact && styles.footerTextCompact]}>Already have an account? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-                <Text style={styles.footerBold}>Sign In</Text>
+                <Text style={[styles.footerBold, isCompact && styles.footerBoldCompact]}>Sign In</Text>
               </TouchableOpacity>
             </View>
             
           </View>
 
           {/* External Terms */}
-          <View style={styles.termsContainer}>
-            <Text style={styles.termsText}>
+          <View style={[styles.termsContainer, isCompact && styles.termsContainerCompact]}>
+            <Text style={[styles.termsText, isCompact && styles.termsTextCompact]}>
               By creating an account, you agree to our{' '}
-              <Text style={styles.termsBold}>Terms of Service</Text> and{' '}
+              <Text style={styles.termsBold}>Terms</Text> and{' '}
               <Text style={styles.termsBold}>Privacy Policy</Text>.
             </Text>
           </View>
 
-          {/* Security Badge */}
-          <View style={styles.securityBadge}>
-            <MaterialIcons name="verified-user" size={13} color="#737686" />
-            <Text style={styles.securityText}>END-TO-END ENCRYPTION</Text>
-          </View>
+          {/* Security Badge (large screens only) */}
+          {!isCompact && (
+            <View style={styles.securityBadge}>
+              <MaterialIcons name="verified-user" size={16} color="#737686" />
+              <Text style={styles.securityText}>END-TO-END ENCRYPTION</Text>
+            </View>
+          )}
 
         </ScrollView>
       </KeyboardAvoidingView>
@@ -205,147 +210,234 @@ const styles = StyleSheet.create({
   
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 24,
+    paddingBottom: 48,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   bgBlob: {
     position: 'absolute',
-    width: 240,
-    height: 240,
-    borderRadius: 120,
-    opacity: 0.4,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    opacity: 0.5,
   },
-  bgBlobTop: { top: -60, left: -60, backgroundColor: 'rgba(0, 53, 148, 0.08)' },
-  bgBlobBottom: { bottom: -60, right: -60, backgroundColor: 'rgba(117, 31, 0, 0.05)' },
+  bgBlobTop: { top: -50, left: -50, backgroundColor: 'rgba(0, 53, 148, 0.08)' },
+  bgBlobBottom: { bottom: -50, right: -50, backgroundColor: 'rgba(117, 31, 0, 0.05)' },
 
   topHeader: {
     width: '100%',
-    maxWidth: 420,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    height: 36,
-    marginTop: Platform.OS === 'android' ? 6 : 0,
-    marginBottom: 4,
+    height: 80,
+    marginTop: Platform.OS === 'android' ? 24 : 0,
+    marginBottom: 16,
   },
   backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(195, 198, 215, 0.5)',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 3,
+    shadowRadius: 4,
     elevation: 2,
   },
   logoContainer: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  logoText: { fontSize: 20, fontWeight: '700', color: '#004ac6' },
+  logoText: { fontSize: 22, fontWeight: '700', color: '#004ac6' },
 
-  heroHeader: { alignItems: 'center', marginBottom: 8 },
-  title: { fontSize: 22, fontWeight: '700', color: '#151c27', marginBottom: 2, letterSpacing: -0.5, textAlign: 'center' },
-  subtitle: { fontSize: 12, color: '#434655', textAlign: 'center' },
+  heroHeader: { alignItems: 'center', marginBottom: 32 },
+  title: { fontSize: 32, fontWeight: '700', color: '#151c27', marginBottom: 8, letterSpacing: -0.5, textAlign: 'center' },
+  subtitle: { fontSize: 16, color: '#434655', textAlign: 'center' },
 
   card: {
     width: '100%',
-    maxWidth: 420,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    maxWidth: 480,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#004ac6',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowRadius: 20,
+    elevation: 8,
     borderWidth: 1,
-    borderColor: 'rgba(195, 198, 215, 0.3)',
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
 
-  formGroup: { marginBottom: 8 },
-  label: { fontSize: 11, fontWeight: '600', color: '#434655', marginBottom: 3, marginLeft: 2 },
+  formGroup: { marginBottom: 20 },
+  label: { fontSize: 14, fontWeight: '600', color: '#434655', marginBottom: 8, marginLeft: 4 },
   
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f3ff',
-    borderRadius: 10,
-    height: 42,
-    paddingHorizontal: 12,
-    borderWidth: 1.5,
-    borderColor: 'transparent',
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    height: 60,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#c3c6d6',
   },
   inputFocused: {
     borderColor: '#004ac6',
-    backgroundColor: '#ffffff',
+    borderWidth: 2,
+    backgroundColor: '#f9f9ff',
   },
-  inputIcon: { marginRight: 8 },
+  inputIcon: { marginRight: 12 },
   eyeIcon: { padding: 4 },
-  input: { flex: 1, fontSize: 14, color: '#151c27' },
+  input: { flex: 1, fontSize: 16, color: '#151c27' },
+  
+  hintText: { fontSize: 12, color: '#737686', marginTop: 6, marginLeft: 4 },
 
   button: {
     backgroundColor: '#004ac6',
-    height: 42,
-    borderRadius: 10,
+    height: 60,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#003594',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-    marginTop: 2,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 6,
+    marginTop: 8,
   },
   buttonDisabled: { opacity: 0.7 },
-  buttonText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
+  buttonText: { color: '#ffffff', fontSize: 18, fontWeight: '700' },
 
-  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 6 },
+  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#c3c6d6' },
-  dividerText: { marginHorizontal: 8, fontSize: 10, fontWeight: '600', color: '#737686' },
+  dividerText: { marginHorizontal: 16, fontSize: 12, fontWeight: '600', color: '#737686' },
 
-  googleButton: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    height: 42, 
-    backgroundColor: '#f0f3ff', 
-    borderRadius: 10, 
-    borderWidth: 1, 
-    borderColor: 'rgba(195, 198, 215, 0.3)', 
-    gap: 8 
-  },
-  googleIcon: { width: 18, height: 18 },
-  googleButtonText: { fontSize: 13, fontWeight: '600', color: '#151c27' },
+  googleButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 60, backgroundColor: '#ffffff', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(195, 198, 215, 0.5)', gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 1 },
+  googleIcon: { width: 22, height: 22 },
+  googleButtonText: { fontSize: 16, fontWeight: '600', color: '#151c27' },
 
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: 32,
+    paddingTop: 24,
     borderTopWidth: 1,
     borderColor: '#e7eefe',
   },
-  footerText: { fontSize: 12, color: '#434655' },
-  footerBold: { color: '#004ac6', fontWeight: '700', fontSize: 12 },
+  footerText: { fontSize: 16, color: '#434655' },
+  footerBold: { color: '#004ac6', fontWeight: '700', fontSize: 16 },
 
-  termsContainer: { marginTop: 8, paddingHorizontal: 12, alignItems: 'center' },
-  termsText: { fontSize: 10, color: '#737686', textAlign: 'center', lineHeight: 14 },
-  termsBold: { fontWeight: '700', color: '#434655' },
+  termsContainer: { marginTop: 32, paddingHorizontal: 16, alignItems: 'center' },
+  termsText: { fontSize: 12, color: '#434655', textAlign: 'center', lineHeight: 20 },
+  termsBold: { fontWeight: '700', color: '#151c27' },
 
   securityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
-    marginTop: 6,
-    opacity: 0.7,
+    gap: 6,
+    marginTop: 24,
+    opacity: 0.6,
   },
-  securityText: { fontSize: 9, fontWeight: '600', color: '#737686', letterSpacing: 0.8 },
+  securityText: { fontSize: 12, fontWeight: '600', color: '#737686', letterSpacing: 1 },
+
+  // Responsive Compact Styles for Mobile
+  scrollContentCompact: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingBottom: 14,
+    justifyContent: 'center',
+  },
+  topHeaderCompact: {
+    height: 36,
+    marginTop: 0,
+    marginBottom: 4,
+  },
+  backButtonCompact: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+  },
+  logoTextCompact: {
+    fontSize: 20,
+  },
+  heroHeaderCompact: {
+    marginBottom: 8,
+  },
+  titleCompact: {
+    fontSize: 22,
+    marginBottom: 2,
+  },
+  subtitleCompact: {
+    fontSize: 13,
+  },
+  cardCompact: {
+    padding: 14,
+    borderRadius: 16,
+  },
+  formGroupCompact: {
+    marginBottom: 8,
+  },
+  labelCompact: {
+    fontSize: 12,
+    marginBottom: 3,
+  },
+  inputContainerCompact: {
+    height: 42,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+  },
+  inputCompactText: {
+    fontSize: 14,
+  },
+  buttonCompact: {
+    height: 42,
+    borderRadius: 10,
+    marginTop: 4,
+  },
+  buttonTextCompact: {
+    fontSize: 15,
+  },
+  dividerContainerCompact: {
+    marginVertical: 8,
+  },
+  dividerTextCompact: {
+    fontSize: 10,
+    marginHorizontal: 8,
+  },
+  googleButtonCompact: {
+    height: 40,
+    borderRadius: 10,
+    gap: 8,
+  },
+  googleIconCompact: {
+    width: 18,
+    height: 18,
+  },
+  googleButtonTextCompact: {
+    fontSize: 14,
+  },
+  cardFooterCompact: {
+    marginTop: 10,
+    paddingTop: 8,
+  },
+  footerTextCompact: {
+    fontSize: 13,
+  },
+  footerBoldCompact: {
+    fontSize: 13,
+  },
+  termsContainerCompact: {
+    marginTop: 8,
+    paddingHorizontal: 10,
+  },
+  termsTextCompact: {
+    fontSize: 11,
+    lineHeight: 16,
+  },
 });
