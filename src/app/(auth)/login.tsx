@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, Image, ScrollView, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, Image, ScrollView, Modal, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { signIn } from '@/services/auth';
@@ -6,6 +6,9 @@ import { signInWithGoogle, resetPasswordForEmail, updatePassword } from '@/servi
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
+  const { height: screenHeight } = useWindowDimensions();
+  const isCompact = screenHeight < 760;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -303,65 +306,123 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9ff', overflow: 'hidden' },
   keyboardView: { flex: 1 },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 48, alignItems: 'center', justifyContent: 'center' },
+  scrollContent: { 
+    flexGrow: 1, 
+    paddingHorizontal: 16, 
+    paddingVertical: 10, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+  },
 
-  bgBlob: { position: 'absolute', width: 300, height: 300, borderRadius: 150, opacity: 0.5 },
-  bgBlobTop: { top: -50, right: -50, backgroundColor: 'rgba(37, 99, 235, 0.08)' },
-  bgBlobBottom: { bottom: -50, left: -50, backgroundColor: 'rgba(148, 55, 0, 0.05)' },
+  bgBlob: { position: 'absolute', width: 240, height: 240, borderRadius: 120, opacity: 0.4 },
+  bgBlobTop: { top: -60, right: -60, backgroundColor: 'rgba(37, 99, 235, 0.08)' },
+  bgBlobBottom: { bottom: -60, left: -60, backgroundColor: 'rgba(148, 55, 0, 0.05)' },
 
-  topHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 80, marginTop: Platform.OS === 'android' ? 24 : 0, marginBottom: 16 },
-  logoText: { fontSize: 24, fontWeight: '700', color: '#004ac6' },
+  topHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    gap: 6, 
+    height: 36, 
+    marginTop: Platform.OS === 'android' ? 6 : 0, 
+    marginBottom: 4 
+  },
+  logoText: { fontSize: 20, fontWeight: '700', color: '#004ac6' },
 
-  heroHeader: { alignItems: 'center', marginBottom: 32 },
-  title: { fontSize: 32, fontWeight: '700', color: '#151c27', marginBottom: 8, letterSpacing: -0.5 },
-  subtitle: { fontSize: 16, color: '#434655', textAlign: 'center' },
+  heroHeader: { alignItems: 'center', marginBottom: 8 },
+  title: { fontSize: 22, fontWeight: '700', color: '#151c27', marginBottom: 2, letterSpacing: -0.5 },
+  subtitle: { fontSize: 12, color: '#434655', textAlign: 'center' },
 
-  card: { width: '100%', maxWidth: 480, backgroundColor: '#ffffff', borderRadius: 24, padding: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.08, shadowRadius: 20, elevation: 8, borderWidth: 1, borderColor: 'rgba(195, 198, 215, 0.3)' },
+  card: { 
+    width: '100%', 
+    maxWidth: 420, 
+    backgroundColor: '#ffffff', 
+    borderRadius: 16, 
+    padding: 14, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 3 }, 
+    shadowOpacity: 0.06, 
+    shadowRadius: 12, 
+    elevation: 4, 
+    borderWidth: 1, 
+    borderColor: 'rgba(195, 198, 215, 0.3)' 
+  },
 
-  formGroup: { marginBottom: 20 },
-  label: { fontSize: 14, fontWeight: '600', color: '#434655', marginBottom: 8, marginLeft: 4 },
-  passwordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  forgotPassword: { fontSize: 12, fontWeight: '600', color: '#004ac6' },
+  formGroup: { marginBottom: 8 },
+  label: { fontSize: 11, fontWeight: '600', color: '#434655', marginBottom: 3, marginLeft: 2 },
+  passwordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
+  forgotPassword: { fontSize: 11, fontWeight: '600', color: '#004ac6' },
 
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f3ff', borderRadius: 16, height: 60, paddingHorizontal: 16, borderWidth: 2, borderColor: 'transparent' },
+  inputContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#f0f3ff', 
+    borderRadius: 10, 
+    height: 42, 
+    paddingHorizontal: 12, 
+    borderWidth: 1.5, 
+    borderColor: 'transparent' 
+  },
   inputFocused: { borderColor: '#004ac6', backgroundColor: '#ffffff' },
-  inputIcon: { marginRight: 12 },
+  inputIcon: { marginRight: 8 },
   eyeIcon: { padding: 4 },
-  input: { flex: 1, fontSize: 16, color: '#151c27' },
+  input: { flex: 1, fontSize: 14, color: '#151c27' },
 
-  button: { backgroundColor: '#004ac6', height: 60, borderRadius: 16, alignItems: 'center', justifyContent: 'center', shadowColor: '#003594', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 16, elevation: 6, marginTop: 8 },
+  button: { 
+    backgroundColor: '#004ac6', 
+    height: 42, 
+    borderRadius: 10, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    shadowColor: '#003594', 
+    shadowOffset: { width: 0, height: 3 }, 
+    shadowOpacity: 0.15, 
+    shadowRadius: 8, 
+    elevation: 3, 
+    marginTop: 2 
+  },
   buttonDisabled: { opacity: 0.7 },
-  buttonText: { color: '#ffffff', fontSize: 18, fontWeight: '700' },
+  buttonText: { color: '#ffffff', fontSize: 14, fontWeight: '700' },
 
-  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
+  dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 6 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#c3c6d6' },
-  dividerText: { marginHorizontal: 16, fontSize: 12, fontWeight: '600', color: '#737686' },
+  dividerText: { marginHorizontal: 8, fontSize: 10, fontWeight: '600', color: '#737686' },
 
-  googleButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 60, backgroundColor: '#f0f3ff', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(195, 198, 215, 0.3)', gap: 12 },
-  googleIcon: { width: 22, height: 22 },
-  googleButtonText: { fontSize: 16, fontWeight: '600', color: '#151c27' },
+  googleButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    height: 42, 
+    backgroundColor: '#f0f3ff', 
+    borderRadius: 10, 
+    borderWidth: 1, 
+    borderColor: 'rgba(195, 198, 215, 0.3)', 
+    gap: 8 
+  },
+  googleIcon: { width: 18, height: 18 },
+  googleButtonText: { fontSize: 13, fontWeight: '600', color: '#151c27' },
 
-  footerLink: { marginTop: 32, alignItems: 'center' },
-  footerText: { fontSize: 15, color: '#434655' },
+  footerLink: { marginTop: 8, alignItems: 'center' },
+  footerText: { fontSize: 12, color: '#434655' },
   footerBold: { color: '#004ac6', fontWeight: '700' },
 
-  socialProof: { marginTop: 40, alignItems: 'center', opacity: 0.8 },
-  avatarGroup: { flexDirection: 'row', marginBottom: 12 },
-  avatar: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: '#f9f9ff' },
-  avatarOverlap: { marginLeft: -12 },
+  socialProof: { marginTop: 8, alignItems: 'center', opacity: 0.85 },
+  avatarGroup: { flexDirection: 'row', marginBottom: 2 },
+  avatar: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: '#f9f9ff' },
+  avatarOverlap: { marginLeft: -6 },
   starsContainer: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  socialProofText: { fontSize: 12, fontWeight: '600', color: '#5c6274', marginLeft: 6 },
+  socialProofText: { fontSize: 10, fontWeight: '600', color: '#5c6274', marginLeft: 4 },
 
   // Modal Styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContainer: { backgroundColor: '#ffffff', borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 32, paddingBottom: Platform.OS === 'ios' ? 48 : 32, minHeight: 400 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 },
-  modalIconContainer: { width: 56, height: 56, borderRadius: 18, backgroundColor: '#EFF6FF', alignItems: 'center', justifyContent: 'center' },
-  modalCloseButton: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#f0f3ff', alignItems: 'center', justifyContent: 'center' },
-  modalTitle: { fontSize: 26, fontWeight: '800', color: '#151c27', marginBottom: 8, letterSpacing: -0.5 },
-  modalSubtitle: { fontSize: 15, color: '#434655', marginBottom: 28, lineHeight: 22 },
-  modalSecondaryButton: { alignItems: 'center', marginTop: 20, paddingVertical: 8 },
-  modalSecondaryText: { fontSize: 14, color: '#737686', fontWeight: '500' },
-  matchIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12, paddingLeft: 4 },
-  matchText: { fontSize: 13, fontWeight: '500' },
+  modalContainer: { backgroundColor: '#ffffff', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24, minHeight: 380 },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 },
+  modalIconContainer: { width: 48, height: 48, borderRadius: 14, backgroundColor: '#EFF6FF', alignItems: 'center', justifyContent: 'center' },
+  modalCloseButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#f0f3ff', alignItems: 'center', justifyContent: 'center' },
+  modalTitle: { fontSize: 22, fontWeight: '800', color: '#151c27', marginBottom: 6, letterSpacing: -0.5 },
+  modalSubtitle: { fontSize: 14, color: '#434655', marginBottom: 20, lineHeight: 20 },
+  modalSecondaryButton: { alignItems: 'center', marginTop: 16, paddingVertical: 6 },
+  modalSecondaryText: { fontSize: 13, color: '#737686', fontWeight: '500' },
+  matchIndicator: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, paddingLeft: 4 },
+  matchText: { fontSize: 12, fontWeight: '500' },
 });
