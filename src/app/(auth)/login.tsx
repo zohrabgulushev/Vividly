@@ -106,7 +106,7 @@ export default function LoginScreen() {
           {/* Top Section */}
           <View style={styles.topSection}>
             <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
-              <MaterialIcons name="language" size={isCompact ? 26 : 30} color="#004ac6" />
+              <MaterialIcons name="language" size={isCompact ? 28 : 30} color="#004ac6" />
               <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
             </View>
 
@@ -122,7 +122,7 @@ export default function LoginScreen() {
             <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
               <Text style={[styles.label, isCompact && styles.labelCompact]}>Email Address</Text>
               <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, emailFocused && styles.inputFocused]}>
-                <Feather name="mail" size={isCompact ? 18 : 20} color={emailFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+                <Feather name="mail" size={isCompact ? 20 : 20} color={emailFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
                 <TextInput style={[styles.input, isCompact && styles.inputCompactText]} placeholder="name@example.com" placeholderTextColor="#737686" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" onFocus={() => setEmailFocused(true)} onBlur={() => setEmailFocused(false)} />
               </View>
             </View>
@@ -135,10 +135,10 @@ export default function LoginScreen() {
                 </TouchableOpacity>
               </View>
               <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, passwordFocused && styles.inputFocused]}>
-                <Feather name="lock" size={isCompact ? 18 : 20} color={passwordFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+                <Feather name="lock" size={isCompact ? 20 : 20} color={passwordFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
                 <TextInput style={[styles.input, isCompact && styles.inputCompactText]} placeholder="••••••••" placeholderTextColor="#737686" value={password} onChangeText={setPassword} secureTextEntry={!showPassword} onFocus={() => setPasswordFocused(true)} onBlur={() => setPasswordFocused(false)} />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                  <Feather name={showPassword ? "eye-off" : "eye"} size={isCompact ? 18 : 20} color="#737686" />
+                  <Feather name={showPassword ? "eye-off" : "eye"} size={isCompact ? 20 : 20} color="#737686" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -183,7 +183,7 @@ export default function LoginScreen() {
                 <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-suB2Rrh7c51upjwHCzsa6E0UmV0VldQCe5VYRbxhJzwFzi0G2kXRywDz3xLByOA1eaS2JsPGnFs2O6g6HXVRBkucQEY2-pdmBaOwmr28R5qBVhRMeW4PABqYyGDezYq7qLnDC_O34Y6OCieqZcXogBQUUqjzvGOlEzkLXyJvX-PKtLps5q9FX2aVRCccPEbdfHBPr14veHh7-kYye2Sp5UCI9x_MgyME1CkRCzZhyOA7IvTXH9MApYL72pfYWmGZYoti9IIudrI' }} style={[styles.avatar, isCompact && styles.avatarCompact, styles.avatarOverlap, { zIndex: 1 }]} />
               </View>
               <View style={styles.starsContainer}>
-                {[1,2,3,4,5].map(i => <MaterialIcons key={i} name="star" size={isCompact ? 13 : 18} color="#bc4800" />)}
+                {[1,2,3,4,5].map(i => <MaterialIcons key={i} name="star" size={isCompact ? 15 : 18} color="#bc4800" />)}
                 <Text style={[styles.socialProofText, isCompact && styles.socialProofTextCompact]}>Joined by 2M+ learners worldwide</Text>
               </View>
             </View>
@@ -363,41 +363,41 @@ const styles = StyleSheet.create({
   starsContainer: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   socialProofText: { fontSize: 12, fontWeight: '600', color: '#5c6274', marginLeft: 6 },
 
-  scrollContentCompact: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 16, justifyContent: 'space-between' },
+  scrollContentCompact: { paddingHorizontal: 18, paddingTop: 12, paddingBottom: 16, justifyContent: 'space-between' },
 
-  topHeaderCompact: { height: 42, marginTop: 4, marginBottom: 2 },
-  logoTextCompact: { fontSize: 22 },
+  topHeaderCompact: { height: 46, marginTop: 4, marginBottom: 2, gap: 8 },
+  logoTextCompact: { fontSize: 26, fontWeight: '700' },
 
-  heroHeaderCompact: { marginBottom: 6 },
-  titleCompact: { fontSize: 24, marginBottom: 2 },
-  subtitleCompact: { fontSize: 13 },
+  heroHeaderCompact: { marginBottom: 8 },
+  titleCompact: { fontSize: 28, fontWeight: '700', marginBottom: 4 },
+  subtitleCompact: { fontSize: 15 },
 
-  cardCompact: { padding: 16, borderRadius: 18 },
+  cardCompact: { padding: 20, borderRadius: 22 },
 
-  formGroupCompact: { marginBottom: 8 },
-  labelCompact: { fontSize: 12, marginBottom: 3 },
-  forgotPasswordCompact: { fontSize: 12 },
+  formGroupCompact: { marginBottom: 12 },
+  labelCompact: { fontSize: 14, fontWeight: '600', marginBottom: 5 },
+  forgotPasswordCompact: { fontSize: 13, fontWeight: '600' },
 
-  inputContainerCompact: { height: 46, borderRadius: 12, paddingHorizontal: 14 },
-  inputCompactText: { fontSize: 15 },
+  inputContainerCompact: { height: 52, borderRadius: 14, paddingHorizontal: 16 },
+  inputCompactText: { fontSize: 16 },
 
-  buttonCompact: { height: 46, borderRadius: 12, marginTop: 4 },
-  buttonTextCompact: { fontSize: 16 },
+  buttonCompact: { height: 52, borderRadius: 14, marginTop: 6 },
+  buttonTextCompact: { fontSize: 17, fontWeight: '700' },
 
-  dividerContainerCompact: { marginVertical: 8 },
-  dividerTextCompact: { fontSize: 10, marginHorizontal: 8 },
+  dividerContainerCompact: { marginVertical: 12 },
+  dividerTextCompact: { fontSize: 12, marginHorizontal: 10 },
 
-  googleButtonCompact: { height: 44, borderRadius: 12, gap: 8 },
-  googleIconCompact: { width: 18, height: 18 },
-  googleButtonTextCompact: { fontSize: 14 },
+  googleButtonCompact: { height: 50, borderRadius: 14, gap: 10 },
+  googleIconCompact: { width: 20, height: 20 },
+  googleButtonTextCompact: { fontSize: 15, fontWeight: '600' },
 
-  footerLinkCompact: { marginTop: 8 },
-  footerTextCompact: { fontSize: 13 },
+  footerLinkCompact: { marginTop: 10 },
+  footerTextCompact: { fontSize: 15 },
 
-  socialProofCompact: { marginTop: 8, opacity: 0.85 },
-  avatarGroupCompact: { marginBottom: 4 },
-  avatarCompact: { width: 28, height: 28, borderRadius: 14 },
-  socialProofTextCompact: { fontSize: 11, marginLeft: 4 },
+  socialProofCompact: { marginTop: 10, opacity: 0.9 },
+  avatarGroupCompact: { marginBottom: 6 },
+  avatarCompact: { width: 32, height: 32, borderRadius: 16 },
+  socialProofTextCompact: { fontSize: 12, fontWeight: '600', marginLeft: 6 },
 
   // Modal Styles
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },

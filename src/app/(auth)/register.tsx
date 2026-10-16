@@ -69,16 +69,16 @@ export default function RegisterScreen() {
           <View style={styles.topSection}>
             <View style={[styles.topHeader, isCompact && styles.topHeaderCompact]}>
               <TouchableOpacity onPress={() => router.back()} style={[styles.backButton, isCompact && styles.backButtonCompact]}>
-                <Feather name="arrow-left" size={isCompact ? 18 : 24} color="#004ac6" />
+                <Feather name="arrow-left" size={isCompact ? 20 : 24} color="#004ac6" />
               </TouchableOpacity>
               
               <View style={styles.logoContainer}>
-                <MaterialIcons name="language" size={isCompact ? 22 : 28} color="#004ac6" />
+                <MaterialIcons name="language" size={isCompact ? 26 : 28} color="#004ac6" />
                 <Text style={[styles.logoText, isCompact && styles.logoTextCompact]}>Vividly</Text>
               </View>
               
               {/* Spacer to balance the back button */}
-              <View style={{ width: isCompact ? 34 : 44 }} />
+              <View style={{ width: isCompact ? 38 : 44 }} />
             </View>
 
             {/* Hero Header */}
@@ -355,103 +355,103 @@ const styles = StyleSheet.create({
 
   // Responsive Compact Styles for Mobile
   scrollContentCompact: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingHorizontal: 18,
+    paddingTop: 12,
     paddingBottom: 16,
     justifyContent: 'space-between',
   },
   topHeaderCompact: {
-    height: 38,
-    marginTop: 2,
+    height: 44,
+    marginTop: 4,
     marginBottom: 2,
   },
   backButtonCompact: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
   },
   logoTextCompact: {
-    fontSize: 20,
+    fontSize: 24,
   },
   heroHeaderCompact: {
-    marginBottom: 6,
+    marginBottom: 8,
   },
   titleCompact: {
-    fontSize: 22,
+    fontSize: 26,
     marginBottom: 2,
   },
   subtitleCompact: {
-    fontSize: 13,
-  },
-  cardCompact: {
-    padding: 14,
-    borderRadius: 18,
-  },
-  formGroupCompact: {
-    marginBottom: 6,
-  },
-  labelCompact: {
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  inputContainerCompact: {
-    height: 40,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-  },
-  inputCompactText: {
     fontSize: 14,
   },
-  buttonCompact: {
-    height: 40,
-    borderRadius: 10,
-    marginTop: 4,
+  cardCompact: {
+    padding: 18,
+    borderRadius: 20,
   },
-  buttonTextCompact: {
+  formGroupCompact: {
+    marginBottom: 8,
+  },
+  labelCompact: {
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  inputContainerCompact: {
+    height: 46,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+  },
+  inputCompactText: {
     fontSize: 15,
   },
+  buttonCompact: {
+    height: 46,
+    borderRadius: 12,
+    marginTop: 6,
+  },
+  buttonTextCompact: {
+    fontSize: 16,
+  },
   dividerContainerCompact: {
-    marginVertical: 6,
+    marginVertical: 8,
   },
   dividerTextCompact: {
-    fontSize: 10,
+    fontSize: 11,
     marginHorizontal: 8,
   },
   googleButtonCompact: {
-    height: 40,
-    borderRadius: 10,
-    gap: 8,
+    height: 44,
+    borderRadius: 12,
+    gap: 10,
   },
   googleIconCompact: {
-    width: 18,
-    height: 18,
+    width: 20,
+    height: 20,
   },
   googleButtonTextCompact: {
-    fontSize: 14,
+    fontSize: 15,
   },
   cardFooterCompact: {
-    marginTop: 8,
-    paddingTop: 6,
+    marginTop: 10,
+    paddingTop: 8,
   },
   footerTextCompact: {
-    fontSize: 13,
+    fontSize: 14,
   },
   footerBoldCompact: {
-    fontSize: 13,
+    fontSize: 14,
   },
   termsContainerCompact: {
-    marginTop: 6,
-    paddingHorizontal: 8,
+    marginTop: 8,
+    paddingHorizontal: 10,
   },
   termsTextCompact: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 12,
+    lineHeight: 16,
   },
   securityBadgeCompact: {
-    marginTop: 6,
-    gap: 4,
+    marginTop: 8,
+    gap: 6,
   },
   securityTextCompact: {
-    fontSize: 10,
+    fontSize: 11,
   },
 });
