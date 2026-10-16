@@ -78,17 +78,6 @@ export default function RootLayout() {
       } else {
         router.replace('/onboarding');
       }
-    } else if (session && !isOnboarded && !inOnboardingFlow) {
-      // If user came from processing or is inside tabs, ensure they aren't trapped
-      if (comingFromProcessing.current || inTabs) {
-        comingFromProcessing.current = false;
-        setIsOnboarded(true);
-        if (session.user?.id) {
-          AsyncStorage.setItem(`vividly_onboarded_${session.user.id}`, 'true').catch(() => {});
-        }
-      } else {
-        router.replace('/onboarding');
-      }
     }
   }, [session, loading, isOnboarded, profileLoading, segments]);
 
