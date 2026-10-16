@@ -121,9 +121,9 @@ export default function LoginScreen() {
             
             <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
               <Text style={[styles.label, isCompact && styles.labelCompact]}>Email Address</Text>
-              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, emailFocused && styles.inputFocused]}>
-                <Feather name="mail" size={isCompact ? 20 : 20} color={emailFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
-                <TextInput style={[styles.input, isCompact && styles.inputCompactText]} placeholder="name@example.com" placeholderTextColor="#737686" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" onFocus={() => setEmailFocused(true)} onBlur={() => setEmailFocused(false)} />
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact]}>
+                <Feather name="mail" size={isCompact ? 20 : 20} color="#737686" style={styles.inputIcon} />
+                <TextInput style={[styles.input, isCompact && styles.inputCompactText]} placeholder="name@example.com" placeholderTextColor="#737686" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
               </View>
             </View>
 
@@ -134,9 +134,9 @@ export default function LoginScreen() {
                   <Text style={[styles.forgotPassword, isCompact && styles.forgotPasswordCompact]}>Forgot password?</Text>
                 </TouchableOpacity>
               </View>
-              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, passwordFocused && styles.inputFocused]}>
-                <Feather name="lock" size={isCompact ? 20 : 20} color={passwordFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
-                <TextInput style={[styles.input, isCompact && styles.inputCompactText]} placeholder="••••••••" placeholderTextColor="#737686" value={password} onChangeText={setPassword} secureTextEntry={!showPassword} onFocus={() => setPasswordFocused(true)} onBlur={() => setPasswordFocused(false)} />
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact]}>
+                <Feather name="lock" size={isCompact ? 20 : 20} color="#737686" style={styles.inputIcon} />
+                <TextInput style={[styles.input, isCompact && styles.inputCompactText]} placeholder="••••••••" placeholderTextColor="#737686" value={password} onChangeText={setPassword} secureTextEntry={!showPassword} />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                   <Feather name={showPassword ? "eye-off" : "eye"} size={isCompact ? 20 : 20} color="#737686" />
                 </TouchableOpacity>
@@ -334,11 +334,16 @@ const styles = StyleSheet.create({
   passwordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   forgotPassword: { fontSize: 12, fontWeight: '600', color: '#004ac6' },
 
-  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f3ff', borderRadius: 16, height: 60, paddingHorizontal: 16, borderWidth: 2, borderColor: 'transparent' },
-  inputFocused: { borderColor: '#004ac6', backgroundColor: '#ffffff' },
+  inputContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0f3ff', borderRadius: 16, height: 60, paddingHorizontal: 16, borderWidth: 0, borderColor: 'transparent' },
+  inputFocused: { borderColor: 'transparent' },
   inputIcon: { marginRight: 12 },
   eyeIcon: { padding: 4 },
-  input: { flex: 1, fontSize: 16, color: '#151c27' },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: '#151c27',
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none', boxShadow: 'none' } as any) : {}),
+  },
 
   button: { backgroundColor: '#004ac6', height: 60, borderRadius: 16, alignItems: 'center', justifyContent: 'center', shadowColor: '#003594', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 16, elevation: 6, marginTop: 8 },
   buttonDisabled: { opacity: 0.7 },

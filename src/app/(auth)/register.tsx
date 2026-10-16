@@ -93,24 +93,22 @@ export default function RegisterScreen() {
             
             <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
               <Text style={[styles.label, isCompact && styles.labelCompact]}>Full Name</Text>
-              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, nameFocused && styles.inputFocused]}>
-                <Feather name="user" size={isCompact ? 18 : 20} color={nameFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact]}>
+                <Feather name="user" size={isCompact ? 18 : 20} color="#737686" style={styles.inputIcon} />
                 <TextInput
                   style={[styles.input, isCompact && styles.inputCompactText]}
                   placeholder="John Doe"
                   placeholderTextColor="#737686"
                   value={fullName}
                   onChangeText={setFullName}
-                  onFocus={() => setNameFocused(true)}
-                  onBlur={() => setNameFocused(false)}
                 />
               </View>
             </View>
 
             <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
               <Text style={[styles.label, isCompact && styles.labelCompact]}>Email Address</Text>
-              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, emailFocused && styles.inputFocused]}>
-                <Feather name="mail" size={isCompact ? 18 : 20} color={emailFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact]}>
+                <Feather name="mail" size={isCompact ? 18 : 20} color="#737686" style={styles.inputIcon} />
                 <TextInput
                   style={[styles.input, isCompact && styles.inputCompactText]}
                   placeholder="name@example.com"
@@ -119,16 +117,14 @@ export default function RegisterScreen() {
                   onChangeText={setEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
-                  onFocus={() => setEmailFocused(true)}
-                  onBlur={() => setEmailFocused(false)}
                 />
               </View>
             </View>
 
             <View style={[styles.formGroup, isCompact && styles.formGroupCompact]}>
               <Text style={[styles.label, isCompact && styles.labelCompact]}>Password</Text>
-              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact, passwordFocused && styles.inputFocused]}>
-                <Feather name="lock" size={isCompact ? 18 : 20} color={passwordFocused ? "#004ac6" : "#737686"} style={styles.inputIcon} />
+              <View style={[styles.inputContainer, isCompact && styles.inputContainerCompact]}>
+                <Feather name="lock" size={isCompact ? 18 : 20} color="#737686" style={styles.inputIcon} />
                 <TextInput
                   style={[styles.input, isCompact && styles.inputCompactText]}
                   placeholder="••••••••"
@@ -136,8 +132,6 @@ export default function RegisterScreen() {
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
-                  onFocus={() => setPasswordFocused(true)}
-                  onBlur={() => setPasswordFocused(false)}
                 />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                   <Feather name={showPassword ? "eye-off" : "eye"} size={isCompact ? 18 : 20} color="#737686" />
@@ -284,21 +278,24 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f0f3ff',
     borderRadius: 16,
     height: 60,
     paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#c3c6d6',
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
   inputFocused: {
-    borderColor: '#004ac6',
-    borderWidth: 2,
-    backgroundColor: '#f9f9ff',
+    borderColor: 'transparent',
   },
   inputIcon: { marginRight: 12 },
   eyeIcon: { padding: 4 },
-  input: { flex: 1, fontSize: 16, color: '#151c27' },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: '#151c27',
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none', boxShadow: 'none' } as any) : {}),
+  },
   
   hintText: { fontSize: 12, color: '#737686', marginTop: 6, marginLeft: 4 },
 
